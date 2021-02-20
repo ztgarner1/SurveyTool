@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/w3.css" />
+    <title>Progranimate Testing</title>
+  </head>
+  <body>
+      <header>
+        <div class="navbar">
+            <img
+            src="images/Progranimate_logo.png"
+              alt="Progranimate Logo"
+              id="logo"
+              align="left"
+            />
+            <a href="/">Home</a>
+            <a href="/create">Create</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+            
+            <a href="/learn">Learn</a>
+            <a href="/myClasses">My Classes</a> 
+            <a href="/enrollment">Enroll<a>
+            
+            <div class="login-container">
+                <% if(profile == null) { %>
+                    <a href="/login">Sign In</a>
+                    <a href="/register">Register</a>
+                <% }else{ %>
+                    <a href="/profile">Profile</a>
+                    <form action="/logout?_method=DELETE" method="POST">
+                        <button type="submit">Log Out</button>
+                    </form>
+                <% } %>
+                 
+
+            </div>
+          </div>
+      </header>
+      <h1 id="main"></h1>
+        <form action "/profile" method = "POST" style = "margin-top: 10%;">
+            <div class="w3-row" style = "padding-top:1%; text-align: center; height: 10%; width: 100%;" id="profile">
+                <div class="w3-col" style = "width:60%; text-align: center;">
+                    <h3>Profile</h3>
+                </div>
+                <div class="w3-col" style = "width:40%; text-align: center;">
+                    <% if(edit){ %>
+                        <button type = "submit" name = "SaveProfile">Save Profile</button>
+                    <% }else { %>
+                        <button type = "submit" name = "EditProfile">Edit Profile</button>
+                    <% } %>
+                    
+                </div>
+                
+            </div>
+            <div class="w3-row" style = "padding-top:1%; text-align: center;height: 10%;" id="Username">
+                Username: <%= profile.name %>
+            </div>
+            <div class="w3-row" style = "padding-top:1%; text-align: center;height: 10%;" id="Email">
+                Email:<%= profile.email %>
+            </div>
+
+            <div class="w3-row" style = "padding-top:1%; text-align: center;height: 10%;">
+                <% if(edit){ %>
+                    <input name = "first" placeholder="First name" id = "first" value = "<%= profile.first %>">
+                    
+                <% }else{ %>
+                    First : <%= profile.first %>
+                <% } %>
+            </div>
+            <div class="w3-row" style = "padding-top:1%; text-align: center;height: 10%;">
+                <% if(edit){ %>
+                    <input name = "last" placeholder="Last name" id = "last" value = "<%= profile.last %>"><br>
+                    <label for="language">Language:</label>
+
+                    <select name="language" id="language" >
+                        <option value="java" >Java</option>
+                        <option value="python">Python</option>
+                        <option value="javascript">Javascript</option>
+                        <option value="mips">Mips</option>
+                    </select>
+                <% }else{ %>
+                    Last : <%= profile.last %><br>
+                    Language : Not Enrolled
+                <% } %>
+            </div>
+            
+        </form> 
+        <div class="w3-row" style = "padding-top:1%; text-align: center;height: 10%;" id="Email">
+            <% if(!edit){ %>
+                <a href = "/" >TO HOMEPAGE</a>
+            <% } %>
+        </div>
+        
+
+        
+    </body>
+
+
+</html>

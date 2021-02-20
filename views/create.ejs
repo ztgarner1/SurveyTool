@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/w3.css" />
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <title>Progranimate Testing</title>
+  </head>
+  <body>
+      <header>
+        <div class="navbar">
+            <img
+            src="images/Progranimate_logo.png"
+              alt="Progranimate Logo"
+              id="logo"
+              align="left"
+            />
+            <a href="/">Home</a>
+            <a href="/create">Create</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+            <% if(profile != null) { %>
+              <a href="/learn">Learn</a>
+              <a href="/myClasses">My Classes</a> 
+              <a href="/enrollment">Enroll<a>
+                
+            <% } %>
+            
+      
+            <div class="login-container">
+                <% if(profile == null) { %>
+                    <a href="/login">Sign In</a>
+                    <a href="register">Register</a>
+                <% }else{ %>
+                    <a href="/profile">Profile</a>
+                    <form action="/logout?_method=DELETE" method="POST">
+                        <button type="submit">Log Out</button>
+                    </form>
+                <% } %>
+                 
+
+            </div>
+          </div>
+      </header>
+      <h1 id="main"></h1>
+      <div class="w3-row">
+        <div>
+          <img src="images/temp.png" alt="This isnt suppose to be a picture" id="progranimate">
+        </div>
+      </div>
+    
+    
+  </body>
+</html>

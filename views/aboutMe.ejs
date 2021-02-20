@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/w3.css" />
+    <title>About Me</title>
+  </head>
+  <body>
+      <header>
+        <div class="navbar">
+            <img
+            src="images/Progranimate_logo.png"
+              alt="Progranimate Logo"
+              id="logo"
+              align="left"
+            />
+            <a href="/">Home</a>
+            <a href="/create">Create</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+            <% if(profile != null) { %>
+              <a href="/learn">Learn</a>
+              <a href="/myClasses">My Classes</a> 
+              <a href="/enrollment">Enroll<a>
+            <% } %>
+            
+      
+            <div class="login-container">
+                <% if(profile == null) { %>
+                    <a href="/login">Sign In</a>
+                    <a href="register">Register</a>
+                <% }else{ %>
+                    <a href="/profile">Profile</a>
+                    <form action="/logout?_method=DELETE" method="POST">
+                        <button type="submit">Log Out</button>
+                    </form>
+                <% } %>
+                 
+
+            </div>
+          </div>
+      </header>
+    <h1 id="main"></h1>
+    <div class="w3-full w3-container w3-padding-20 w3-margin-left w3-margin-right">
+      <h2 style="text-align:center;"><b>About Progranimate</b></h2>
+      <p>
+        Progranimate is a dynamic visualisation programming tool aimed at the
+        novice programmer. Its aim is to make the initial stages of programming
+        more palatable for the novice. Progranimate removes the complexities
+        associated with novice exposure to professional development environments
+        and the impact of writing syntax. This allows novices to focus solely on
+        their key weakness, that of the algorithmic problem solving aspects of
+        programming involving the basics of sequence selection and iteration.
+      </p>
+    </div>
+    <div class="w3-full w3-container w3-padding-20 w3-margin-left w3-margin-right">
+      <h2 style="text-align:center;"><b>Features</b></h2>
+      <h4><b>Program Construction</b></h4>
+      <p>
+        Progranimate allows the users to construct a computer program via a
+        flowchart based representation. The flowchart visualisations provide the
+        novices with an accurate and useful mental model of the individual
+        programming components and algorithms modelled.
+      </p>
+
+      <h4><b>Automatic Code Generation</b></h4>
+      <p>
+        Progranimate provides the novices with the ability to generate source
+        code without being bogged down with the complexities of writing
+        confusing and finicky syntax. Computer code is auto generated on the fly
+        as components are added to a program. Progranimate can generate code in
+        Java and Visual Basic with more languages planned for the future.
+      </p>
+
+      <h4><b>Code and Flowchart Highlighting</b></h4>
+      <p>
+        The highlighting of flowchart components and lines of code has been
+        synchronised. This allows the user to draw a strong correlation between
+        the flowchart and the textual code structure that such design would
+        likely produce.
+      </p>
+
+      <h4><b>Program Animation</b></h4>
+      <p>
+        Programs can be animated with each step of a program being highlighted
+        in turn in both the code and flowchart representations. Variables and
+        array elements are visualised in the variable inspector. This allows the
+        use to observe the effect that each program statement has on the values
+        of the variables and arrays used. Progranimate's animation features and
+        correlation it draws between the visual and code representations
+        reinforce student understanding of both the visual solution and program
+        statement flow
+      </p>
+
+      <h4><b>Online Integration</b></h4>
+      <p>
+        Progranimate can be used as a stand alone application. However, its can
+        be integrated within a web page for concept demonstration, program
+        demonstration or program creation. Progranimate can also be launched via
+        Java web start. This means Progranimate can be used on any computer with
+        internet access and the Java runtime environment. It also means
+        Progranimate is an ideal centrepiece to an online tutorial involving the
+        basics of programming for novices.
+      </p>
+    </div>
+    
+    
+  </body>
+</html>

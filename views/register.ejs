@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/w3.css" />
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <title>Progranimate Testing</title>
+  </head>
+  <body>
+      <header>
+        <div class="navbar">
+            <img
+            src="images/Progranimate_logo.png"
+              alt="Progranimate Logo"
+              id="logo"
+              align="left"
+            />
+            <a href="/">Home</a>
+            <a href="/create">Create</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+          </div>
+      </header>
+        
+        <h1 id= 'main'></h1>
+        <div class = "w3-row" style = "text-align: center;margin-top: 2%;">
+            
+            <% if(error != null){%>
+            <%= error %>
+            <% } %>
+            
+        </div>
+        <form action = '/register' method = "POST" >
+            <div class = "w3-row" style = "text-align: center;padding-top: 1%;">
+                <label for="name"></label>
+                <input placeholder="Username" name = "name"  type = "text" id = "name" required>   
+            </div>
+            <div class = "w3-row" style = "text-align: center;">
+                <label for="email"></label>
+                <input placeholder="Email" name = "email" type = "email" id = "email" required>
+            </div>
+            <div class = "w3-row" style = "text-align: center;">
+                <label for="password"></label>
+                <input placeholder="Password" name= 'password'  type = "password" id = "password" required>
+            </div>
+            <div class = "w3-row" style = "text-align: center;">
+                
+                <label for="question">Are you a teacher:</label>
+                    <select name="question" id="question">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+            </div>
+            <br>
+            <div class = "w3-row" style = "text-align: center;">
+                <button type = "submit">Register</button>
+            </div>
+            <div class = "w3-row" style = "text-align: center;">
+                Already have an account? Log in on the homepage <a href = "/login" style = "color: blue">log In</a>
+            </div>
+            <div class = "w3-row" style = "text-align: center;">
+                <p id = "item-notification" style = "color: green;"> </p>
+            </div>
+        </form>   
+
+    
+        
+    </body>
+
+</html>

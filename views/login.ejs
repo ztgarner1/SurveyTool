@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/w3.css" />
+    <title>Progranimate Testing</title>
+  </head>
+  
+      <header>
+        <div class="navbar">
+            <img
+            src="images/Progranimate_logo.png"
+              alt="Progranimate Logo"
+              id="logo"
+              align="left"
+            />
+            <a href="/">Home</a>
+            <a href="/create">Create</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+            
+          </div>
+      </header>
+      <body>
+      <h1 id = "main"></h1>
+        
+        <div class = "w3-row" style = "text-align: center;margin-top: 2%;">
+            <% if (messages.error){%>
+            <%= messages.error %>
+            <% } %>
+            
+        </div>
+        
+        <form action = '/login' method = "POST">
+            <div class = "w3-row" style = "text-align: center;">
+                <label for="email"></label>
+                <input placeholder="Email" name = "email" type = "email" id = "email" required>
+            </div>
+            <div class = "w3-row" style = "text-align: center;">
+                <label for="password"></label>
+                <input placeholder="Password" name= 'password'  type = "password" id = "password" required>
+            </div>
+            <div class = "w3-row" style = "text-align: center;">
+                <button type = "submit">Login</button>
+            </div>
+            <div class = "w3-row" style = "text-align: center;">
+                <a href = "/register">Register</a>
+            </div>
+        </form>   
+
+    
+        
+    </body>
+
+</html>
