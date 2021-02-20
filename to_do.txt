@@ -1,0 +1,31 @@
+
+for local setup here
+https://devcenter.heroku.com/articles/heroku-postgresql#local-setup
+
+you need to add a table and then a row to work. then follow link
+https://devcenter.heroku.com/articles/getting-started-with-nodejs#provision-a-database
+
+this is for sending comfirmation emails
+https://app.sendgrid.com/settings/sender_auth/senders
+
+439 stillwell 1 university dr
+cullowhee nc 
+28723
+
+look up 3rd party database stuff.
+does mongodb have an api 
+
+https://www.youtube.com/watch?v=NSYSXU2j6nE
+for connecting and adding to a database(table and everything)
+
+
+Progranimate7@gmail.com
+pwd: WCUProgranimate
+
+August 20 2000
+
+mongoose.connect("mongodb+srv://dbUser:UURpFBluSKGVRtWW@cluster0.obk8p.mongodb.net/dbUser?retryWrites=true&w=majority",
+  {
+      useNewUrlParser: true,
+      useUnifiedTopology: true 
+  });
