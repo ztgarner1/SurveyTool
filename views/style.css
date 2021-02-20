@@ -1,0 +1,88 @@
+/* CSS files add styling rules to your content */
+
+body {
+  font-family: helvetica, arial, sans-serif;
+  margin: 2em;
+}
+
+h1 {
+  font-style: italic;
+  color: #373fff;
+}
+
+input {
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  margin: 5px 0;
+  opacity: 0.85;
+  font-size: 17px;
+  line-height: 20px;
+}
+input[type="submit"] {
+  background-color: #ff9800;
+  color: white;
+  cursor: pointer;
+}
+
+#column {
+  min-height: 100vh;
+}
+
+/* The navigation bar */
+.navbar {
+  overflow: hidden;
+  background-color: #333;
+  position: fixed; /* Set the navbar to fixed position */
+  top: 0; /* Position the navbar at the top of the page */
+  width: 100%; /* Full width */
+}
+/* Links inside the navbar */
+.navbar a {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+/* Change background on mouse-over */
+.navbar a:hover {
+  background: #ddd;
+  color: black;
+}
+
+/* Style the input container */
+.navbar .login-container {
+  float: right;
+}
+
+#logo {
+  margin: 0 10px 0 10px;
+  height: 50px;
+}
+/* Main content */
+#main {
+  margin-top: 50px; /* Add a top margin to avoid content overlay */
+}
+
+#progranimate {
+  display: block;
+  margin-top: 1%;
+  margin-left: auto;
+  margin-right: auto;
+  width: 75%;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
+  width: 20%;
+}
+
+ul {
+  display: table;
+  margin: 0 auto;
+}
