@@ -49,9 +49,21 @@
     <div class="w3-row">
       <div class="w3-rest w3-container w3-orange w3-padding-32" style= "text-align: center;">
 
-        <button id="addCourse">Add a Course</button>
-        <button id="addTut">Add a tutorial</button>
-        <button id="addProgramTask">Add a programming task</button>
+        <form action='/addClasses' enctype="multipart/form-data" method ='POST' name = 'addCourse'>
+          <div class = 'w3-row'>
+              <input placeholder='Enter a course Id' name='courseId'></div>
+          <div class = 'w3-row'>
+              <input placeholder='Enter Language of course' name='courseLanguage'></div>
+          <div class = 'w3-row' >
+              <input placeholder='Enter description of course' name='courseDesc'style = width:50%,height: 25%;></div>
+          <div class = 'w3-row' >
+              <input placeholder='Enter description of course' type = 'file' name='fileName'style = width:50%,height: 25%;></div>
+          <div class = 'w3-row'>
+              <button id = 'submitButton' type = 'submit' >Add Class</button></div>
+        </form>
+
+        <
+        
       </div>
       <div id = "addingItems"style= "text-align: center; width:100%" ></div>
     </div>
