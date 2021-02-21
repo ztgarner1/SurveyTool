@@ -530,6 +530,6 @@ var resetDataBase =  function(){
   })
 }
 
-resetDataBase()
+//resetDataBase()
 //makes sure the server is listening on a specified port number. 
 app.listen(process.env.PORT || 3000)
