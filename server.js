@@ -5,6 +5,12 @@ const bcrypt = require('bcrypt')
 const passport = require('passport')
 const flash = require('express-flash')
 const session = require('express-session')
+const fileUpload = require('express-fileupload')
+const csv = require('csv-parser')
+const fs = require('fs');
+app.use(fileUpload());
+
+
 var courses;
 //this helps log a user out
 const methodOverride = require('method-override')
@@ -43,6 +49,7 @@ app.use(express.static(__dirname + "/Mongoose Models"));
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(methodOverride('_method'))
+
 
 //this is the home screen
 app.get('/', (req, res) => {
@@ -188,7 +195,8 @@ app.post("/profile",checkAuthenticated, (req,res)=>{
     .exec()
     .then(docs =>{
       //updating the current user logged in so the data displays right away after saving.
-      
+      req.user.first = req.body.first;
+      req.user.last = req.body.last;
       res.render('profile.ejs', {profile:req.user, edit: false});
     })
   }
@@ -226,6 +234,10 @@ app.get('/enrollment', checkAuthenticated, (req,res)=>{
   }
   else{
     Course.find()
+    .exec()
+    .then((data)=>{
+
+    })
     .then(docs=>{
       res.render('enrollment.ejs', {user: req.user, courses:docs});
     })
@@ -304,10 +316,74 @@ app.get('/addClasses',checkAuthenticated, (req,res)=>{
 })
 //
 app.post('/addClasses',(req,res)=>{
-  //console.log(req.body.courseName)
-  //console.log(req.body.courseId)
-  //console.log(req.body.courseLanguage)
-  //console.log(req.body.courseDesc)
+  
+  if(req.files){
+    var file = req.files.fileName,
+     filename = file.name
+    var results = [];
+    var section = 1;
+    file.mv(__dirname + "/views/uploads/"+filename,function(err){
+      if(err){
+        console.log(err);
+        res.send("error occured");
+      }
+      else{
+        console.log("No problem")
+      }
+      
+    })
+    fs.createReadStream(__dirname +'/views/uploads/'+filename)
+    .pipe(csv({}))
+    .on("data", (data)=> results.push(data))
+    .on("end",() =>{
+        console.log(results);
+    })
+    Course.find()
+    .exec()
+    .then(data=>{
+      
+      for(let i = 0; i< data.length;i++){
+        if(data[i].course_id == req.body.courseId){
+          section++;
+        }
+      }
+      var course = new Course({
+        intructor : req.user.__id,
+        section: section,
+        course_id: req.body.courseId,
+        description:req.body.courseDesc,
+        students:results,
+      })
+      course.save()
+      .then(check =>{
+        res.render('classesInfo.ejs',{user:req.user})
+      })
+      
+      req.user.Enrolled.push(course);
+      User.updateOne({__id:req.user.__id},{$push:{Enrolled:req.user.Enrolled }})
+        .then(()=>{
+          console.log("successful")
+          res.render('enrollment.ejs', {user: req.user, courses:courses});
+        })
+        .catch(()=>{
+          res.render('enrollment.ejs', {user: req.user, courses:courses});
+        })
+    })
+    .catch(error=>{
+      
+    })
+
+
+
+  }
+  else{
+    console.log("did not work")
+  }
+  console.log(filename);
+  res.render('classesInfo.ejs',{profile:req.user})
+  
+    
+  /*
   var check = true;
   let emptyArrays = [];
   Course.find()
@@ -316,12 +392,10 @@ app.post('/addClasses',(req,res)=>{
     console.log("Checked in here")
   })
   .catch(error=>{})
-
+ var sectionNumber;
   Course.findOne({course_name: req.body.courseName})
   .then(doc =>{
-    if(doc != null){
-      check = false;
-    }
+    sectionNumber = doc.length+1; 
   })
   if(check){
       
@@ -341,12 +415,9 @@ app.post('/addClasses',(req,res)=>{
       res.render("addClasses.ejs",{profile:req.user,msg:null})
     })
   }
-  
-  
-  
-  
-  
+  */
 })
+
 
 //this is the confirmation the email sent to the user gets sent to. 
 //checking to see if the code passed through as :variable is the same verification code
@@ -429,7 +500,39 @@ function sendMail(to,user){
   
   
 }
+var resetDataBase =  function(){
+  var emptyArray = [];
+  User.find()
+  .exec()
+  .then(data=>{
+    for(let i = 0; i< data.length; i++){
+      User.updateOne({__id: data[i].__id},{Enrolled : emptyArray }).then(result =>{
+        console.log("reset " + data[i].first + ", " + data[i].last);
+      })
+    }
+  })
+  .catch(error =>{
+    console.log("Error >> " + error);
+  })
 
+  Course.find()
+  .exec()
+  .then(data=>{
+    for(let i = 0; i< data.length; i++){
+      Course.deleteOne({course_id:data[i].course_id})
+      .then(result =>{
+        console.log(result);
+      })
+      .catch(error =>{
+        console.log("Error >> " + error);
+      })
+    }
+  })
+  .catch(error =>{
+    console.log("Error >> " + error);
+  })
+}
 
+resetDataBase()
 //makes sure the server is listening on a specified port number. 
 app.listen(process.env.PORT || 3000)
