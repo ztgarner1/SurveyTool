@@ -16,15 +16,13 @@ const methodOverride = require('method-override')
 //sendgrid for the mail.
 //setting up the database
 const mongoose = require("mongoose");
-mongoose.connect("mongodb+srv://dbUser:UURpFBluSKGVRtWW@surveytool.obk8p.mongodb.net/dbUser?retryWrites=true&w=majority",
+mongoose.connect(""+process.env.MONGO_ATLAS_PW,
   {
       useNewUrlParser: true,
       useUnifiedTopology: true 
   });
 //initializing Passport
 const initializePassport = require('./passport-config');
-//getting the Enrollment schema
-const Enroll = require('./Enrolment_Materials/Enrollment');
 //getting the User Schema
 const User = require('./Mongoose Models/user');
 //getting the courses 
@@ -461,7 +459,7 @@ const sgMail = require("@sendgrid/mail");
 const e = require('express')
 const { render } = require('ejs')
 const user = require('./Mongoose Models/user')
-sgMail.setApiKey("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");
+sgMail.setApiKey(''+process.env.SENDGRID_PW+'');
 
 //sendMail("zacharygarner7@gmail.com")
 //a function that sends a email the a checks to see if this is from register or resending an email
