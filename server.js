@@ -10,7 +10,6 @@ const csv = require('csv-parser')
 const fs = require('fs');
 app.use(fileUpload());
 
-
 var courses;
 //this helps log a user out
 const methodOverride = require('method-override')
