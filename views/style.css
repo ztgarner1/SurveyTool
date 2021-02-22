@@ -66,6 +66,11 @@ input[type="submit"] {
   margin-top: 50px; /* Add a top margin to avoid content overlay */
 }
 
+/* Maindiv content */
+#maindiv {
+  background-color: #592C88;
+}
+
 #progranimate {
   display: block;
   margin-top: 1%;
