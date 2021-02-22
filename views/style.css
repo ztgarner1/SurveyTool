@@ -66,9 +66,14 @@ input[type="submit"] {
   margin-top: 50px; /* Add a top margin to avoid content overlay */
 }
 
-/* Maindiv content */
-#maindiv {
+/* Purplediv content */
+#purplediv {
   background-color: #592C88;
+}
+
+/* Golddiv content */
+#golddiv {
+  background-color: #C1A875;
 }
 
 #progranimate {
