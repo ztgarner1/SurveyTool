@@ -59,32 +59,32 @@ app.get('/', (req, res) => {
 })
 
 //this is the about me page does not matter if the user is logged in here
-app.get('/about', (req,res) => {
-  if(req.user == undefined){
-    res.render('aboutMe.ejs',{profile:null});
-  }
-  else{
-      res.render('aboutMe.ejs', { profile: req.user})
-  }
-})
+// app.get('/about', (req,res) => {
+  // if(req.user == undefined){
+    // res.render('aboutMe.ejs',{profile:null});
+  // }
+  // else{
+      // res.render('aboutMe.ejs', { profile: req.user})
+  // }
+// })
 //this is the contact page that the server serves
-app.get('/contact', (req,res) => {
-  if(req.user == undefined){
-    res.render('contact.ejs',{profile:null});
-  }
-  else{
-      res.render('contact.ejs', { profile: req.user})
-  }
-})
+// app.get('/contact', (req,res) => {
+  // if(req.user == undefined){
+    // res.render('contact.ejs',{profile:null});
+  // }
+  // else{
+      // res.render('contact.ejs', { profile: req.user})
+  // }
+// })
 //server serving the create page
-app.get("/create",(req,res) => {
-  if(req.user == undefined){
-    res.render('create.ejs',{profile:null});
-  }
-  else{
-      res.render('create.ejs', { profile: req.user})
-  }
-})
+// app.get("/create",(req,res) => {
+  // if(req.user == undefined){
+    // res.render('create.ejs',{profile:null});
+  // }
+  // else{
+      // res.render('create.ejs', { profile: req.user})
+  // }
+// })
 //server serving the login page where user cant be logged in
 app.get("/login", checkNotAuthenticated, (req,res)=>{
     res.render("login.ejs");
@@ -97,21 +97,21 @@ app.post('/login', passport.authenticate('local', {
   failureFlash: true
 }))
 //sends the user back learn page
-app.get("/learn",checkAuthenticated,(req,res) => {
-  res.render('learn/learn.ejs', { profile:req.user, language:"Java"})
-})
-//
-app.get("/learntour",checkAuthenticated,(req,res) => {
-res.render('learn/learntour.ejs', { profile: req.user, language:"Java"})
-})
+// app.get("/learn",checkAuthenticated,(req,res) => {
+  // res.render('learn/learn.ejs', { profile:req.user, language:"Java"})
+// })
 
-app.get("/learnVVOE",checkAuthenticated,(req,res) => {
-  res.render('learn/learnvvoe.ejs', { profile: req.user, language:"Java"})
-})
+// app.get("/learntour",checkAuthenticated,(req,res) => {
+// res.render('learn/learntour.ejs', { profile: req.user, language:"Java"})
+// })
 
-app.get("/contactImport",checkAuthenticated,(req,res)=>{
-  res.render('contactImport.ejs',{ profile: req.user});
-})
+// app.get("/learnVVOE",checkAuthenticated,(req,res) => {
+  // res.render('learn/learnvvoe.ejs', { profile: req.user, language:"Java"})
+// })
+
+// app.get("/contactImport",checkAuthenticated,(req,res)=>{
+  // res.render('contactImport.ejs',{ profile: req.user});
+// })
 
 //server serving the register page where the user cant be logged in
 app.get('/register', checkNotAuthenticated, (req, res) => {
