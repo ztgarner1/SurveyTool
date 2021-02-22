@@ -109,9 +109,9 @@ app.post('/login', passport.authenticate('local', {
   // res.render('learn/learnvvoe.ejs', { profile: req.user, language:"Java"})
 // })
 
-// app.get("/contactImport",checkAuthenticated,(req,res)=>{
-  // res.render('contactImport.ejs',{ profile: req.user});
-// })
+ app.get("/contactImport",checkAuthenticated,(req,res)=>{
+   res.render('contactImport.ejs',{ profile: req.user});
+ })
 
 //server serving the register page where the user cant be logged in
 app.get('/register', checkNotAuthenticated, (req, res) => {
