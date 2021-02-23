@@ -114,7 +114,7 @@ app.post('/login', passport.authenticate('local', {
  })
  
 app.get('/survey', checkNotAuthenticated, (req, res) => {
-  res.render('questions.ejs',{error: null})
+  res.render('questions.ejs',{ profile: req.user})
 })
 
 //server serving the register page where the user cant be logged in
