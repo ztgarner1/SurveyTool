@@ -11,23 +11,8 @@
   <body>
       <header>
         <div class="navbar">
-            <img
-              src="images/Progranimate_logo.png"
-              alt="Progranimate Logo"
-              id="logo"
-              align="left"
-            />
             <a href="/">Home</a>
-            <a href="/create">Create</a>
-            <a href="/about">About</a>
-            <a href="/contact">Contact</a>
-            <% if(profile != null) { %>
-              <a href="/learn">Learn</a>
-              <a href="/myClasses">My Classes</a> 
-              <a href="/enrollment">Enroll</a>
-            <% } %>
-            
-      
+			
             <div class="login-container">
                 <% if(profile == null) { %>
                     <a href="/login">Sign In</a>
@@ -46,7 +31,7 @@
     <h1 id="main"></h1>
     
     <div class="w3-row">
-      <div class="w3-rest w3-container w3-orange w3-padding-32" style= "text-align: center;">
+      <div id="purplediv" class="w3-rest w3-container w3-padding-32" style= "text-align: center;">
 
         <% if(profile.Enrolled.length == 0){ %>
             <div class ="w3-row" style = "border-bottom: black solid 2px">
