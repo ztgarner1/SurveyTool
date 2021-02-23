@@ -112,6 +112,10 @@ app.post('/login', passport.authenticate('local', {
  app.get("/contactImport",checkAuthenticated,(req,res)=>{
    res.render('contactImport.ejs',{ profile: req.user});
  })
+ 
+app.get('/survey', checkNotAuthenticated, (req, res) => {
+  res.render('questions.ejs',{error: null})
+})
 
 //server serving the register page where the user cant be logged in
 app.get('/register', checkNotAuthenticated, (req, res) => {
@@ -301,7 +305,7 @@ app.post('/enrollment',checkAuthenticated,(req,res)=>{
 
 //this is just for the admins
 app.get('/addClasses',checkAuthenticated, (req,res)=>{
-  if(req.user.email.toLowerCase() === "zacharygarner7@gmail.com"){
+  if((req.user.email.toLowerCase() === "zacharygarner7@gmail.com") ||(req.user.email.toLowerCase() === "aydlettm@yahoo.com")){
     //if the user equals one of us
     //then render the addClasses page
     res.render('addClasses.ejs',{profile:req.user,msg:null});
