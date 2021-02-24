@@ -3,56 +3,86 @@
 const localStrategy = require("passport-local").Strategy;
 const mongoose = require("mongoose");
 var bcrypt = require("bcrypt");
-const User = require('./Mongoose Models/user');
+const Student = require('./Mongoose Models/student');
+const Teacher = require('./Mongoose Models/teacher');
 var user;
 function initialize(passport){
     const authenticateUser = async (email, password, done) =>{
         //console.log(email)
         //const user = getUserByEmail(email)
-        User.findOne({email:email})
+        Teacher.findOne({email:email})
         .exec()
-        .then(data =>{
-            console.log(data)
+        .then(data=>{
             user = data;
             try {
                 if(user == null){
-                    return done(null, false, {message: "Email or password is incorrect"})
-                }
-                if(bcrypt.compareSync(password, user.password)){
-                    //console.log(docs[i]);
-                    console.log("comparing password")
-                    return done(null, user)
+                    console.log("checked here");
+                    Student.findOne({email:email})
+                    .exec()
+                    .then(result =>{
+                        user = result;
+                        try {
+                            if(user == null){
+                                console.log("Not in either");
+                                return done(null, false, {message: "Email or password is incorrect"})
+                            }
+                            if(bcrypt.compareSync(password, user.password)){
+                                //console.log(docs[i]);
+                                console.log("comparing password")
+                                return done(null, user)
+                            }
+                            else{
+                                return done(null, false, {message: "Email or password is incorrect"})
+                            }
+                        } catch (error) {
+                            return done(error);
+                        }
+                    })
+                    .catch(error=>{
+                        return done(null, false, {message: "Email or password is incorrect"})
+                    })
                 }
                 else{
-                    return done(null, false, {message: "Email or password is incorrect"})
+                    if(bcrypt.compareSync(password, user.password)){
+                    //console.log(docs[i]);
+                        console.log("comparing password")
+                        return done(null, user)
+                    }
+                    else{
+                        return done(null, false, {message: "Email or password is incorrect"})
+                    }
                 }
+                
             } catch (error) {
                 return done(error);
             }
-            
         })
         .catch(error=>{
             return done(null, false, {message: "Email or password is incorrect"})
         })
-        
-        
-        
-        
-        
+     
     }
-    
+    //return done(null, false, {message: "Email or password is incorrect"})
     
     passport.use(new localStrategy({usernameField: "email"}, authenticateUser));
     passport.serializeUser((user,done) => {
-        //console.log("serializing user")
-        //console.log(arguments.callee.caller);
-        done(null, user.id);
+        
+        console.log(user);
+        done(null, user);
     })
     
     passport.deserializeUser((user,done) => {
-        User.findById(user, (error,user)=>{
-            done(error, user)
-        })
+        console.log(user)
+        if(user.isTeacher){
+            Teacher.findById(user, (error,user)=>{
+                done(error, user)
+            })
+        }
+        else{
+            Student.findById(user, (error,user)=>{
+                done(error, user)
+            })
+        }
         
     });
 
