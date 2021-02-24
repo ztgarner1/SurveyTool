@@ -42,24 +42,24 @@
             <h2 style="text-align:center;">
               Current Courses:
             </h2>
-            <% if(user.teaching.length == 0){ %>
+            <% if(user.Enrolled.length == 0){ %>
               
               You are currently not enrolled in any courses. Enroll below<br>
               
             <%}else{ %>
                 Currently working on:
-                <% for(let i=0; i< user.teaching.length;i++){ %>
+                <% for(let i=0; i< user.Enrolled.length;i++){ %>
                     
                         <div class = "w3-row" style = "border-top: 1px solid black;border: 1px solid black">
                             
                             <div class = 'w3-col' style = "height : fit-content;width: 33%;">
-                              Course id: <%= user.teaching[i].course_id %>
+                              Course id: <%= user.Enrolled[i].course_id %>
                             </div>
                             <div class = 'w3-col'style = "height : fit-content;width: 33; ">
-                              Course Language: <%= user.teaching[i].course_language %>
+                              Course Language: <%= user.Enrolled[i].course_language %>
                             </div>
                             <div class = 'w3-col'style = "height : fit-content;width: 33%;">
-                              Course description: <%= user.teaching[i].description %>
+                              Course description: <%= user.Enrolled[i].description %>
                             </div>
         
                           </div>
