@@ -10,6 +10,7 @@ const csv = require('csv-parser')
 const fs = require('fs');
 app.use(fileUpload());
 
+
 var courses;
 //this helps log a user out
 const methodOverride = require('method-override')
@@ -18,13 +19,15 @@ const methodOverride = require('method-override')
 const mongoose = require("mongoose");
 mongoose.connect(""+process.env.MONGO_ATLAS_PW,
   {
-      useNewUrlParser: true,
-      useUnifiedTopology: true 
+    useNewUrlParser: true,
+    useUnifiedTopology: true 
   });
 //initializing Passport
 const initializePassport = require('./passport-config');
-//getting the User Schema
-const User = require('./Mongoose Models/user');
+//getting Student and Teacher Schema
+
+const Student = require('./Mongoose Models/student');
+const Teacher = require('./Mongoose Models/teacher');
 //getting the courses 
 const Course = require('./Mongoose Models/course');
 //calling the initializePassport function;
@@ -38,7 +41,7 @@ app.use(flash())
 app.use(session({
   secret: ""+process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
 }))
 //telling the server which files to look at
 app.use(express.static(__dirname + "/views"));
@@ -50,41 +53,43 @@ app.use(methodOverride('_method'))
 
 //this is the home screen
 app.get('/', (req, res) => {
+  
   if(req.user == undefined){
-      res.render('index.ejs',{profile:null});
+      res.render('index.ejs',{user:null});
   }
   else{
-      res.render('index.ejs', { profile: req.user})
+      res.render('index.ejs', { user: req.user})
   }
 })
-
+/*
 //this is the about me page does not matter if the user is logged in here
-// app.get('/about', (req,res) => {
-  // if(req.user == undefined){
-    // res.render('aboutMe.ejs',{profile:null});
-  // }
-  // else{
-      // res.render('aboutMe.ejs', { profile: req.user})
-  // }
-// })
+app.get('/about', (req,res) => {
+  if(req.user == undefined){
+    res.render('aboutMe.ejs',{user:null});
+  }
+  else{
+      res.render('aboutMe.ejs', { user: req.user})
+  }
+})
 //this is the contact page that the server serves
-// app.get('/contact', (req,res) => {
-  // if(req.user == undefined){
-    // res.render('contact.ejs',{profile:null});
-  // }
-  // else{
-      // res.render('contact.ejs', { profile: req.user})
-  // }
-// })
+app.get('/contact', (req,res) => {
+  if(req.user == undefined){
+    res.render('contact.ejs',{user:null});
+  }
+  else{
+      res.render('contact.ejs', { user: req.user})
+  }
+})
 //server serving the create page
-// app.get("/create",(req,res) => {
-  // if(req.user == undefined){
-    // res.render('create.ejs',{profile:null});
-  // }
-  // else{
-      // res.render('create.ejs', { profile: req.user})
-  // }
-// })
+app.get("/create",(req,res) => {
+  if(req.user == undefined){
+    res.render('create.ejs',{user:null});
+  }
+  else{
+      res.render('create.ejs', { user: req.user})
+  }
+})
+*/
 //server serving the login page where user cant be logged in
 app.get("/login", checkNotAuthenticated, (req,res)=>{
     res.render("login.ejs");
@@ -96,25 +101,22 @@ app.post('/login', passport.authenticate('local', {
   failureRedirect: '/login',
   failureFlash: true
 }))
+/*
 //sends the user back learn page
-// app.get("/learn",checkAuthenticated,(req,res) => {
-  // res.render('learn/learn.ejs', { profile:req.user, language:"Java"})
-// })
+app.get("/learn",checkAuthenticated,(req,res) => {
+  res.render('learn/learn.ejs', { user:req.user, language:"Java"})
+})
+//
+app.get("/learntour",checkAuthenticated,(req,res) => {
+res.render('learn/learntour.ejs', { user: req.user, language:"Java"})
+})
 
-// app.get("/learntour",checkAuthenticated,(req,res) => {
-// res.render('learn/learntour.ejs', { profile: req.user, language:"Java"})
-// })
-
-// app.get("/learnVVOE",checkAuthenticated,(req,res) => {
-  // res.render('learn/learnvvoe.ejs', { profile: req.user, language:"Java"})
-// })
-
- app.get("/contactImport",checkAuthenticated,(req,res)=>{
-   res.render('contactImport.ejs',{ profile: req.user});
- })
- 
-app.get('/survey', checkNotAuthenticated, (req, res) => {
-  res.render('questions.ejs',{ profile: req.user})
+app.get("/learnVVOE",checkAuthenticated,(req,res) => {
+  res.render('learn/learnvvoe.ejs', { user: req.user, language:"Java"})
+})
+*/
+app.get("/contactImport",checkAuthenticated,(req,res)=>{
+  res.render('contactImport.ejs',{ user: req.user});
 })
 
 //server serving the register page where the user cant be logged in
@@ -127,59 +129,79 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
       //initializing a boolean 
       let emailExists = false;
       //getting all the users from the database
-      User.find()
-      .exec()
-      .then(docs =>{
-        //docs contains the information for all the users
-        let i = 0;
-        for(i = 0; i < docs.length;i++){
-          //console.log(docs[i]);
-          //checking to see if the email of docs at i is the email the user is trying to register
-          if(docs[i].email.toLowerCase() === req.body.email.toLowerCase()){
-            //if reaches here then the email already exists
-            emailExists = true;
-            res.render("register.ejs",{error: "Email already in use"});
-            break;
-          }
-          //else nothing happens. the for loop keeps traversing all of the users to check the email
-        }
-        //if the email was not found then the user will actually be registered
-        if(!emailExists){
-          //sending the mail to the email they are trying to register
-          let code = sendMail(req.body.email, null);
-          //creating a new user that will be passed the code to verify the account later
-          const user = new User({
-            __id: new mongoose.Types.ObjectId(),
-            name: req.body.name,
-            first: "",
-            last: "",
-            email:req.body.email,
-            password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(9)),
-            locked : false,
-            verified: false,
-            Enrolled: [],
-            confirmCode:code,
-            isTeacher:req.body.question,
-          })
-          //saving the new user to the database
-          user.save()
-          .then(result => {
-            
-           //if no error occured then the user will be taken to the login page
-            res.redirect('/login');
-          })
-          .catch(err =>{
-            //if an error occured then they stay on the page but given an error message for the user to see
-            res.render("register.ejs",{error: "User not added"})
-          })
-        }
+      if(req.body.question.toLowerCase == "no"){
+        Student.findOne({email:req.body.email})
+        .exec()
+        .then(data=>{
+          if(data==null){
+            //if there isnt a student with that email
+            let code = sendMail(req.body.email, null);
 
-      })
-      .catch(err => {
-        //if an error occurs while trying to get the list of users in the database
-        console.log("error is " + err)
-        res.render("register.ejs",{error:"User not added, try again"});
-      })
+            var student = new Student({
+              __id: new mongoose.Types.ObjectId(),
+              username:req.body.name,
+              first: "",
+              last:"",
+              email:req.body.email,
+              password:bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(9)),
+              locked:false,
+              verified:false,
+              Enrolled:[],
+              confirmCode:code,
+              isTeacher:false,
+            })
+
+            student.save()
+            .then( () => {
+              
+             //if no error occured then the user will be taken to the login page
+              res.redirect('/login');
+            })
+            .catch(err =>{
+              //if an error occured then they stay on the page but given an error message for the user to see
+              res.render("register.ejs",{error: "User not added"})
+            })
+            
+          }
+          else{
+            res.render("register.ejs",{error: "Email already in use"});
+          
+          }
+        })
+      }
+      else{
+        Teacher.findOne({email:req.body.email})
+        .exec()
+        .then(data=>{
+          if(data==null){
+            let code = sendMail(req.body.email, null);
+            var teacher = new Teacher({
+              __id: new mongoose.Types.ObjectId(),
+              username:req.body.name,
+              first: "",
+              last:"",
+              email:req.body.email,
+              password:bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(9)),
+              locked:false,
+              verified:false,
+              Enrolled:[],
+              confirmCode:code,
+              isTeacher:true,
+            })
+
+            teacher.save()
+            .then( () => {
+              
+             //if no error occured then the user will be taken to the login page
+              res.redirect('/login');
+            })
+            .catch(err =>{
+              //if an error occured then they stay on the page but given an error message for the user to see
+              res.render("register.ejs",{error: "User not added"})
+            })
+          }
+        })
+      }
   } catch(error) {
       console.log(error);
   }
@@ -198,23 +220,23 @@ app.post("/profile",checkAuthenticated, (req,res)=>{
       //updating the current user logged in so the data displays right away after saving.
       req.user.first = req.body.first;
       req.user.last = req.body.last;
-      res.render('profile.ejs', {profile:req.user, edit: false});
+      res.render('profile.ejs', {user:req.user, edit: false});
     })
   }
   else{
     //the profile is not in edit mode. So they are just viewing everything they have to their account. 
-    res.render('profile.ejs', {profile:req.user, edit: true,language:req.body.language});
+    res.render('profile.ejs', {user:req.user, edit: true,language:req.body.language});
   }
 })
 //server serving the profile page
 app.get("/profile" ,checkAuthenticated,(req,res)=>{
-  res.render("profile.ejs",{profile:req.user, edit:false})
+  res.render("profile.ejs",{user:req.user, edit:false})
 })
 
 //server responding to the myCourses post
 app.get('/myClasses',checkAuthenticated,(req,res)=>{
   if(req.user.isTeacher){
-    res.render('classesInfo.ejs',{profile:req.user})
+    res.render('classesInfo.ejs',{user:req.user})
   }
   else{
     res.render('myClasses.ejs',{user:req.user})
@@ -305,17 +327,19 @@ app.post('/enrollment',checkAuthenticated,(req,res)=>{
 
 //this is just for the admins
 app.get('/addClasses',checkAuthenticated, (req,res)=>{
-  if((req.user.email.toLowerCase() === "zacharygarner7@gmail.com") ||(req.user.email.toLowerCase() === "aydlettm@yahoo.com")){
+  if(req.user.isTeacher){
     //if the user equals one of us
     //then render the addClasses page
-    res.render('addClasses.ejs',{profile:req.user,msg:null});
+    res.render('addClasses.ejs',{user:req.user,msg:null});
   }
   else{
-    res.render('index.ejs',{profile:req.user});
+    res.render('index.ejs',{user:req.user});
   }
   
 })
-//
+/**
+ * this will be called whenever a post method is made to /addClasses
+ */
 app.post('/addClasses',(req,res)=>{
   
   if(req.files){
@@ -381,7 +405,7 @@ app.post('/addClasses',(req,res)=>{
     console.log("did not work")
   }
   console.log(filename);
-  res.render('classesInfo.ejs',{profile:req.user})
+  res.render('classesInfo.ejs',{user:req.user})
   
     
   /*
@@ -444,6 +468,7 @@ app.delete('/logout', (req, res) => {
 })
 //checks to see if the user is Authenticated or not
 function checkAuthenticated(req, res, next) {
+  
   if (req.isAuthenticated()) {
     return next()
   }
@@ -482,8 +507,8 @@ function sendMail(to,user){
     //console.log("getting from user")
     randomString = user.confirmCode;
   }
-  //let link = "https://progranimate.herokuapp.com/confirm" + randomString;
-  let link = "http://localhost:3000/confirm/" + randomString;
+  let link = "https://wcu-surveytool.herokuapp.com/confirm" + randomString;
+  //let link = "http://localhost:3000/confirm/" + randomString;
   //console.log(link);
   const msg = {
     to: to,
@@ -501,39 +526,8 @@ function sendMail(to,user){
   
   
 }
-var resetDataBase =  function(){
-  var emptyArray = [];
-  User.find()
-  .exec()
-  .then(data=>{
-    for(let i = 0; i< data.length; i++){
-      User.updateOne({__id: data[i].__id},{Enrolled : emptyArray }).then(result =>{
-        console.log("reset " + data[i].first + ", " + data[i].last);
-      })
-    }
-  })
-  .catch(error =>{
-    console.log("Error >> " + error);
-  })
 
-  Course.find()
-  .exec()
-  .then(data=>{
-    for(let i = 0; i< data.length; i++){
-      Course.deleteOne({course_id:data[i].course_id})
-      .then(result =>{
-        console.log(result);
-      })
-      .catch(error =>{
-        console.log("Error >> " + error);
-      })
-    }
-  })
-  .catch(error =>{
-    console.log("Error >> " + error);
-  })
-}
 
-//resetDataBase()
+
 //makes sure the server is listening on a specified port number. 
 app.listen(process.env.PORT || 3000)
