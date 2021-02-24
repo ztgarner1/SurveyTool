@@ -14,7 +14,7 @@
             <a href="/">Home</a>
 			
             <div class="login-container">
-                <% if(profile == null) { %>
+                <% if(user == null) { %>
                     <a href="/login">Sign In</a>
                     <a href="/register">Register</a>
                 <% }else{ %>
@@ -45,25 +45,24 @@
                 
             </div>
             <div class="w3-row" style = "padding-top:1%; text-align: center;height: 10%;" id="Username">
-                Username: <%= profile.name %>
+                Username: <%= user.name %>
             </div>
             <div class="w3-row" style = "padding-top:1%; text-align: center;height: 10%;" id="Email">
-                Email:<%= profile.email %>
+                Email:<%= user.email %>
             </div>
 
             <div class="w3-row" style = "padding-top:1%; text-align: center;height: 10%;">
                 <% if(edit){ %>
-                    <input name = "first" placeholder="First name" id = "first" value = "<%= profile.first %>">
+                    <input name = "first" placeholder="First name" id = "first" value = "<%= user.first %>">
                     
                 <% }else{ %>
-                    First : <%= profile.first %>
+                    First : <%= user.first %>
                 <% } %>
             </div>
             <div class="w3-row" style = "padding-top:1%; text-align: center;height: 10%;">
                 <% if(edit){ %>
-                    <input name = "last" placeholder="Last name" id = "last" value = "<%= profile.last %>"><br>
+                    <input name = "last" placeholder="Last name" id = "last" value = "<%= user.last %>"><br>
                     <label for="language">Language:</label>
-
                     <select name="language" id="language" >
                         <option value="java" >Java</option>
                         <option value="python">Python</option>
@@ -71,7 +70,7 @@
                         <option value="mips">Mips</option>
                     </select>
                 <% }else{ %>
-                    Last : <%= profile.last %><br>
+                    Last : <%= user.last %><br>
                     Language : Not Enrolled
                 <% } %>
             </div>

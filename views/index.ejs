@@ -15,7 +15,7 @@
           <a href="/">Home</a>
 
           <div class="login-container">
-            <% if(profile != null) { %>
+            <% if(user != null) { %>
               <a href="/profile">Profile</a>
               <form action="/logout?_method=DELETE" method="POST">
                   <button type="submit">Log Out</button>
@@ -34,7 +34,7 @@
       <div id="purplediv" class="w3-rest w3-container w3-padding-32">
         <div class ="w3-row" style="text-align: center;">
 
-			<% if(profile == null) { %>
+			<% if(user == null) { %>
             <div class = "w3-col" style = "width:50%">
               <button id="golddiv" class="w3-button"><a href="/login">Sign In</a></button>
             </div>
@@ -62,4 +62,3 @@
     
   </body>
 </html>
-
