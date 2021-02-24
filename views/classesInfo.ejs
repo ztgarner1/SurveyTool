@@ -14,7 +14,7 @@
             <a href="/">Home</a>
 			
             <div class="login-container">
-                <% if(profile == null) { %>
+                <% if(user == null) { %>
                     <a href="/login">Sign In</a>
                     <a href="/register">Register</a>
                 <% }else{ %>
@@ -33,24 +33,24 @@
     <div class="w3-row">
       <div id="purplediv" class="w3-rest w3-container w3-padding-32" style= "text-align: center;">
 
-        <% if(profile.Enrolled.length == 0){ %>
+        <% if(user.Enrolled.length == 0){ %>
             <div class ="w3-row" style = "border-bottom: black solid 2px">
                 You have no classes at this time<br>
             </div>
             
         <% }else {  %>
-            <% for(let i=0; i < profile.Enrolled.length;i++){ %>
+            <% for(let i=0; i < user.Enrolled.length;i++){ %>
                 
                     <div class = "w3-row" style = "border-top: 1px solid black;border: 1px solid black">
                     
                         <div class = 'w3-col' style = "height : fit-content;width: 33%;">
-                          Course id: <%= profile.Enrolled[i].course_id %>
+                          Course id: <%= user.Enrolled[i].course_id %>
                         </div>
                         <div class = 'w3-col'style = "height : fit-content;width: 33%; ">
-                          Course Language: <%= profile.Enrolled[i].course_language %>
+                          Course Language: <%= user.Enrolled[i].course_language %>
                         </div>
                         <div class = 'w3-col'style = "height : fit-content;width: 33%;">
-                          Course description: <%= profile.Enrolled[i].description %>
+                          Course description: <%= user.Enrolled[i].description %>
                         </div>
                         
                       </div>
