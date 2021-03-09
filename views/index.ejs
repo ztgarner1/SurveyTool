@@ -6,11 +6,27 @@
     <link rel="stylesheet" href="/style.css" />
     <link rel="stylesheet" href="/w3.css" />
     <link rel="shortcut icon" href="images/favicon.ico">
-    <script src="scripts/nav.js"></script>
-	
+    
     <title>Homepage</title>
   </head>
   <body>
+    <header>
+      <div class="navbar">
+          <a href="/">Home</a>
+
+          <div class="login-container">
+            <% if(user != null) { %>
+              <a href="/profile">Profile</a>
+              <form action="/logout?_method=DELETE" method="POST">
+                  <button type="submit">Log Out</button>
+              </form>
+            <% } %>
+             
+
+        </div>
+          
+        </div>
+    </header>
     <h1 id="main"></h1>
     
     
