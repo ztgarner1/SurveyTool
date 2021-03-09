@@ -56,12 +56,14 @@
     <h1 id="main"></h1>
 	
 	<div id="learn" class="w3-full w3-container">	
+		<!-- Question 1 -->
 		<h4>What is your current GPA?</h4>
 		<input type="text" id="q1" />
 		
+		<!-- Question 2 Schedule -->
 		<h4>What times are you available?</h4>
 		<table>
-			<tr>
+			<tr> <!-- Headers -->
 				<th>Time</th>
 				<th>Sunday</th>
 				<th>Monday</th>
@@ -71,7 +73,7 @@
 				<th>Friday</th>
 				<th>Saturday</th>
 			</tr>
-			<tr>
+			<tr> <!-- Times -->
 				<td>8am</td>
 				<td><input type="checkbox" id="q2sun1" name="schedule"/></td>
 				<td><input type="checkbox" id="q2mon1" name="schedule"/></td>
@@ -213,28 +215,34 @@
 			</tr>
 		</table>
 		
+		<!-- Question 3 -->
 		<h4>Do you live on campus?</h4>
 		<input type="checkbox" id="q3" />
 		
+		<!-- Question 4 -->
 		<h4>What is your age?</h4>
 		<input type="text" id="q4" />
 		
+		<!-- Question 5 -->
 		<h4>Do you work?</h4>
 		<input type="checkbox" id="q5" />
 		
+		<!-- Question 6 -->
 		<h4>How much work do you put into homework? In hours.</h4>
 		<input type="text" id="q6" />
 		
+		<!-- Question 7 -->
 		<h4>Have you taken CS???</h4>
 		<input type="checkbox" id="q7" />
 		
+		<!-- Question 8 (This is just a test for a multiple choice question) -->
 		<h4>Answer the question!</h4>
 		<form>
 			<input type="radio" name="weird" value="this">This</input>
 			<input type="radio" name="weird" value="that">That</input>
 			<input type="radio" name="weird" value="bob">Bob from accounting</input>
 		</form>
-		
+		<!-- Where the results are printed (This is temporary) -->
 		<span id="result"></span>
 		<button  onclick="testfunc()">Submit</button> <br />
     </div>
