@@ -336,17 +336,8 @@ app.post('/enrollment',checkAuthenticated,(req,res)=>{
   }   
 })
 
-//this is just for the admins
-app.get('/addClasses',checkAuthenticated, (req,res)=>{
-  if(req.user.isTeacher){
-    //if the user equals one of us
-    //then render the addClasses page
-    res.render('addClasses.ejs',{user:req.user,msg:null});
-  }
-  else{
-    res.render('index.ejs',{user:req.user});
-  }
-  
+app.get('/addClasses',checkAuthenticated,(req,res)=>{
+  res.render('addClasses.ejs',{user: req.user})
 })
 /**
  * this will be called whenever a post method is made to /addClasses
@@ -357,101 +348,87 @@ app.post('/addClasses',(req,res)=>{
     var file = req.files.fileName,
      filename = file.name
     var results = [];
-    var section = 1;
     file.mv(__dirname + "/views/uploads/"+filename,function(err){
       if(err){
         console.log(err);
         res.send("error occured");
       }
       else{
-        console.log("No problem")
+        fs.createReadStream(__dirname +'/views/uploads/'+filename)
+        .pipe(csv({}))
+        .on("data", (data)=> results.push(data))
+        .on("end",() =>{
+            //console.log(results);
+        })
       }
       
     })
-    fs.createReadStream(__dirname +'/views/uploads/'+filename)
-    .pipe(csv({}))
-    .on("data", (data)=> results.push(data))
-    .on("end",() =>{
-        console.log(results);
-    })
-    Course.find()
-    .exec()
+    Course.findOne({course_id:req.body.courseId,section:req.body.courseSection})
     .then(data=>{
-      
-      for(let i = 0; i< data.length;i++){
-        if(data[i].course_id == req.body.courseId){
-          section++;
-        }
-      }
-      var course = new Course({
-        intructor : req.user.__id,
-        section: section,
-        course_id: req.body.courseId,
-        description:req.body.courseDesc,
-        students:results,
-      })
-      course.save()
-      .then(check =>{
-        res.render('classesInfo.ejs',{user:req.user})
-      })
-      
-      req.user.Enrolled.push(course);
-      User.updateOne({__id:req.user.__id},{$push:{Enrolled:req.user.Enrolled }})
+      if(data == null){
+        var course = new Course({
+          intructor : req.user.__id,
+          section: req.body.courseSection,
+          course_id: req.body.courseId,
+          description:req.body.courseDesc,
+          students:results,
+        })
+        course.save()
+        .then(check =>{
+          res.render('classesInfo.ejs',{user:req.user, error: null})
+        })
+        
+        req.user.teaching.push(course);
+        Teacher.updateOne({__id:req.user.__id},{$push:{teaching:req.user.teaching }})
         .then(()=>{
-          console.log("successful")
+          //console.log("successful")
           res.render('enrollment.ejs', {user: req.user, courses:courses});
         })
         .catch(()=>{
           res.render('enrollment.ejs', {user: req.user, courses:courses});
         })
+      }
+      else{
+        res.render('classesInfo.ejs',{user:req.user, error:"Already a class with that name"})
+      }
     })
-    .catch(error=>{
-      
-    })
-
-
-
+    
   }
   else{
     console.log("did not work")
   }
-  console.log(filename);
-  res.render('classesInfo.ejs',{user:req.user})
-  
-    
-  /*
-  var check = true;
-  let emptyArrays = [];
-  Course.find()
-  .then(data=>{
-    courses = data;
-    console.log("Checked in here")
-  })
-  .catch(error=>{})
- var sectionNumber;
-  Course.findOne({course_name: req.body.courseName})
-  .then(doc =>{
-    sectionNumber = doc.length+1; 
-  })
-  if(check){
-      
-      //console.log(courses)
-      const course = new Course({
-      course_name: req.body.courseName,
-      course_id:courses.length,
-      course_language:req.body.courseLanguage,
-      description:''+req.body.courseDesc+'',
-      tutorials:emptyArrays,
-      quizes:emptyArrays,
-      programming_task:emptyArrays,
-    })
-    course.save()
-    .then(result=>{
+})
 
-      res.render("addClasses.ejs",{profile:req.user,msg:null})
-    })
+app.get("/classesInfo",checkAuthenticated,(req,res)=>{
+  if(req.user.isTeacher){
+    res.render('classesInfo.ejs', {user: req.user, error: null});
   }
-  */
+  else{
+    res.render('myClasses.ejs', {user: req.user});
+  }
+})
+app.post('/classesInfo',(req,res)=>{
+  //console.log(req.body.classes);
+  var result = req.body.classes.split(",");
+  
+  Course.findOne({course_id:result[0],section:result[1]})
+  .exec()
+  .then(data=>{
+    //console.log(data);
+    if(data==null){
+      res.render('classesInfo.ejs', {user: req.user, error: "Something went wrong"});
+    }
+    else{
+      //console.log(data.students);
+      res.render('editCourse.ejs', {user: req.user, course:data, error: null});
+    }
+    
+  })
+  .catch(error=>{
+    res.render('classesInfo.ejs', {user: req.user, error: error});
+
+  })
+  
 })
 
 
