@@ -247,7 +247,7 @@ app.get("/profile" ,checkAuthenticated,(req,res)=>{
 //server responding to the myCourses post
 app.get('/myClasses',checkAuthenticated,(req,res)=>{
   if(req.user.isTeacher){
-    res.render('classesInfo.ejs',{user:req.user})
+    res.render('classesInfo.ejs',{user:req.user,error:null})
   }
   else{
     res.render('myClasses.ejs',{user:req.user})
@@ -404,7 +404,7 @@ app.get("/classesInfo",checkAuthenticated,(req,res)=>{
     res.render('classesInfo.ejs', {user: req.user, error: null});
   }
   else{
-    res.render('myClasses.ejs', {user: req.user});
+    res.render('myClasses.ejs', {user: req.user,});
   }
 })
 app.post('/classesInfo',(req,res)=>{
