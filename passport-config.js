@@ -23,12 +23,12 @@ function initialize(passport){
                         user = result;
                         try {
                             if(user == null){
-                                console.log("Not in either");
+                                //console.log("Not in either");
                                 return done(null, false, {message: "Email or password is incorrect"})
                             }
                             if(bcrypt.compareSync(password, user.password)){
                                 //console.log(docs[i]);
-                                console.log("comparing password")
+                                //console.log("comparing password")
                                 return done(null, user)
                             }
                             else{
@@ -45,7 +45,7 @@ function initialize(passport){
                 else{
                     if(bcrypt.compareSync(password, user.password)){
                     //console.log(docs[i]);
-                        console.log("comparing password")
+                        //console.log("comparing password")
                         return done(null, user)
                     }
                     else{
@@ -67,12 +67,12 @@ function initialize(passport){
     passport.use(new localStrategy({usernameField: "email"}, authenticateUser));
     passport.serializeUser((user,done) => {
         
-        console.log(user);
+        //console.log(user);
         done(null, user);
     })
     
     passport.deserializeUser((user,done) => {
-        console.log(user)
+        //console.log(user)
         if(user.isTeacher){
             Teacher.findById(user, (error,user)=>{
                 done(error, user)
