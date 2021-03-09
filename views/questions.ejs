@@ -24,6 +24,7 @@
 			for (var i = 0, len = q2Check.length; i < len; i++) {
 				ans2 += q2Check[i].checked + ",";
 			}
+			ans2 = ans2.slice(0, -1);
 			ans2 += "]";
 			
 			document.getElementById('result').textContent = "AFTER";
