@@ -409,6 +409,9 @@ app.get("/classesInfo",checkAuthenticated,(req,res)=>{
 })
 app.post('/classesInfo',(req,res)=>{
   //console.log(req.body.classes);
+  if(req.body.classes == null){
+    res.render('classesInfo.ejs', {user: req.user, error: "A class was not selected"});
+  }
   var result = req.body.classes.split(",");
   
   Course.findOne({course_id:result[0],section:result[1]})
