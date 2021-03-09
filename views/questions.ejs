@@ -16,12 +16,14 @@
 			var q2Check = document.getElementByName("schedule");
 			var ans2 = "[";
 			
-			console.log("TESTSTSTS");
+			document.getElementById('result').textContent = "BEFORE";
 			
 			for (var i = 0, len = q2Check.length; i < len; i++) {
 				ans2 += q2Check.checked + ",";
 			}
 			ans2 += "]";
+			
+			document.getElementById('result').textContent = "AFTER";
 			
             var ans3 = document.getElementById("q3").checked;
 			var ans4 = document.getElementById("q4").value;
