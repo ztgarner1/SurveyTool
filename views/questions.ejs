@@ -34,20 +34,19 @@
 			var ans6 = document.getElementById("q6").value;
 			var ans7 = document.getElementById("q7").checked;
 			
-			//var q8Rad = document.getElementByName("weird");
+			var q8Rad = document.getElementByName("weird");
 			
-			//var ans8 = "";
+			var ans8 = "";
 			
-			//for (var i = 0, len = q8Rad.length; i < len; i++) {
-			//	if (q8Rad[i].checked) {
-			//		ans8 = q8Rad[i].value;
-			//		break;
-			//	}
-			//}
+			for (var i = 0, len = q8Rad.length; i < len; i++) {
+				if (q8Rad[i].checked) {
+					ans8 = q8Rad[i].value;
+					break;
+				}
+			}
             
-			var result = ans2;// + ', ' + ans3 + ', ' + ans4;
-			//result += ', ' + ans5 + ', ' + ans6 + ', ' + ans7;
-			//result += ', ' + ans8;
+			var result = ans1 + ', ' + ans2 + ', ' + ans3 + ', ' + ans4;
+			result += ', ' + ans5 + ', ' + ans6 + ', ' + ans7 + ', ' + ans8;
             document.getElementById('result').textContent = result;
         }
     </script>
