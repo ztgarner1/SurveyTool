@@ -389,10 +389,10 @@ app.post('/addClasses',(req,res)=>{
         Teacher.updateOne({__id:req.user.__id},{$push:{teaching:req.user.teaching }})
         .then(()=>{
           //console.log("successful")
-          res.render('enrollment.ejs', {user: req.user, courses:courses});
+          res.render('classesInfo.ejs',{user:req.user,error: null})
         })
         .catch(()=>{
-          res.render('enrollment.ejs', {user: req.user, courses:courses});
+          res.render('classesInfo.ejs',{user:req.user,error: "Your profile has not been updated"})
         })
       }
       else{
