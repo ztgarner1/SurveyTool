@@ -368,27 +368,8 @@ app.post('/addClasses',(req,res)=>{
           console.log(results);
       })
     })
-    /*
     
-    file.mv(__dirname + "/views/uploads/"+filename, err =>{
-      console.log(err)
-      if(err){
-        console.log(err);
-        res.send("error occured" + err);
-      }
-      else{
-
-        fs.createReadStream(__dirname +'/views/uploads/'+filename)
-        .pipe(csv({}))
-        .on("data", (data) => results.push(data))
-        .on("end",() =>{
-            console.log(results);
-        })
-      }
-      
-    })
-    */
-    /*
+    
     Course.findOne({course_id:req.body.courseId,section:req.body.courseSection})
     .then(data=>{
       if(data == null){
@@ -418,7 +399,7 @@ app.post('/addClasses',(req,res)=>{
         res.render('classesInfo.ejs',{user:req.user, error:"Already a class with that name"})
       }
     })
-    */
+    
     
   }
   else{
