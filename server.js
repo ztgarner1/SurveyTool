@@ -348,21 +348,26 @@ app.post('/addClasses',(req,res)=>{
     var file = req.files.fileName,
      filename = file.name
     var results = [];
-    file.mv(__dirname + "/views/uploads/"+filename,function(err){
-      if(err){
-        console.log(err);
-        res.send("error occured");
-      }
-      else{
-        fs.createReadStream(__dirname +'/views/uploads/'+filename)
-        .pipe(csv({}))
-        .on("data", (data)=> results.push(data))
-        .on("end",() =>{
-            //console.log(results);
-        })
-      }
-      
+    var moveAndParse = function(callback){
+      file.mv(__dirname + "/views/uploads/"+filename, err =>{
+        console.log(err)
+        if(err){
+          console.log(err);
+          res.send("error occured" + err);
+        }
+      })
+      callback()
+    }
+
+    moveAndParse( function(){
+      fs.createReadStream(__dirname +'/views/uploads/'+filename)
+      .pipe(csv({}))
+      .on("data", (data) => results.push(data))
+      .on("end",() =>{
+          console.log(results);
+      })
     })
+    /*
     Course.findOne({course_id:req.body.courseId,section:req.body.courseSection})
     .then(data=>{
       if(data == null){
@@ -397,6 +402,7 @@ app.post('/addClasses',(req,res)=>{
   else{
     console.log("did not work")
   }
+  */
 })
 
 app.get("/classesInfo",checkAuthenticated,(req,res)=>{
@@ -506,7 +512,7 @@ function sendMail(to,user){
     from:"Progranimate7@gmail.com",
     subject: "Confirmation",
     text: "Hello,\nYou are recieving this email because you have registered " + 
-    "for Progranimates website.\nThank you for registering!\n" +
+    "for wcu-surveytool website.\nThank you for registering!\n" +
     "Please verify your email address using this link below "+ link +
     "\n\n--Progranimate"
   }
