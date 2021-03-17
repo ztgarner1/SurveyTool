@@ -506,7 +506,7 @@ function sendMail(to,user){
     //console.log("getting from user")
     randomString = user.confirmCode;
   }
-  let link = "https://wcu-surveytool.herokuapp.com/confirm" + randomString;
+  let link = "https://wcu-surveytool.herokuapp.com/confirm/" + randomString;
   //let link = "http://localhost:3000/confirm/" + randomString;
   //console.log(link);
   const msg = {
