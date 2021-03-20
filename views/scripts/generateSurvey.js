@@ -28,6 +28,9 @@ function genHTML() {
 
 function checkText() {
 	addQuestion("text", "THIS IS A TEST!", ["A", "B"]);
-	document.getElementById("quesbutton").innerText = "TESTTJGBNDJBNFJ";
 	genHTML();
+}
+
+window.onload = function() {
+    quesSec = document.getElementById("questionsSections");
 }
