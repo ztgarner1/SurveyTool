@@ -18,8 +18,11 @@ function genHTML() {
 	var i;
 	for (i = 0; i < surveyQues.length; i++) {
 		
+		var tempStr = "";
+		
 		if (surveyQues[i].type == "text") {
-			var tempStr = "<h4>" + surveyQues[i].ques + "</h4>";
+			tempStr = "<h4>" + surveyQues[i].ques + "</h4>";
+			tempStr = "<input type=\"text\" id=\"q" + i + "\" />";
 		}
 		quesSec.innerHTML = tempStr;
 	}
@@ -27,7 +30,7 @@ function genHTML() {
 }
 
 function checkText() {
-	addQuestion("text", "THIS IS A TEST!", ["A", "B"]);
+	addQuestion("text", "THIS IS A TEST!", []);
 	genHTML();
 }
 
