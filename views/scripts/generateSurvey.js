@@ -25,3 +25,9 @@ function genHTML() {
 	}
 	
 }
+
+function test() {
+	addQuestion("text", "THIS IS A TEST!", ["A", "B"]);
+	
+	genHTML();
+}
