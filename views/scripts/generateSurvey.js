@@ -46,7 +46,7 @@ function genHTML() {
 function checkText() {
 	addQuestion("text", "THIS IS A TEST for text!", []);
 	addQuestion("checkbox", "THIS IS A TEST for checkbox!", []);
-	addQuestion("checkbox", "THIS IS A TEST for radio!", ["A", "B", "C"]);
+	addQuestion("radio", "THIS IS A TEST for radio!", ["A", "B", "C"]);
 	genHTML();
 }
 
