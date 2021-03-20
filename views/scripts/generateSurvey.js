@@ -28,6 +28,6 @@ function genHTML() {
 
 function test() {
 	addQuestion("text", "THIS IS A TEST!", ["A", "B"]);
-	quesSec.innerHTML = "CHCKINHSHJBVFKJSBFHBJKS"
+	quesSec.innerHTML = "CHCKINHSHJBVFKJSBFHBJKS";
 	//genHTML();
 }
