@@ -1,5 +1,5 @@
 
-const quesSec = document.getElementById("questionsSections");
+const quesSec;
 
 var surveyQues = [];
 
@@ -30,4 +30,8 @@ function test() {
 	addQuestion("text", "THIS IS A TEST!", ["A", "B"]);
 	quesSec.innerHTML = "CHCKINHSHJBVFKJSBFHBJKS";
 	//genHTML();
+}
+
+window.onload = function() {
+    quesSec = document.getElementById("questionsSections");
 }
