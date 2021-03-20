@@ -28,7 +28,7 @@ function genHTML() {
 
 function test() {
 	addQuestion("text", "THIS IS A TEST!", ["A", "B"]);
-	document.querySelector('#ShowButton').innerText = "CHCKINHSHJBVFKJSBFHBJKS";
+	document.querySelector('#quesbutton').innerText = "CHCKINHSHJBVFKJSBFHBJKS";
 	//genHTML();
 }
 
