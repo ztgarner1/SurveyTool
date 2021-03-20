@@ -35,6 +35,7 @@ function genHTML() {
 			for (x = 0; x < surveyQues[i].ans.length; x++) {
 				var temp = surveyQues[i].ans[x];
 				tempStr += "<input type=\"radio\" name=\"q" + j + "\" value=\"" + temp + "\">" + temp + "</input>";
+				tempStr += "<br>"
 			}
 			
 		}
