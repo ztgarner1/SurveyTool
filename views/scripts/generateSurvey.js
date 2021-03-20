@@ -29,6 +29,7 @@ function genHTML() {
 function checkText() {
 	//addQuestion("text", "THIS IS A TEST!", ["A", "B"]);
 	document.getElementById("quesbutton").innerText = "TESTTJGBNDJBNFJ";
+	document.write("1/n2/n3/n");
 	//genHTML();
 }
 
