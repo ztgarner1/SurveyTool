@@ -26,9 +26,9 @@ function genHTML() {
 	
 }
 
-function test() {
-	addQuestion("text", "THIS IS A TEST!", ["A", "B"]);
-	document.querySelector('#quesbutton').innerText = "CHCKINHSHJBVFKJSBFHBJKS";
+function checkText() {
+	//addQuestion("text", "THIS IS A TEST!", ["A", "B"]);
+	document.getElementById("quesbutton").value = "TESTTJGBNDJBNFJ";
 	//genHTML();
 }
 
