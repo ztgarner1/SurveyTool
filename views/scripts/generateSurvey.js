@@ -1,11 +1,11 @@
 
-//const quesSec;
+const quesSec;
 
 var surveyQues = [];
 
-Type is the type of question (text answer, multiple choice, selection, etc)
-Question is the question its asking
-Answers is an array of answers, depending on type will depend on how many answers
+//Type is the type of question (text answer, multiple choice, selection, etc)
+//Question is the question its asking
+//Answers is an array of answers, depending on type will depend on how many answers
 function addQuestion(questype, question, answers) {
 	var temp = new Object();
 	temp.type = questype;
