@@ -14,20 +14,20 @@ function addQuestion(questype, question, answers) {
 	surveyQues.push(temp);
 }
 
-//function genHTML() {
-//	var i;
-//	for (i = 0; i < surveyQues.length; i++) {
-//		
-//		if (surveyQues[i].type == "text") {
-//			var tempStr = "<h4>" + surveyQues[i].ques + "</h4>";
-//		}
-//		quesSec.innerHTML = tempStr;
-//	}
-//	
-//}
+function genHTML() {
+	var i;
+	for (i = 0; i < surveyQues.length; i++) {
+		
+		if (surveyQues[i].type == "text") {
+			var tempStr = "<h4>" + surveyQues[i].ques + "</h4>";
+		}
+		quesSec.innerHTML = tempStr;
+	}
+	
+}
 
 function checkText() {
-	//addQuestion("text", "THIS IS A TEST!", ["A", "B"]);
-	document.getElementById("quesbutton").innerText = "TESTTJGBNDJBNFJ";
-	//genHTML();
+	addQuestion("text", "THIS IS A TEST!", ["A", "B"]);
+	//document.getElementById("quesbutton").innerText = "TESTTJGBNDJBNFJ";
+	genHTML();
 }
