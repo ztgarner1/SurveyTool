@@ -72,6 +72,16 @@ app.get('/survey', (req, res) => {
   }
 })
 
+app.get('/template', (req, res) => {
+  
+  if(req.user == undefined){
+      res.render('templateQuestions.ejs',{user:null});
+  }
+  else{
+      res.render('templateQuestions.ejs', { user: req.user})
+  }
+})
+
 /*
 //this is the about me page does not matter if the user is logged in here
 app.get('/about', (req,res) => {
