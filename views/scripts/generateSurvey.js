@@ -44,7 +44,7 @@ function genHTML() {
 	quesSec.innerHTML = tempStr;
 }
 
-function checkText() {
+function generate() {
 	addQuestion("text", "THIS IS A TEST for text!", []);
 	addQuestion("checkbox", "THIS IS A TEST for checkbox!", []);
 	addQuestion("radio", "THIS IS A TEST for radio!", ["A", "B", "C"]);
