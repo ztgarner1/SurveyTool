@@ -22,7 +22,8 @@ function genHTML() {
 		
 		if (surveyQues[i].type == "text") {
 			tempStr = "<h4>" + surveyQues[i].ques + "</h4>";
-			tempStr = "<input type=\"text\" id=\"q" + i + "\" />";
+			var j = i + 1;
+			tempStr += "<input type=\"text\" id=\"q" + j + "\" />";
 		}
 		quesSec.innerHTML = tempStr;
 	}
