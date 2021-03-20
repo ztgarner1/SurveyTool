@@ -1,5 +1,5 @@
 
-const quesSec;
+var quesSec;
 
 var surveyQues = [];
 
