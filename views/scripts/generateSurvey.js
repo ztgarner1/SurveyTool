@@ -24,13 +24,13 @@ function genHTML() {
 		var j = i + 1;
 		
 		if (surveyQues[i].type == "text") {
-			tempStr += "<h4>" + surveyQues[i].ques + "</h4>";
+			tempStr += "<h4>" + j + ") " + surveyQues[i].ques + "</h4>";
 			tempStr += "<input type=\"text\" id=\"q" + j + "\" />";
 		} else if (surveyQues[i].type == "checkbox") {
-			tempStr += "<h4>" + surveyQues[i].ques + "</h4>";
+			tempStr += "<h4>" + j + ") " + surveyQues[i].ques + "</h4>";
 			tempStr += "<input type=\"checkbox\" id=\"q" + j + "\" />";
 		} else if (surveyQues[i].type == "radio") {
-			tempStr += "<h4>" + surveyQues[i].ques + "</h4>";
+			tempStr += "<h4>" + j + ") " + surveyQues[i].ques + "</h4>";
 			var x;
 			for (x = 0; x < surveyQues[i].ans.length; x++) {
 				var temp = surveyQues[i].ans[x];
@@ -45,9 +45,13 @@ function genHTML() {
 }
 
 function generate() {
-	addQuestion("text", "THIS IS A TEST for text!", []);
-	addQuestion("checkbox", "THIS IS A TEST for checkbox!", []);
-	addQuestion("radio", "THIS IS A TEST for radio!", ["A", "B", "C"]);
+	addQuestion("text", "What is your current GPA?", []);
+	addQuestion("checkbox", "Do you live on campus?", []);
+	addQuestion("text", "What is your age?", []);
+	addQuestion("checkbox", "Do you work?", []);
+	addQuestion("text", "How many hours do you put into homework?", []);
+	addQuestion("checkbox", "Have you taken CS???", []);
+	addQuestion("radio", "Do you like pie", ["Yes", "No", "Never tried it"]);
 	genHTML();
 }
 
