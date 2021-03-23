@@ -30,7 +30,6 @@ const Student = require('./Mongoose Models/student');
 const Teacher = require('./Mongoose Models/teacher');
 //getting the courses 
 const Course = require('./Mongoose Models/course');
-const Survey = require('./Mongoose Models/surveyQuestions');
 //calling the initializePassport function;
 initializePassport(
   passport,
