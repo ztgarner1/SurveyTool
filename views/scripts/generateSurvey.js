@@ -14,6 +14,7 @@ function addQuestion(questype, question, answers) {
 	surveyQues.push(temp);
 }
 
+//Generates a string to be written into the html page
 function genHTML() {
 	
 	var tempStr = "";
@@ -43,7 +44,7 @@ function genHTML() {
 	}
 	quesSec.innerHTML = tempStr;
 }
-
+//This is a temporary function to show how the system works
 function generate() {
 	addQuestion("text", "What is your current GPA?", []);
 	addQuestion("checkbox", "Do you live on campus?", []);
