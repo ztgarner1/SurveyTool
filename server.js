@@ -509,6 +509,7 @@ app.post("/editCourse",(req,res)=>{
         }
         else{
           //console.log(data);
+          results.push(data);
         }
         
       })
