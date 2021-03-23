@@ -30,6 +30,7 @@ const Student = require('./Mongoose Models/student');
 const Teacher = require('./Mongoose Models/teacher');
 //getting the courses 
 const Course = require('./Mongoose Models/course');
+const Survey = require('./Mongoose Models/surveyQuestions');
 //calling the initializePassport function;
 initializePassport(
   passport,
@@ -373,7 +374,17 @@ app.post('/addClasses',(req,res)=>{
     moveAndParse( function(){
       fs.createReadStream(__dirname +'/views/uploads/'+filename)
       .pipe(csv({}))
-      .on("data", (data) => results.push(data))
+      .on("data", (data) => {
+        
+        var test = {
+          first: data.first,
+          last: data.last,
+          email: data.email,
+          Survey: []
+        }
+        //console.log("test is >> \n" + test);
+        results.push(test);
+      })
       .on("end",() =>{
           console.log(results);
       })
@@ -389,6 +400,7 @@ app.post('/addClasses',(req,res)=>{
           course_id: req.body.courseId,
           description:req.body.courseDesc,
           students:results,
+          groups:[],
         })
         course.save()
         .then(check =>{
@@ -416,7 +428,10 @@ app.post('/addClasses',(req,res)=>{
     console.log("did not work")
   }
 })
-
+/**
+ * This will call when a user goes to classesInfo page. This page is only for teachers
+ * if the user is not a teacher they get redirected to /myClasses
+ */
 app.get("/classesInfo",checkAuthenticated,(req,res)=>{
   if(req.user.isTeacher){
     res.render('classesInfo.ejs', {user: req.user, error: null});
@@ -425,33 +440,109 @@ app.get("/classesInfo",checkAuthenticated,(req,res)=>{
     res.redirect('/myClasses');
   }
 })
+/**
+ * this post method gets what class is chosen to edit 
+ */
 app.post('/classesInfo',(req,res)=>{
-  //console.log(req.body.classes);
-  if(req.body.classes == null){
+  console.log(req.body.classes);
+  if(req.body.classes == undefined){
+    console.log("Here");
     res.render('classesInfo.ejs', {user: req.user, error: "A class was not selected"});
   }
-  var result = req.body.classes.split(",");
-  
-  Course.findOne({course_id:result[0],section:result[1]})
-  .exec()
-  .then(data=>{
-    //console.log(data);
-    if(data==null){
-      res.render('classesInfo.ejs', {user: req.user, error: "Something went wrong"});
-    }
-    else{
-      //console.log(data.students);
-      res.render('editCourse.ejs', {user: req.user, course:data, error: null});
-    }
+  else{
+    var result = req.body.classes.split(",");
     
-  })
-  .catch(error=>{
-    res.render('classesInfo.ejs', {user: req.user, error: error});
+    Course.findOne({course_id:result[0],section:result[1]})
+    .exec()
+    .then(data=>{
+      //console.log(data);
+      if(data==null){
+        res.render('classesInfo.ejs', {user: req.user, error: "Something went wrong"});
+      }
+      else{
+        //console.log(data.students);
+        res.render('editCourse.ejs', {user: req.user, course:data, error: null});
+      }
+      
+    })
+    .catch(error=>{
+      res.render('classesInfo.ejs', {user: req.user, error: error});
 
-  })
+    })
+  }
+  
   
 })
 
+/**
+ * 
+ */
+app.post("/editCourse",(req,res)=>{
+  
+  if(req.files){
+    var file = req.files.fileName,
+     filename = file.name
+    var results = [];
+    
+    var moveAndParse = function(callback){
+      file.mv(__dirname + "/views/uploads/"+filename, err =>{
+        console.log(err)
+        if(err){
+          console.log(err);
+          res.send("error occured" + err);
+        }
+      })
+      callback()
+    }
+    //making sure that the file matches the current students in the class
+    
+    moveAndParse( function(){
+      fs.createReadStream(__dirname +'/views/uploads/'+filename)
+      .pipe(csv({}))
+      .on("data", (data) => {
+        //need to check here if the students information is the same
+        //if the checkbox is not clicked
+        if(req.body.myCheck == undefined){
+          
+          
+          //console.log("test is >> \n" + test);
+          results.push(data);
+        }
+        else{
+          //console.log(data);
+        }
+        
+      })
+      .on("end",() =>{
+        var spiltText = req.body.courseName.split(",");
+        Course.updateOne({course_id:spiltText[0],section:spiltText[1]},{survey:results})
+        .exec()
+        .then(data=>{
+          res.render('classesInfo.ejs', {user: req.user, error: null});
+        })
+        .catch(error=>{
+          res.render("classesInfo.ejs",{user:req.user,error:"Error when submitting the csv file"});
+        })
+        
+        /*
+        var survey = Survey({
+          results:results,
+        })
+        survey.save()
+        .then(data =>{
+          res.render('classesInfo.ejs', {user: req.user, error: null});
+        })
+        */
+          //console.log(results);
+      })
+    })
+    
+    
+  }
+  else{
+    res.render("classesInfo.ejs",{user:req.user,error:"There was no file Submitted"});
+  }
+})
 
 //this is the confirmation the email sent to the user gets sent to. 
 //checking to see if the code passed through as :variable is the same verification code
@@ -494,12 +585,10 @@ function checkNotAuthenticated(req, res, next) {
 
 //mailing info
 const sgMail = require("@sendgrid/mail");
-const e = require('express')
-const { render } = require('ejs')
 const user = require('./Mongoose Models/user')
 sgMail.setApiKey(''+process.env.SENDGRID_PW+'');
 
-//sendMail("zacharygarner7@gmail.com")
+
 //a function that sends a email the a checks to see if this is from register or resending an email
 //in order to see if we need to go to the Users account to get the confirmation code to resend
 // or create a new one(if user == null)
