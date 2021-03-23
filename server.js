@@ -485,7 +485,7 @@ app.post("/editCourse",(req,res)=>{
     
     var moveAndParse = function(callback){
       file.mv(__dirname + "/views/uploads/"+filename, err =>{
-        console.log(err)
+        //console.log(err)
         if(err){
           console.log(err);
           res.send("error occured" + err);
@@ -517,7 +517,7 @@ app.post("/editCourse",(req,res)=>{
         Course.updateOne({course_id:spiltText[0],section:spiltText[1]},{survey:results})
         .exec()
         .then(data=>{
-          res.render('classesInfo.ejs', {user: req.user, error: null});
+          
         })
         .catch(error=>{
           res.render("classesInfo.ejs",{user:req.user,error:"Error when submitting the csv file"});
@@ -532,6 +532,7 @@ app.post("/editCourse",(req,res)=>{
           res.render('classesInfo.ejs', {user: req.user, error: null});
         })
         */
+        res.render('classesInfo.ejs', {user: req.user, error: null});
           //console.log(results);
       })
     })
