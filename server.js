@@ -1,4 +1,6 @@
 //requiring everything thats needed and setting up app.
+const dotenv = require('dotenv');
+dotenv.config()
 const express = require('express')
 const app = express()
 const bcrypt = require('bcrypt')
@@ -10,14 +12,13 @@ const csv = require('csv-parser')
 const fs = require('fs');
 app.use(fileUpload());
 
-
 var courses;
 //this helps log a user out
 const methodOverride = require('method-override')
 //sendgrid for the mail.
 //setting up the database
 const mongoose = require("mongoose");
-mongoose.connect(""+process.env.MONGO_ATLAS_PW,
+mongoose.connect("" +process.env.MONGO_ATLAS_PW+"",
   {
     useNewUrlParser: true,
     useUnifiedTopology: true 
@@ -26,10 +27,10 @@ mongoose.connect(""+process.env.MONGO_ATLAS_PW,
 const initializePassport = require('./passport-config');
 //getting Student and Teacher Schema
 
-const Student = require('./Mongoose Models/student');
-const Teacher = require('./Mongoose Models/teacher');
+const User = require('./Mongoose Models/user');
 //getting the courses 
 const Course = require('./Mongoose Models/course');
+const SurveyResults = require('./Mongoose Models/surveyResults');
 //calling the initializePassport function;
 initializePassport(
   passport,
@@ -151,14 +152,14 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
       let emailExists = false;
       //getting all the users from the database
       if(req.body.question.toLowerCase == "no"){
-        Student.findOne({email:req.body.email})
+        User.findOne({email:req.body.email})
         .exec()
         .then(data=>{
           if(data==null){
             //if there isnt a student with that email
             let code = sendMail(req.body.email, null);
 
-            var student = new Student({
+            var student = new User({
               __id: new mongoose.Types.ObjectId(),
               username:req.body.name,
               first: "",
@@ -167,14 +168,13 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
               password:bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(9)),
               locked:false,
               verified:false,
-              Enrolled:[],
+              courses:[],
               confirmCode:code,
               isTeacher:false,
             })
 
             student.save()
             .then( () => {
-              
              //if no error occured then the user will be taken to the login page
               res.redirect('/login');
             })
@@ -191,12 +191,12 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
         })
       }
       else{
-        Teacher.findOne({email:req.body.email})
+        User.findOne({email:req.body.email})
         .exec()
         .then(data=>{
           if(data==null){
             let code = sendMail(req.body.email, null);
-            var teacher = new Teacher({
+            var teacher = new User({
               __id: new mongoose.Types.ObjectId(),
               username:req.body.name,
               first: "",
@@ -205,7 +205,7 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
               password:bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(9)),
               locked:false,
               verified:false,
-              Enrolled:[],
+              courses:[],
               confirmCode:code,
               isTeacher:true,
             })
@@ -307,8 +307,8 @@ app.post('/enrollment',checkAuthenticated,(req,res)=>{
  else{
    //console.log(req.body.courseToAdd)
    let add = true;
-    for(let i=0;i<req.user.Enrolled.length;i++){
-      if(req.user.Enrolled[i].course.course_id == req.body.courseToAdd){
+    for(let i=0;i<req.user.courses.length;i++){
+      if(req.user.courses[i].course.course_id == req.body.courseToAdd){
         console.log("already added that one")
         add = false;
       }
@@ -318,15 +318,15 @@ app.post('/enrollment',checkAuthenticated,(req,res)=>{
       Course.findOne({course_id:req.body.courseToAdd})
       .then(data =>{
         var enroll;
-        if(req.user.Enrolled.length == 0){
+        if(req.user.courses.length == 0){
           enroll = new Enroll(data, true)
         }
         else{
           enroll = new Enroll(data, false)
         }
-        req.user.Enrolled.push(enroll);
+        req.user.courses.push(enroll);
         //pushing to the arrray that is Enrolled
-        User.updateOne({__id:req.user.__id},{$push:{Enrolled:enroll }})
+        User.updateOne({__id:req.user.__id},{$push:{courses:enroll }})
         .then(()=>{
           console.log("successful")
           res.render('enrollment.ejs', {user: req.user, courses:courses});
@@ -364,7 +364,7 @@ app.post('/addClasses',(req,res)=>{
         console.log(err)
         if(err){
           console.log(err);
-          res.send("error occured" + err);
+          //res.send("error occured" + err);
         }
       })
       callback()
@@ -379,6 +379,7 @@ app.post('/addClasses',(req,res)=>{
           first: data.first,
           last: data.last,
           email: data.email,
+          id: data.id,
           Survey: []
         }
         //console.log("test is >> \n" + test);
@@ -394,6 +395,7 @@ app.post('/addClasses',(req,res)=>{
     .then(data=>{
       if(data == null){
         var course = new Course({
+          __id: new mongoose.Types.ObjectId(),
           intructor : req.user.__id,
           section: req.body.courseSection,
           course_id: req.body.courseId,
@@ -405,9 +407,13 @@ app.post('/addClasses',(req,res)=>{
         .then(check =>{
           res.render('classesInfo.ejs',{user:req.user, error: null})
         })
+        console.log("__id " + course.__id);
+        var courseId = {
+          id: course.id,
+        }
         
-        req.user.teaching.push(course);
-        Teacher.updateOne({__id:req.user.__id},{$push:{teaching:req.user.teaching }})
+        req.user.courses.push(courseId);
+        User.updateOne({__id:req.user.__id},{$push:{courses:courseId }})
         .then(()=>{
           //console.log("successful")
           res.render('classesInfo.ejs',{user:req.user,error: null})
@@ -417,7 +423,7 @@ app.post('/addClasses',(req,res)=>{
         })
       }
       else{
-        res.render('classesInfo.ejs',{user:req.user, error:"Already a class with that name"})
+        res.render('classesInfo.ejs',{user:req.user, error:"Course name and section already exist"})
       }
     })
     
@@ -433,7 +439,26 @@ app.post('/addClasses',(req,res)=>{
  */
 app.get("/classesInfo",checkAuthenticated,(req,res)=>{
   if(req.user.isTeacher){
-    res.render('classesInfo.ejs', {user: req.user, error: null});
+    var courses = [];
+    
+    for(let i = 0; i< req.user.courses.length; i++){
+      Course.findById(req.user.courses[i].id)
+      .then(data=>{
+        if(data != null){
+          courses.push(data);
+          //console.log("1");
+        }
+        if(i == req.user.courses.length -1){
+          console.log(courses.length);
+          res.render('classesInfo.ejs', {user: req.user,courses:courses, error: null});
+        }
+      })
+      .catch(error=>{
+        res.render('classesInfo.ejs', {user: req.user,courses:courses, error: "Error occured while getting the classes"});
+      })
+    }
+    
+    
   }
   else{
     res.redirect('/myClasses');
@@ -446,7 +471,25 @@ app.post('/classesInfo',(req,res)=>{
   console.log(req.body.classes);
   if(req.body.classes == undefined){
     console.log("Here");
-    res.render('classesInfo.ejs', {user: req.user, error: "A class was not selected"});
+    var courses = [];
+    
+    for(let i = 0; i< req.user.courses.length; i++){
+      Course.findById(req.user.courses[i].id)
+      .then(data=>{
+        if(data != null){
+          courses.push(data);
+          
+        }
+        if(i == req.user.courses.length -1){
+          
+          res.render('classesInfo.ejs', {user: req.user,courses:courses, error:"A class was not selected"});
+        }
+      })
+      .catch(error=>{
+        res.render('classesInfo.ejs', {user: req.user,courses:courses, error: null});
+      })
+    }
+    //res.render('classesInfo.ejs', {user: req.user, error: "A class was not selected"});
   }
   else{
     var result = req.body.classes.split(",");
@@ -487,8 +530,8 @@ app.post("/editCourse",(req,res)=>{
       file.mv(__dirname + "/views/uploads/"+filename, err =>{
         //console.log(err)
         if(err){
-          console.log(err);
-          res.send("error occured" + err);
+          console.log("ERROR moving " + err);
+          //res.send("error occured" + err);
         }
       })
       callback()
@@ -496,46 +539,55 @@ app.post("/editCourse",(req,res)=>{
     //making sure that the file matches the current students in the class
     
     moveAndParse( function(){
+      //console.log(req.body.myCheck);
       fs.createReadStream(__dirname +'/views/uploads/'+filename)
       .pipe(csv({}))
       .on("data", (data) => {
+       
         //need to check here if the students information is the same
         //if the checkbox is not clicked
-        if(req.body.myCheck == undefined){
-          
-          
-          //console.log("test is >> \n" + test);
-          results.push(data);
-        }
-        else{
-          //console.log(data);
-          results.push(data);
-        }
+        //console.log(data);
+        
+        data["Prev Course"] =  "" +data["Prev Course"]+"";
+        console.log(data["Prev Course"]);
+        results.push(data);
+        //console.log(results.length);
+      }) 
+      .on("end",() =>{
         
       })
-      .on("end",() =>{
-        var spiltText = req.body.courseName.split(",");
-        Course.updateOne({course_id:spiltText[0],section:spiltText[1]},{survey:results})
-        .exec()
-        .then(data=>{
+      var spiltText = req.body.courseName.split(",");
+      var courseId;
+      //console.log(results);
+
+      //console.log(spiltText[0]);
+      //console.log(spiltText[1]);
+      Course.findOne({course_id:spiltText[0],section:spiltText[1]})
+      .then(dataCourse=>{
+          courseId = dataCourse.id;
+          //console.log(data.id);
+          console.log(courseId)
+          console.log(results.length);
+          var survey = new SurveyResults({
+          results:results,
+          course_id:courseId,
+        })
+        survey.save()
+        .then(dataN =>{
+          
+          res.render('editCourse.ejs', {user: req.user, course:dataCourse, error: "Successfully uploaded CSV file"});
           
         })
         .catch(error=>{
-          res.render("classesInfo.ejs",{user:req.user,error:"Error when submitting the csv file"});
+          console.log(error)
+          res.render('editCourse.ejs', {user: req.user, course:dataCourse, error: error});
+          
+
         })
         
-        /*
-        var survey = Survey({
-          results:results,
-        })
-        survey.save()
-        .then(data =>{
-          res.render('classesInfo.ejs', {user: req.user, error: null});
-        })
-        */
-        res.render('classesInfo.ejs', {user: req.user, error: null});
-          //console.log(results);
       })
+      //res.render('classesInfo.ejs', {user: req.user, error: null});
+        //console.log(results);
     })
     
     
@@ -629,4 +681,4 @@ function sendMail(to,user){
 
 
 //makes sure the server is listening on a specified port number. 
-app.listen(process.env.PORT || 3000)
+app.listen(3000)

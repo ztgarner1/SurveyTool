@@ -5,12 +5,13 @@ const mongoose = require("mongoose");
 var bcrypt = require("bcrypt");
 const Student = require('./Mongoose Models/student');
 const Teacher = require('./Mongoose Models/teacher');
+const User = require('./Mongoose Models/user');
 var user;
 function initialize(passport){
     const authenticateUser = async (email, password, done) =>{
         //console.log(email)
         //const user = getUserByEmail(email)
-        Teacher.findOne({email:email})
+        User.findOne({email:email})
         .exec()
         .then(data=>{
             user = data;
@@ -66,24 +67,13 @@ function initialize(passport){
     
     passport.use(new localStrategy({usernameField: "email"}, authenticateUser));
     passport.serializeUser((user,done) => {
-        
-        //console.log(user);
         done(null, user);
     })
     
     passport.deserializeUser((user,done) => {
-        //console.log(user)
-        if(user.isTeacher){
-            Teacher.findById(user, (error,user)=>{
-                done(error, user)
-            })
-        }
-        else{
-            Student.findById(user, (error,user)=>{
-                done(error, user)
-            })
-        }
-        
+        User.findById(user, (error,user)=>{
+            done(error, user);
+        })
     });
 
 }
