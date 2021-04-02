@@ -681,4 +681,4 @@ function sendMail(to,user){
 
 
 //makes sure the server is listening on a specified port number. 
-app.listen(3000)
+app.listen(process.env.PORT || 3000)
