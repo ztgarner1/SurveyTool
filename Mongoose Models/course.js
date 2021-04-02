@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const courseSchema = mongoose.Schema({
+    __id: mongoose.Schema.Types.ObjectId,
     intructor:String,
     section:Number,
     semester:String,
@@ -8,7 +9,6 @@ const courseSchema = mongoose.Schema({
     course_language:String,
     description:String,
     students:Array,
-    
 })
 
 module.exports = mongoose.model("Course", courseSchema);
