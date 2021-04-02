@@ -9,7 +9,7 @@ const userSchema = mongoose.Schema({
     password:String,
     locked:Boolean,
     verified: Boolean,
-    Enrolled: Array,
+    courses: Array,
     confirmCode: String,
     isTeacher: Boolean,
 })
