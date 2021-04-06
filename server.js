@@ -322,9 +322,7 @@ app.post('/createSurvey',(req,res)=>{
 			count++;
 			continue;
 		}
-		
-		console.log(req.body[c]);
-
+		//console.log(req.body[c]);
 		if ((count % 3) == 1) {
 			tempObj.ask = req.body[c];
 		} else if ((count % 3) == 2) {
@@ -338,7 +336,6 @@ app.post('/createSurvey',(req,res)=>{
 				answers: ""
 			};
 		}
-		
 		count++;
 	}
 	
@@ -353,13 +350,11 @@ app.post('/createSurvey',(req,res)=>{
 				template.save()
 					.then(check=>{
 						res.redirect('/createSurvey');
+					}).catch(()=>{
+						res.redirect('/createSurvey');
 					})
 			}
 		})
-	
-
-
-	res.redirect('/createSurvey');
 	
 })
 
