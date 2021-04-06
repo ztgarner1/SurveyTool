@@ -16,7 +16,7 @@ function genNavbar() {
 	temp += "</form>";
 	temp += "<% } %>";
 			
-	var test = <%- JSON.stringify(temp) %>;
+	var test = <%- temp %>;
 	console.log(test);
 	navArea.innerHTML = test;
 }
