@@ -304,11 +304,11 @@ app.get('/enrollment', checkAuthenticated, (req,res)=>{
   
 })
 
-app.post('/addClasses',(req,res)=>{
+app.post('/createSurvey',(req,res)=>{
 	
 	for (c in req.body) {
 		
-		console.log(c);
+		document.getElementById("testingQ") += c;
 		
 	}
 	
