@@ -308,7 +308,7 @@ app.post('/createSurvey',(req,res)=>{
 	
 	for (c in req.body) {
 		
-		document.getElementById("testingQ") += c;
+		window.alert(c);
 		
 	}
 	
