@@ -9,7 +9,7 @@
     <link rel="shortcut icon" href="images/favicon.ico">  
 	
 	<script>
-		var count = 0;
+		var count = 1;
 		function addquestionToSurvey() {
 			
 			var ques = "<h4>Enter Question</h4><input type=\"text\" id=\"question" + count + "\" />";
@@ -35,9 +35,9 @@
 		}
 		
 		function resetSurvey() {
-			document.getElementById("createSurvey") = "<h4>Enter Survey Title</h4>";
-			document.getElementById("createSurvey") += "<input type=\"text\" id=\"surveyTitle\" />";
-			document.getElementById("createSurvey") += "<br><hr size=\"10\">";
+			document.getElementById("createSurvey").innerHTML = "<h4>Enter Survey Title</h4>";
+			document.getElementById("createSurvey").innerHTML += "<input type=\"text\" id=\"surveyTitle\" />";
+			document.getElementById("createSurvey").innerHTML += "<br><hr size=\"10\">";
 		}
 	</script>
 	
@@ -56,8 +56,8 @@
 	<div id="setupQuestions" class="w3-full w3-container">	
 	
 		<button id="addq" type="button" onclick="addquestionToSurvey();">Add Question</button>
-		<button id='submitButton' type='submit' form='createSurvey'>Save Survey</button>
-		<button id='submitButton' type="button" onclick="resetSurvey();">Reset Survey</button>
+		<button id='submitSurvey' type='submit' form='createSurvey'>Save Survey</button>
+		<button id='resetSurvey' type="button" onclick="resetSurvey();">Reset Survey</button>
 		
 		<form action="/createSurvey" enctype="multipart/form-data" method='POST' id='createSurvey'>
 		

@@ -308,7 +308,7 @@ app.post('/addClasses',(req,res)=>{
 	
 	for (c in req.body) {
 		
-		document.getElementById("testingQ") += c;
+		console.log(c);
 		
 	}
 	
