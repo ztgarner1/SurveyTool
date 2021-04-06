@@ -304,7 +304,7 @@ app.get('/enrollment', checkAuthenticated, (req,res)=>{
   
 })
 
-app.post('/createSurvey',(req,res)=>{
+app.post('/createSurvey',checkAuthenticated,(req,res)=>{
 	
 	console.log(req.body.question1);
 	
