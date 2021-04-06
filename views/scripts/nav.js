@@ -16,7 +16,7 @@ function genNavbar() {
 	temp += "</form>";
 	temp += "<% } %>";
 			
-	navArea.innerHTML = temp;
+	navArea.innerHTML = ejs.render(temp);
 }
 
 window.onload = function() {
