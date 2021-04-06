@@ -9,15 +9,25 @@
     <link rel="shortcut icon" href="images/favicon.ico">  
 	
 	<script>
+		var count = 0;
 		function addquestionToSurvey() {
 			
-			var ques = document.getElementById("question");
-			var quesType = "";
-			var quesAnswers = "";
+			var ques = "<h4>Enter Question</h4><input type=\"text\" id=\"question" + count + "\" />";
+			var quesType = "<label for=\"qtype\">Enter Question type</label>";
+			quesType += "<select name=\"qtype\" id=\"qtype" + count + "\">";
+			quesType += "<option value=\"text\">Text Box</option>";
+			quesType += "<option value=\"radio\">Multiple Choice</option>";
+			quesType += "<option value=\"checkbox\">Select all that apply</option>";
+			quesType += "</select>";
+			var quesAnswers = "<h4>Enter Question Answers (If Apply)</h4>
+			quesAnswers += "<h5>Enter the answers in a comma seperated format!</h5>
+			quesAnswers +=   "<input type=\"text\" id=\"question" + count + "Answers\" />";
 			
-			document.getElementById("createSurvey").innerHTML += ques[0] + "<br>";
+			document.getElementById("createSurvey").innerHTML += ques + "<br>";
 			document.getElementById("createSurvey").innerHTML += quesType + "<br>";
 			document.getElementById("createSurvey").innerHTML += quesAnswers + "<br>";
+			
+			count = count + 1;
 			
 		}
 	</script>
@@ -48,20 +58,6 @@
     </div>
 	
 	<div id="adding" class="w3-full w3-container">	
-		
-		<h4>Enter Question</h4>
-		<input type="text" id="question" />
-		
-		<label for="qtype">Enter Question type</label>
-		<select name="qtype" id="qtype">
-			<option value="text">Text Box</option>
-			<option value="radio">Multiple Choice</option>
-			<option value="checkbox">Select all that apply</option>
-		</select>
-		
-		<h4>Enter Question Answers (If Apply)</h4>
-		<h5>Enter the answers in a comma seperated format!</h5>
-		<input type="text" id="questionAnswers" />
 
 		<button id="addq" type="button" onclick="addquestionToSurvey();">Add Question</button>
 		
