@@ -502,6 +502,7 @@ app.post('/addClasses',(req,res)=>{
  * if the user is not a teacher they get redirected to /myClasses
  */
 app.get("/classesInfo",checkAuthenticated,(req,res)=>{
+  console.log("here"
   if(req.user.isTeacher){
     var courses = [];
     
@@ -511,9 +512,11 @@ app.get("/classesInfo",checkAuthenticated,(req,res)=>{
         if(data != null){
           courses.push(data);
           //console.log("1");
+	  
         }
         if(i == req.user.courses.length -1){
           console.log(courses.length);
+          break;
           res.render('classesInfo.ejs', {user: req.user,courses:courses, error: null});
         }
       })
@@ -521,6 +524,8 @@ app.get("/classesInfo",checkAuthenticated,(req,res)=>{
         res.render('classesInfo.ejs', {user: req.user,courses:courses, error: "Error occured while getting the classes"});
       })
     }
+    res.render('classesInfo.ejs', {user: req.user,courses:courses, error: null});
+	  
     
     
   }
