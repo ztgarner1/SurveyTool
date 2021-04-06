@@ -306,7 +306,10 @@ app.get('/enrollment', checkAuthenticated, (req,res)=>{
 
 app.post('/createSurvey',(req,res)=>{
 	
-	console.log(req.body.question1);
+	for (c in req.body) {
+		console.log(req.body[c]);
+	}
+
 	res.render('createSurvey.ejs',{user:null});
 	
 })
