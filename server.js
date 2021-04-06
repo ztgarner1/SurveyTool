@@ -31,7 +31,6 @@ const User = require('./Mongoose Models/user');
 //getting the courses 
 const Course = require('./Mongoose Models/course');
 const SurveyResults = require('./Mongoose Models/surveyResults');
-const SurveyTemplates = require('./Mongoose Models/surveyTemplate');
 //calling the initializePassport function;
 initializePassport(
   passport,
@@ -81,16 +80,6 @@ app.get('/template', (req, res) => {
   }
   else{
       res.render('templateQuestions.ejs', { user: req.user})
-  }
-})
-
-app.get('/createSurvey', (req, res) => {
-  
-  if(req.user == undefined){
-      res.render('createSurvey.ejs',{user:null});
-  }
-  else{
-      res.render('createSurvey.ejs', { user: req.user})
   }
 })
 
@@ -246,7 +235,7 @@ app.post("/profile",checkAuthenticated, (req,res)=>{
   if(req.body.SaveProfile != null){
     //console.log("In edit mode");
     //updating the user in the database
-    User.updateOne({_id: req.user._id, first:req.body.first,last:req.body.last})
+    User.updateOne({_id: req.id, first:req.body.first,last:req.body.last})
     .exec()
     .then(docs =>{
       //updating the current user logged in so the data displays right away after saving.
@@ -303,59 +292,6 @@ app.get('/enrollment', checkAuthenticated, (req,res)=>{
     
   }
   
-})
-
-app.post('/createSurvey',(req,res)=>{
-	
-	var tempArray = [];
-	var count = 0;
-	
-	var tempObj = {
-		ask: "",
-		type: "",
-		answers: ""
-	};
-	
-	for (c in req.body) {
-		
-		if (count == 0) {
-			count++;
-			continue;
-		}
-		//console.log(req.body[c]);
-		if ((count % 3) == 1) {
-			tempObj.ask = req.body[c];
-		} else if ((count % 3) == 2) {
-			tempObj.type = req.body[c];
-		} else if ((count % 3) == 0) {
-			tempObj.answers = req.body[c];
-			tempArray.push(tempObj);
-			tempObj = {
-				ask: "",
-				type: "",
-				answers: ""
-			};
-		}
-		count++;
-	}
-	
-	SurveyTemplates.findOne({title:req.body.surveyTitle})
-		.then(data=>{
-			if (data == null) {
-				var template = new SurveyTemplates({
-					_id: new mongoose.Types.ObjectId(),
-					title: req.body.surveyTitle,
-					questions: tempArray,
-				})
-				template.save()
-					.then(check=>{
-						res.redirect('/createSurvey');
-					}).catch(()=>{
-						res.redirect('/createSurvey');
-					})
-			}
-		})
-	
 })
 
 
@@ -417,12 +353,12 @@ app.get('/addClasses',checkAuthenticated,(req,res)=>{
  * this will be called whenever a post method is made to /addClasses
  */
 app.post('/addClasses',(req,res)=>{
-  
+
   if(req.files){
     var file = req.files.fileName,
      filename = file.name
     var results = [];
-    
+  
     var moveAndParse = function(callback){
       file.mv(__dirname + "/views/uploads/"+filename, err =>{
         console.log(err)
@@ -433,7 +369,6 @@ app.post('/addClasses',(req,res)=>{
       })
       callback()
     }
-
     moveAndParse( function(){
       fs.createReadStream(__dirname +'/views/uploads/'+filename)
       .pipe(csv({}))
@@ -444,17 +379,14 @@ app.post('/addClasses',(req,res)=>{
           last: data.last,
           email: data.email,
           id: data.id,
-          Survey: []
         }
         //console.log("test is >> \n" + test);
         results.push(test);
       })
       .on("end",() =>{
-          console.log(results);
+          //console.log(results);
       })
     })
-    
-    
     Course.findOne({course_id:req.body.courseId,section:req.body.courseSection})
     .then(data=>{
       if(data == null){
@@ -469,9 +401,11 @@ app.post('/addClasses',(req,res)=>{
         })
         course.save()
         .then(check =>{
-          res.render('classesInfo.ejs',{user:req.user, error: null})
+          let courses = [];
+          courses.push(course);
+          res.render('classesInfo.ejs',{user:req.user,courses:courses, error: null})
         })
-        console.log("_id " + course._id);
+        //console.log("__id " + course.__id);
         var courseId = {
           id: course.id,
         }
@@ -480,51 +414,43 @@ app.post('/addClasses',(req,res)=>{
         User.updateOne({_id:req.user._id},{$push:{courses:courseId }})
         .then(()=>{
           //console.log("successful")
-          res.render('classesInfo.ejs',{user:req.user,error: null})
+          res.redirect('/classesInfo');
         })
         .catch(()=>{
-          res.render('classesInfo.ejs',{user:req.user,error: "Your profile has not been updated"})
+          res.redirect('/classesInfo');
         })
       }
       else{
-        res.render('classesInfo.ejs',{user:req.user, error:"Course name and section already exist"})
+        res.redirect('/classesInfo');
+        //res.render('classesInfo.ejs',{user:req.user,courses:[], error:"Course name and section already exist"})
       }
     })
-    
-    
   }
   else{
     console.log("did not work")
   }
+  
 })
+var tempFunction = function(req){
+
+}
 /**
  * This will call when a user goes to classesInfo page. This page is only for teachers
  * if the user is not a teacher they get redirected to /myClasses
  */
 app.get("/classesInfo",checkAuthenticated,(req,res)=>{
-  console.log("here")
   if(req.user.isTeacher){
     var courses = [];
     
-    for(let i = 0; i< req.user.courses.length; i++){
-      Course.findById(req.user.courses[i].id)
-      .then(data=>{
-        if(data != null){
-          courses.push(data);
-          //console.log("1");
-	  
-        }
-        if(i == req.user.courses.length -1){
-          //console.log(courses.length);
-          res.render('classesInfo.ejs', {user: req.user,courses:courses, error: null});
-        }
-      })
-      .catch(error=>{
-        res.render('classesInfo.ejs', {user: req.user,courses:courses, error: "Error occured while getting the classes"});
-      })
-    }
-    res.render('classesInfo.ejs', {user: req.user,courses:courses, error: null});
-	  
+    Course.find({intructor:req.user.id})
+    .then(data=>{
+      if(data != null){
+        res.render('classesInfo.ejs', {user: req.user,courses:data, error: null});
+      }
+    })
+    .catch(error=>{
+      console.log(error);
+    })
     
     
   }
@@ -535,29 +461,24 @@ app.get("/classesInfo",checkAuthenticated,(req,res)=>{
 /**
  * this post method gets what class is chosen to edit 
  */
-app.post('/classesInfo',(req,res)=>{
+app.post('/classesInfo',checkAuthenticated,(req,res)=>{
   console.log(req.body.classes);
   if(req.body.classes == undefined){
     
     var courses = [];
     
-    for(let i = 0; i< req.user.courses.length; i++){
-      Course.findById(req.user.courses[i].id)
-      .then(data=>{
-        if(data != null){
-          courses.push(data);
-          
-        }
-        if(i == req.user.courses.length -1){
-          
-          res.render('classesInfo.ejs', {user: req.user,courses:courses, error:"A class was not selected"});
-        }
-      })
-      .catch(error=>{
-        res.render('classesInfo.ejs', {user: req.user,courses:courses, error: null});
-      })
-    }
-    //res.render('classesInfo.ejs', {user: req.user, error: "A class was not selected"});
+    Course.find({intructor:req.user.id})
+    .then(data=>{
+      if(data != null){
+        courses = data;
+        res.render('classesInfo.ejs', {user: req.user,courses:data, error: null});
+      }
+    })
+    .catch(error=>{
+      console.log(error);
+    })
+
+    res.redirect('/classesInfo');
   }
   else{
     var result = req.body.classes.split(",");
@@ -566,28 +487,77 @@ app.post('/classesInfo',(req,res)=>{
     .exec()
     .then(data=>{
       //console.log(data);
-      if(data==null){
-        res.render('classesInfo.ejs', {user: req.user, error: "Something went wrong"});
-      }
-      else{
-        //console.log(data.students);
-        res.render('editCourse.ejs', {user: req.user, course:data, error: null});
-      }
+      var coursesT = [];
+  
+      //console.log(data);
+      res.render('editCourse.ejs', {user: req.user, course:data, error: null});
       
     })
     .catch(error=>{
-      res.render('classesInfo.ejs', {user: req.user, error: error});
-
+      res.render('classesInfo.ejs', {user: req.user, courses:coursesT,error: error});
     })
   }
   
   
+})
+app.post('/createSurvey',(req,res)=>{
+	
+	var tempArray = [];
+	var count = 0;
+	
+	var tempObj = {
+		ask: "",
+		type: "",
+		answers: ""
+	};
+	
+	for (c in req.body) {
+		
+		if (count == 0) {
+			count++;
+			continue;
+		}
+		//console.log(req.body[c]);
+		if ((count % 3) == 1) {
+			tempObj.ask = req.body[c];
+		} else if ((count % 3) == 2) {
+			tempObj.type = req.body[c];
+		} else if ((count % 3) == 0) {
+			tempObj.answers = req.body[c];
+			tempArray.push(tempObj);
+			tempObj = {
+				ask: "",
+				type: "",
+				answers: ""
+			};
+		}
+		count++;
+	}
+	
+	SurveyTemplates.findOne({title:req.body.surveyTitle})
+		.then(data=>{
+			if (data == null) {
+				var template = new SurveyTemplates({
+					_id: new mongoose.Types.ObjectId(),
+					title: req.body.surveyTitle,
+					questions: tempArray,
+				})
+				template.save()
+					.then(check=>{
+						res.redirect('/createSurvey');
+					}).catch(()=>{
+						res.redirect('/createSurvey');
+					})
+			}
+		})
+	
 })
 
 /**
  * 
  */
 app.post("/editCourse",(req,res)=>{
+  
   
   if(req.files){
     var file = req.files.fileName,
@@ -637,21 +607,20 @@ app.post("/editCourse",(req,res)=>{
           console.log(courseId)
           console.log(results.length);
           var survey = new SurveyResults({
-          results:results,
-          course_id:courseId,
-        })
-        survey.save()
-        .then(dataN =>{
+            _id: new mongoose.Types.ObjectId(),
+            results:results,
+            course_id:courseId,
+          })
+          survey.save()
+          .then(dataN =>{
           
-          res.render('editCourse.ejs', {user: req.user, course:dataCourse, error: "Successfully uploaded CSV file"});
+            res.render('editCourse.ejs', {user: req.user, course:dataCourse, error: "Successfully uploaded CSV file"});
           
-        })
-        .catch(error=>{
-          console.log(error)
-          res.render('editCourse.ejs', {user: req.user, course:dataCourse, error: error});
-          
-
-        })
+          })
+          .catch(error=>{
+            console.log(error)
+            res.render('editCourse.ejs', {user: req.user, course:dataCourse, error: error});
+          })
         
       })
       //res.render('classesInfo.ejs', {user: req.user, error: null});
@@ -663,6 +632,7 @@ app.post("/editCourse",(req,res)=>{
   else{
     res.render("classesInfo.ejs",{user:req.user,error:"There was no file Submitted"});
   }
+
 })
 
 //this is the confirmation the email sent to the user gets sent to. 
@@ -749,4 +719,4 @@ function sendMail(to,user){
 
 
 //makes sure the server is listening on a specified port number. 
-app.listen(process.env.PORT || 3000)
+app.listen(3000)
