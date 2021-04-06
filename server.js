@@ -307,13 +307,40 @@ app.get('/enrollment', checkAuthenticated, (req,res)=>{
 
 app.post('/createSurvey',(req,res)=>{
 	
+	var tempArray = [];
+	var count = 0;
+	
+	for (c in req.body) {
+		console.log(req.body[c]);
+		
+		var tempObj = {
+			ask: "",
+			type: "",
+			answers: ""
+		};
+		
+		if ((count % 3) == 0) {
+			tempObj.ask = req.body[c];
+		} else if ((count % 3) == 1) {
+			tempObj.type = req.body[c];
+		} else if ((count % 3) == 2) {
+			tempObj.answers = req.body[c];
+		} else {
+			res.redirect('/');
+		}
+		
+		tempArray.push(tempObj);
+		
+		count++
+	}
+	
 	SurveyTemplates.findOne({title:req.body.surveyTitle})
 		.then(data=>{
 			if (data == null) {
 				var template = new SurveyTemplates({
 					_id: new mongoose.Types.ObjectId(),
 					title: req.body.surveyTitle,
-					questions: [],
+					questions: tempArray,
 				})
 				template.save()
 					.then(check=>{
@@ -322,9 +349,7 @@ app.post('/createSurvey',(req,res)=>{
 			}
 		})
 	
-	for (c in req.body) {
-		console.log(req.body[c]);
-	}
+
 
 	res.redirect('/createSurvey');
 	
