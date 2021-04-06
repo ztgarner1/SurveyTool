@@ -31,6 +31,7 @@ const User = require('./Mongoose Models/user');
 //getting the courses 
 const Course = require('./Mongoose Models/course');
 const SurveyResults = require('./Mongoose Models/surveyResults');
+const SurveyTemplates = require('./Mongoose Models/surveyTemplates');
 //calling the initializePassport function;
 initializePassport(
   passport,
@@ -305,6 +306,21 @@ app.get('/enrollment', checkAuthenticated, (req,res)=>{
 })
 
 app.post('/createSurvey',(req,res)=>{
+	
+	SurveyTemplates.findOne({title:req.body.surveyTitle})
+		.then(data=>{
+			if (data == null) {
+				var template = new SurveyTemplates({
+					__id: new mongoose.Types.ObjectId(),
+					title: req.body.surveyTitle,
+					questions: [],
+				})
+				template.save()
+					.then(check=>{
+						res.render('createSurvey.ejs',{user:null});
+					})
+			}
+		})
 	
 	for (c in req.body) {
 		console.log(req.body[c]);
