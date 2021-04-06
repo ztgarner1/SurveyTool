@@ -1,7 +1,7 @@
 const mongoose= require("mongoose");
 
 const SurveySchema = mongoose.Schema({
-    __id:mongoose.Schema.Types.ObjectId,
+    _id:mongoose.Schema.Types.ObjectId,
     results: Array,
     course_id:String,
 })
