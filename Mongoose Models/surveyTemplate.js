@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const SurveyTemplate = mongoose.Schema({
-    __id: mongoose.Schema.Types.ObjectId,
+    _id: mongoose.Schema.Types.ObjectId,
     title:String,
     questions:Array,
 

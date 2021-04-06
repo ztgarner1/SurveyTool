@@ -311,13 +311,13 @@ app.post('/createSurvey',(req,res)=>{
 		.then(data=>{
 			if (data == null) {
 				var template = new SurveyTemplates({
-					__id: new mongoose.Types.ObjectId(),
+					_id: new mongoose.Types.ObjectId(),
 					title: req.body.surveyTitle,
 					questions: [],
 				})
 				template.save()
 					.then(check=>{
-						res.render('createSurvey.ejs',{user:null});
+						res.redirect('/createSurvey');
 					})
 			}
 		})
@@ -326,7 +326,7 @@ app.post('/createSurvey',(req,res)=>{
 		console.log(req.body[c]);
 	}
 
-	res.render('createSurvey.ejs',{user:null});
+	res.redirect('/createSurvey');
 	
 })
 
