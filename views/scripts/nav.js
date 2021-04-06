@@ -17,7 +17,7 @@ function genNavbar() {
 	temp += "<% } %>";
 			
 	//navArea.innerHTML = temp;
-	document.write(temp);
+	//document.write(temp);
 }
 
 window.onload = function() {

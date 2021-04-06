@@ -13,7 +13,25 @@
   <body>
     <header>
       <div class="navbar" id="navbarArea">
-	  
+			<a href="/">Home</a>
+            <% if(user != null) { %>
+              <a href="/myClasses">My Classes</a> 
+            <% } %>
+            <a href="/survey">Survey</a>
+      
+            <div class="login-container">
+                <% if(user == null) { %>
+                    <a href="/login">Sign In</a>
+                    <a href="/register">Register</a>
+                <% }else{ %>
+                    <a href="/profile">Profile</a>
+                    <form action="/logout?_method=DELETE" method="POST">
+                        <button type="submit">Log Out</button>
+                    </form>
+                <% } %>
+                 
+
+            </div>
       </div>
     </header>
     <h1 id="main"></h1>
