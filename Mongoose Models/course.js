@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const courseSchema = mongoose.Schema({
-    __id: mongoose.Schema.Types.ObjectId,
+    _id: mongoose.Schema.Types.ObjectId,
     intructor:String,
     section:Number,
     semester:String,
