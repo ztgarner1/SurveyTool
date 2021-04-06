@@ -171,7 +171,7 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
             let code = sendMail(req.body.email, null);
 
             var student = new User({
-              __id: new mongoose.Types.ObjectId(),
+              _id: new mongoose.Types.ObjectId(),
               username:req.body.name,
               first: "",
               last:"",
@@ -208,7 +208,7 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
           if(data==null){
             let code = sendMail(req.body.email, null);
             var teacher = new User({
-              __id: new mongoose.Types.ObjectId(),
+              _id: new mongoose.Types.ObjectId(),
               username:req.body.name,
               first: "",
               last:"",
@@ -246,7 +246,7 @@ app.post("/profile",checkAuthenticated, (req,res)=>{
   if(req.body.SaveProfile != null){
     //console.log("In edit mode");
     //updating the user in the database
-    User.updateOne({__id: req.id, first:req.body.first,last:req.body.last})
+    User.updateOne({_id: req.user._id, first:req.body.first,last:req.body.last})
     .exec()
     .then(docs =>{
       //updating the current user logged in so the data displays right away after saving.
@@ -390,7 +390,7 @@ app.post('/enrollment',checkAuthenticated,(req,res)=>{
         }
         req.user.courses.push(enroll);
         //pushing to the arrray that is Enrolled
-        User.updateOne({__id:req.user.__id},{$push:{courses:enroll }})
+        User.updateOne({_id:req.user._id},{$push:{courses:enroll }})
         .then(()=>{
           console.log("successful")
           res.render('enrollment.ejs', {user: req.user, courses:courses});
@@ -459,8 +459,8 @@ app.post('/addClasses',(req,res)=>{
     .then(data=>{
       if(data == null){
         var course = new Course({
-          __id: new mongoose.Types.ObjectId(),
-          intructor : req.user.__id,
+          _id: new mongoose.Types.ObjectId(),
+          intructor : req.user._id,
           section: req.body.courseSection,
           course_id: req.body.courseId,
           description:req.body.courseDesc,
@@ -471,13 +471,13 @@ app.post('/addClasses',(req,res)=>{
         .then(check =>{
           res.render('classesInfo.ejs',{user:req.user, error: null})
         })
-        console.log("__id " + course.__id);
+        console.log("_id " + course._id);
         var courseId = {
           id: course.id,
         }
         
         req.user.courses.push(courseId);
-        User.updateOne({__id:req.user.__id},{$push:{courses:courseId }})
+        User.updateOne({_id:req.user._id},{$push:{courses:courseId }})
         .then(()=>{
           //console.log("successful")
           res.render('classesInfo.ejs',{user:req.user,error: null})
