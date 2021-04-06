@@ -308,7 +308,7 @@ app.post('/createSurvey',(req,res)=>{
 	
 	for (c in req.body) {
 		
-		window.alert(c);
+		alert(c);
 		
 	}
 	
