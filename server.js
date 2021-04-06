@@ -523,7 +523,7 @@ app.get("/classesInfo",checkAuthenticated,(req,res)=>{
         res.render('classesInfo.ejs', {user: req.user,courses:courses, error: "Error occured while getting the classes"});
       })
     }
-    //res.render('classesInfo.ejs', {user: req.user,courses:courses, error: null});
+    res.render('classesInfo.ejs', {user: req.user,courses:courses, error: null});
 	  
     
     
