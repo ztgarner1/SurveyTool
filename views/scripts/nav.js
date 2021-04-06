@@ -16,9 +16,7 @@ function genNavbar() {
 	temp += "</form>";
 	temp += "<% } %>";
 			
-	var test = <%- temp %>;
-	console.log(test);
-	navArea.innerHTML = test;
+	navArea.innerHTML = temp;
 }
 
 window.onload = function() {
