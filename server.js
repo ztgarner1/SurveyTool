@@ -304,6 +304,16 @@ app.get('/enrollment', checkAuthenticated, (req,res)=>{
   
 })
 
+app.post('/addClasses',(req,res)=>{
+	
+	for (c in req.body) {
+		
+		document.getElementById("testingQ") += c;
+		
+	}
+	
+})
+
 
 //server responding to the enrollment Post method.
 app.post('/enrollment',checkAuthenticated,(req,res)=>{

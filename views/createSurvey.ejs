@@ -33,6 +33,12 @@
 			count = count + 1;
 			
 		}
+		
+		function resetSurvey() {
+			document.getElementById("createSurvey") = "<h4>Enter Survey Title</h4>";
+			document.getElementById("createSurvey") += "<input type=\"text\" id=\"surveyTitle\" />";
+			document.getElementById("createSurvey") += "<br><hr size=\"10\">";
+		}
 	</script>
 	
     <title>Create Survey</title>
@@ -48,6 +54,10 @@
     <h1 id="main"></h1>
 	
 	<div id="setupQuestions" class="w3-full w3-container">	
+	
+		<button id="addq" type="button" onclick="addquestionToSurvey();">Add Question</button>
+		<button id='submitButton' type='submit' form='createSurvey'>Save Survey</button>
+		<button id='submitButton' type="button" onclick="resetSurvey();">Reset Survey</button>
 		
 		<form action="/createSurvey" enctype="multipart/form-data" method='POST' id='createSurvey'>
 		
@@ -60,12 +70,9 @@
 		
     </div>
 	
-	<div id="adding" class="w3-full w3-container">	
-
-		<button id="addq" type="button" onclick="addquestionToSurvey();">Add Question</button>
+	<div id="testingQ" class="w3-full w3-container">	
 		
     </div>
-
 	
   </body>
 </html>
