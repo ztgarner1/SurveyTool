@@ -11,13 +11,13 @@
 	<script>
 		function addquestionToSurvey() {
 			
-			var ques = document.getElementById("question").value;
-			var quesType = document.getElementById("qtype").value;
-			var quesAnswers = document.getElementById("questionAnswers").value;
+			var ques = document.getElementById("question");
+			var quesType = "";
+			var quesAnswers = "";
 			
-			document.getElementById("setupQuestions").innerHTML += ques + "<br>";
-			document.getElementById("setupQuestions").innerHTML += quesType + "<br>";
-			document.getElementById("setupQuestions").innerHTML += quesAnswers + "<br>";
+			document.getElementById("createSurvey").innerHTML += ques + "<br>";
+			document.getElementById("createSurvey").innerHTML += quesType + "<br>";
+			document.getElementById("createSurvey").innerHTML += quesAnswers + "<br>";
 			
 		}
 	</script>
@@ -36,10 +36,14 @@
 	
 	<div id="setupQuestions" class="w3-full w3-container">	
 		
-		<h4>Enter Survey Title</h4>
-		<input type="text" id="surveyTitle" />
+		<form action="/createSurvey" enctype="multipart/form-data" method='POST' id='createSurvey'>
 		
+			<h4>Enter Survey Title</h4>
+			<input type="text" id="surveyTitle" />
+			
+			
 		
+		</form>
 		
     </div>
 	
