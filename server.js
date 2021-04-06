@@ -1,6 +1,6 @@
 //requiring everything thats needed and setting up app.
-const dotenv = require('dotenv');
-dotenv.config()
+
+
 const express = require('express')
 const app = express()
 const bcrypt = require('bcrypt')
@@ -719,4 +719,4 @@ function sendMail(to,user){
 
 
 //makes sure the server is listening on a specified port number. 
-app.listen(3000)
+app.listen(process.env.PORT || 3000)
