@@ -11,7 +11,7 @@
 		var count = 1;
 		function addquestionToSurvey() {
 			
-			var ques = "<h4>Enter Question</h4><input type=\"text\" id=\"question" + count + "\" />";
+			var ques = "<h4>Enter Question</h4><input type=\"text\" name=\"question" + count + "\" />";
 			var quesType = "<label for=\"qtype\">Enter Question type</label>";
 			quesType += "<select name=\"qtype\" id=\"qtype" + count + "\">";
 			quesType += "<option value=\"text\">Text Box</option>";
@@ -20,7 +20,7 @@
 			quesType += "</select>";
 			var quesAnswers = "<h4>Enter Question Answers (If Apply)</h4>";
 			quesAnswers += "<h5>Enter the answers in a comma seperated format!</h5>";
-			quesAnswers +=   "<input type=\"text\" id=\"question" + count + "Answers\" />";
+			quesAnswers +=   "<input type=\"text\" name=\"question" + count + "Answers\" />";
 			
 			var questionArea = document.getElementById("createSurvey");
 			
@@ -35,7 +35,7 @@
 		
 		function resetSurvey() {
 			document.getElementById("createSurvey").innerHTML = "<h4>Enter Survey Title</h4>";
-			document.getElementById("createSurvey").innerHTML += "<input type=\"text\" id=\"surveyTitle\" />";
+			document.getElementById("createSurvey").innerHTML += "<input type=\"text\" name=\"surveyTitle\" />";
 			document.getElementById("createSurvey").innerHTML += "<br><hr size=\"10\">";
 		}
 	</script>
@@ -61,7 +61,7 @@
 		<form action="/createSurvey" enctype="multipart/form-data" method='POST' id='createSurvey'>
 		
 			<h4>Enter Survey Title</h4>
-			<input type="text" id="surveyTitle" />
+			<input type="text" name="surveyTitle" />
 			<br><hr size="10">
 			
 		
