@@ -23,9 +23,12 @@
 			quesAnswers += "<h5>Enter the answers in a comma seperated format!</h5>";
 			quesAnswers +=   "<input type=\"text\" id=\"question" + count + "Answers\" />";
 			
-			document.getElementById("createSurvey").innerHTML += ques + "<br>";
-			document.getElementById("createSurvey").innerHTML += quesType + "<br>";
-			document.getElementById("createSurvey").innerHTML += quesAnswers + "<br>";
+			var questionArea = document.getElementById("createSurvey");
+			
+			questionArea.innerHTML += "Question " + count + ":<br>";
+			questionArea.innerHTML += ques + "<br>";
+			questionArea.innerHTML += quesType + "<br>";
+			questionArea.innerHTML += quesAnswers + "<br><hr>";
 			
 			count = count + 1;
 			
