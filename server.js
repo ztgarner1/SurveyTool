@@ -31,7 +31,7 @@ const User = require('./Mongoose Models/user');
 //getting the courses 
 const Course = require('./Mongoose Models/course');
 const SurveyResults = require('./Mongoose Models/surveyResults');
-const SurveyTemplates = require('./Mongoose Models/surveyTemplates');
+const SurveyTemplates = require('./Mongoose Models/surveyTemplate');
 //calling the initializePassport function;
 initializePassport(
   passport,
