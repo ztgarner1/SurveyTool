@@ -319,6 +319,7 @@ app.post('/createSurvey',(req,res)=>{
 	for (c in req.body) {
 		
 		if (count == 0) {
+			count++;
 			continue;
 		}
 		
@@ -331,11 +332,9 @@ app.post('/createSurvey',(req,res)=>{
 		} else if ((count % 3) == 0) {
 			tempObj.answers = req.body[c];
 			tempArray.push(tempObj);
-		} else {
-			res.redirect('/');
 		}
 		
-		count++
+		count++;
 	}
 	
 	SurveyTemplates.findOne({title:req.body.surveyTitle})
