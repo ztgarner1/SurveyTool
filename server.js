@@ -310,26 +310,30 @@ app.post('/createSurvey',(req,res)=>{
 	var tempArray = [];
 	var count = 0;
 	
+	var tempObj = {
+		ask: "",
+		type: "",
+		answers: ""
+	};
+	
 	for (c in req.body) {
+		
+		if (count == 0) {
+			continue;
+		}
+		
 		console.log(req.body[c]);
-		
-		var tempObj = {
-			ask: "",
-			type: "",
-			answers: ""
-		};
-		
-		if ((count % 3) == 0) {
+
+		if ((count % 3) == 1) {
 			tempObj.ask = req.body[c];
-		} else if ((count % 3) == 1) {
-			tempObj.type = req.body[c];
 		} else if ((count % 3) == 2) {
+			tempObj.type = req.body[c];
+		} else if ((count % 3) == 0) {
 			tempObj.answers = req.body[c];
+			tempArray.push(tempObj);
 		} else {
 			res.redirect('/');
 		}
-		
-		tempArray.push(tempObj);
 		
 		count++
 	}
