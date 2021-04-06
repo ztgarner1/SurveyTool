@@ -306,11 +306,7 @@ app.get('/enrollment', checkAuthenticated, (req,res)=>{
 
 app.post('/createSurvey',(req,res)=>{
 	
-	for (c in req.body) {
-		
-		console.log(req.body[c].value);
-		
-	}
+	console.log(req.body.question1);
 	
 })
 
