@@ -332,6 +332,11 @@ app.post('/createSurvey',(req,res)=>{
 		} else if ((count % 3) == 0) {
 			tempObj.answers = req.body[c];
 			tempArray.push(tempObj);
+			tempObj = {
+				ask: "",
+				type: "",
+				answers: ""
+			};
 		}
 		
 		count++;
