@@ -31,6 +31,7 @@ const User = require('./Mongoose Models/user');
 //getting the courses 
 const Course = require('./Mongoose Models/course');
 const SurveyResults = require('./Mongoose Models/surveyResults');
+const SurveyTemplates = require('./Mongoose Models/surveyTemplate');
 //calling the initializePassport function;
 initializePassport(
   passport,
@@ -80,6 +81,16 @@ app.get('/template', (req, res) => {
   }
   else{
       res.render('templateQuestions.ejs', { user: req.user})
+  }
+})
+
+app.get('/createSurvey', (req, res) => {
+  
+  if(req.user == undefined){
+      res.render('createSurvey.ejs',{user:null});
+  }
+  else{
+      res.render('createSurvey.ejs', { user: req.user})
   }
 })
 
@@ -294,6 +305,59 @@ app.get('/enrollment', checkAuthenticated, (req,res)=>{
   
 })
 
+app.post('/createSurvey',(req,res)=>{
+	
+	var tempArray = [];
+	var count = 0;
+	
+	var tempObj = {
+		ask: "",
+		type: "",
+		answers: ""
+	};
+	
+	for (c in req.body) {
+		
+		if (count == 0) {
+			count++;
+			continue;
+		}
+		//console.log(req.body[c]);
+		if ((count % 3) == 1) {
+			tempObj.ask = req.body[c];
+		} else if ((count % 3) == 2) {
+			tempObj.type = req.body[c];
+		} else if ((count % 3) == 0) {
+			tempObj.answers = req.body[c];
+			tempArray.push(tempObj);
+			tempObj = {
+				ask: "",
+				type: "",
+				answers: ""
+			};
+		}
+		count++;
+	}
+	
+	SurveyTemplates.findOne({title:req.body.surveyTitle})
+		.then(data=>{
+			if (data == null) {
+				var template = new SurveyTemplates({
+					_id: new mongoose.Types.ObjectId(),
+					title: req.body.surveyTitle,
+					questions: tempArray,
+				})
+				template.save()
+					.then(check=>{
+						res.redirect('/createSurvey');
+					}).catch(()=>{
+						res.redirect('/createSurvey');
+					})
+			}
+		})
+	
+})
+
 
 //server responding to the enrollment Post method.
 app.post('/enrollment',checkAuthenticated,(req,res)=>{
@@ -500,58 +564,7 @@ app.post('/classesInfo',checkAuthenticated,(req,res)=>{
   
   
 })
-app.post('/createSurvey',(req,res)=>{
-	
-	var tempArray = [];
-	var count = 0;
-	
-	var tempObj = {
-		ask: "",
-		type: "",
-		answers: ""
-	};
-	
-	for (c in req.body) {
-		
-		if (count == 0) {
-			count++;
-			continue;
-		}
-		//console.log(req.body[c]);
-		if ((count % 3) == 1) {
-			tempObj.ask = req.body[c];
-		} else if ((count % 3) == 2) {
-			tempObj.type = req.body[c];
-		} else if ((count % 3) == 0) {
-			tempObj.answers = req.body[c];
-			tempArray.push(tempObj);
-			tempObj = {
-				ask: "",
-				type: "",
-				answers: ""
-			};
-		}
-		count++;
-	}
-	
-	SurveyTemplates.findOne({title:req.body.surveyTitle})
-		.then(data=>{
-			if (data == null) {
-				var template = new SurveyTemplates({
-					_id: new mongoose.Types.ObjectId(),
-					title: req.body.surveyTitle,
-					questions: tempArray,
-				})
-				template.save()
-					.then(check=>{
-						res.redirect('/createSurvey');
-					}).catch(()=>{
-						res.redirect('/createSurvey');
-					})
-			}
-		})
-	
-})
+
 
 /**
  * 
