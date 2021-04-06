@@ -515,8 +515,7 @@ app.get("/classesInfo",checkAuthenticated,(req,res)=>{
 	  
         }
         if(i == req.user.courses.length -1){
-          console.log(courses.length);
-          break;
+          //console.log(courses.length);
           res.render('classesInfo.ejs', {user: req.user,courses:courses, error: null});
         }
       })
@@ -524,7 +523,7 @@ app.get("/classesInfo",checkAuthenticated,(req,res)=>{
         res.render('classesInfo.ejs', {user: req.user,courses:courses, error: "Error occured while getting the classes"});
       })
     }
-    res.render('classesInfo.ejs', {user: req.user,courses:courses, error: null});
+    //res.render('classesInfo.ejs', {user: req.user,courses:courses, error: null});
 	  
     
     
