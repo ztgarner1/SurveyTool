@@ -502,7 +502,7 @@ app.post('/addClasses',(req,res)=>{
  * if the user is not a teacher they get redirected to /myClasses
  */
 app.get("/classesInfo",checkAuthenticated,(req,res)=>{
-  console.log("here"
+  console.log("here")
   if(req.user.isTeacher){
     var courses = [];
     
@@ -539,7 +539,7 @@ app.get("/classesInfo",checkAuthenticated,(req,res)=>{
 app.post('/classesInfo',(req,res)=>{
   console.log(req.body.classes);
   if(req.body.classes == undefined){
-    console.log("Here");
+    
     var courses = [];
     
     for(let i = 0; i< req.user.courses.length; i++){
