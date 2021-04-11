@@ -54,9 +54,9 @@
                 <h4>Students</h4>
                 <select size = "10" name = "classes" id= "clases" style = "width:auto; text-align: center;">
 
-                    <% for(let i=0; i < course.students.length;i++){ %>
-
-                        <option value = "<%= course.students[i].id %>"> <%= course.students[i].first %> , <%= course.students[i].last %> , <%= course.students[i].email %> , <%= course.students[i].id %></option>
+                    <% for(let i=0; i < students.length;i++){ %>
+                        
+                        <option value = "<%= students[i]._id %>"> <%= students[i].first %> , <%= students[i].last %> , <%= students[i].email %> , <%= students[i].studentId %></option>
                     
                     <% } %>
                 </select>
