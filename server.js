@@ -243,11 +243,11 @@ app.post('/myClasses', checkAuthenticated,(req,res)=>{
 
 app.post('/createSurvey',(req,res)=>{
 	
-	var tempArray = [];
+	var questionsArray = [];
 	var weight = 0;
 	var count = 0;
 	
-	var tempObj = {
+	var questionObj = {
 		ask: "",
 		type: "",
 		answers: "",
@@ -262,24 +262,21 @@ app.post('/createSurvey',(req,res)=>{
 		}
 		console.log(req.body[c]);
 		if ((count % 4) == 1) {
-			tempObj.ask = req.body[c];
+			questionObj.ask = req.body[c];
 		} else if ((count % 4) == 2) {
-			tempObj.type = req.body[c];
+			questionObj.type = req.body[c];
 		} else if ((count % 4) == 3) {
-			tempObj.answers = req.body[c];
+			questionObj.answers = req.body[c];
 		} else if ((count % 4) == 0) {
-			tempObj.weight = req.body[c];
-			tempArray.push(tempObj);
-			tempObj = {
+			questionObj.weight = req.body[c];
+			questionsArray.push(questionObj);
+			questionObj = {
 				ask: "",
 				type: "",
 				answers: "",
 				weight: 0
 			};
 		}
-		
-		
-		
 		count++;
 	}
 	
@@ -289,7 +286,7 @@ app.post('/createSurvey',(req,res)=>{
 				var template = new SurveyTemplates({
 					_id: new mongoose.Types.ObjectId(),
 					title: req.body.surveyTitle,
-					questions: tempArray,
+					questions: questionsArray,
 				})
 				template.save()
 					.then(check=>{
