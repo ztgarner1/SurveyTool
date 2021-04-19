@@ -250,7 +250,8 @@ app.post('/createSurvey',(req,res)=>{
 	var tempObj = {
 		ask: "",
 		type: "",
-		answers: ""
+		answers: "",
+		weight: 0
 	};
 	
 	for (c in req.body) {
@@ -266,15 +267,18 @@ app.post('/createSurvey',(req,res)=>{
 			tempObj.type = req.body[c];
 		} else if ((count % 4) == 3) {
 			tempObj.answers = req.body[c];
-			tempArray.push(tempObj);
-			tempObj = {
-				ask: "",
-				type: "",
-				answers: ""
-			};
 		} else if ((count % 4) == 0) {
-			weight = req.body[c];
+			tempObj.weight = req.body[c];
 		}
+		
+		tempArray.push(tempObj);
+		tempObj = {
+			ask: "",
+			type: "",
+			answers: "",
+			weight: 0
+		};
+		
 		count++;
 	}
 	
@@ -285,7 +289,6 @@ app.post('/createSurvey',(req,res)=>{
 					_id: new mongoose.Types.ObjectId(),
 					title: req.body.surveyTitle,
 					questions: tempArray,
-					weight: weight,
 				})
 				template.save()
 					.then(check=>{
