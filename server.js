@@ -242,7 +242,6 @@ app.post('/myClasses', checkAuthenticated,(req,res)=>{
 
 
 app.post('/createSurvey',(req,res)=>{
-	
 	var tempArray = [];
 	var count = 0;
 	
@@ -303,7 +302,34 @@ app.get('/addClasses',checkAuthenticated,(req,res)=>{
  * this will be called whenever a post method is made to /addClasses
  */
 app.post('/addClasses',(req,res)=>{
-
+  var courseData = null;
+  Course.findOne({course_id:req.body.courseId,section:req.body.courseSection})
+  .then(data=>{
+    if(data == null){
+      var course = new Course({
+        _id: new mongoose.Types.ObjectId(),
+        intructor : req.user._id,
+        section: req.body.courseSection,
+        course_id: req.body.courseId,
+        description:req.body.courseDesc,
+        students:results,
+        groups:[],
+      })
+      courseData = course;
+      course.save()
+      .then(check =>{
+        req.user.courses.push(course._id);
+        User.updateOne({_id:req.user._id},{$push:{courses:course._id}})
+        .then(()=>{
+          console.log("updated Teacher")
+        })
+      })
+      //adding the course to the teachers teaching array
+    }
+    else{
+      res.redirect('/classesInfo');
+    }
+  })
   if(req.files){
     var file = req.files.fileName,
      filename = file.name
@@ -326,17 +352,24 @@ app.post('/addClasses',(req,res)=>{
         User.findOne({email:data.email})
         .then(tempStudent=>{
           if(tempStudent== null){
-            //send student email
+            //send student email later
             const slash = /\//gi;
             const period =/\./gi;
+            //create String for the link
             var randomString = bcrypt.hashSync(""+data.first[0]+data.last+"", bcrypt.genSaltSync(9));
             randomString = randomString.replace(slash,"");
             randomString = randomString.replace(period,"");
+            //create temp password
             var password = bcrypt.hashSync(""+data.first[0]+data.last+"", bcrypt.genSaltSync(6));
             password = password.replace(slash,"");
             password = password.replace(slash,"");
             //var confirmCode = sendMail(data.email,null,password) 
             //create temp password for student
+            var courseArray = [];
+            if(courseData != null){
+              courseArray.push(courseData._id);
+            }
+            
             var student = new User({
               _id: mongoose.Types.ObjectId(),
               username: ""+data.first[0]+data.last+"",
@@ -346,123 +379,47 @@ app.post('/addClasses',(req,res)=>{
               password: password,
               locked: false,
               verified:false,
-              courses: [],
+              courses: courseArray,
               confirmCode: randomString,
               isTeacher:false,
               studentId: data.id,
             })
             student.save()
             .then(check=>{
-              if(check != null){
-                console.log("Added to database")
-                results.push(student._id);
-              }
+              
+              Course.updateOne({_id:courseData._id},{$push:{students:student._id}})
+              .then(()=>{
+                console.log("Updating with student")
+              })
+              .catch(error=>{
+                console.log(error)
+              })
+              
             })
             .catch(error =>{
               console.log("Did not add to database")
             })
           }
           else{
-            console.log("adding student that already exists in database")
-            results.push(tempStudent._id);
+            //console.log("adding student that already exists in database")
+            Course.updateOne({_id:courseArray._id},{$push:{students:tempStudent._id}});
           }
         })
         //console.log("test is >> \n" + test);
       })
       .on("end",() =>{
-          //console.log(results);
+
       })
     })
-    Course.findOne({course_id:req.body.courseId,section:req.body.courseSection})
-    .then(data=>{
-      if(data == null){
-        var course = new Course({
-          _id: new mongoose.Types.ObjectId(),
-          intructor : req.user._id,
-          section: req.body.courseSection,
-          course_id: req.body.courseId,
-          description:req.body.courseDesc,
-          students:results,
-          groups:[],
-        })
-        course.save()
-        .then(check =>{
-          Course.updateOne({_id:course._id},{students:results})
-          .then(check=>{
-            //res.redirect('/classesInfo');
-          })
-          
-          //res.render('classesInfo.ejs',{user:req.user,courses:courses, error: null})
-        })
-        //console.log("__id " + course.__id);
-        updateStudentsCourses(course._id);
-        //
-        req.user.courses.push(course._id);
-        User.updateOne({_id:req.user._id},{$push:{courses:course.id}})
-        .then(()=>{
-          //console.log("successful")
-          res.redirect('/classesInfo');
-        })
-        .catch(()=>{
-          res.redirect('/classesInfo');
-        })
-      }
-      else{
-        res.redirect('/classesInfo');
-        //res.render('classesInfo.ejs',{user:req.user,courses:[], error:"Course name and section already exist"})
-      }
-    })
+
+    res.redirect('/classesInfo')
+    
   }
   else{
     console.log("did not work")
   }
-  
 })
 
-var updateStudentsCourses = function(id){
-  Course.findOne({_id:id})
-  .exec()
-  .then(classes =>{
-    if(classes != null){
-     
-      for(let i= 0; i < classes.students.length;i++){
-        var temp;
-        var check = true;
-        console.log()
-        User.findOne({_id:classes.students[i]})
-        .exec()
-        .then(result=>{
-          for(let j = 0; j< result.courses.length;j++){
-            temp = result.courses;
-            
-            if(temp[j] == id){
-              check = false;
-              break;
-            }
-
-          }
-          if(check){
-            User.updateOne({_id:classes.students[i]._id},{$push :{courses:id}})
-            .then(result=>{
-              //console.log("updated User")
-            })
-            .catch(error=>{
-              //console.log("Error updating all the students");
-            })
-            
-          }
-          else{
-            
-          }
-        })
-      }
-    }
-    else{
-      console.log("Classes was null?")
-    }
-    
-  })
-}
 /**
  * This will call when a user goes to classesInfo page. This page is only for teachers
  * if the user is not a teacher they get redirected to /myClasses
@@ -480,8 +437,6 @@ app.get("/classesInfo",checkAuthenticated,(req,res)=>{
     .catch(error=>{
       console.log(error);
     })
-    
-    
   }
   else{
     res.redirect('/myClasses');
@@ -503,38 +458,37 @@ app.post('/classesInfo',checkAuthenticated,(req,res)=>{
     .catch(error=>{
       console.log(error);
     })
-
     res.redirect('/classesInfo');
   }
   else{
     var result = req.body.classes.split(",");
+    var course = null; 
+    
     
     Course.findOne({course_id:result[0],section:result[1]})
     .exec()
     .then(data=>{
+      course= data;
       //console.log(data);
       var students = [];
       for(let i= 0; i < data.students.length;i++){
         User.findOne({_id:data.students[i]})
         .exec()
         .then(student=>{
-
+          
           students.push(student);
-
+          //console.log("adding student")
+          if(i == data.students.length-1){
+            res.render('editCourse.ejs', {user: req.user, students:students,course: course, error: null});
+          }
         })
+        
       }
-      
-      console.log(students.length);
-      res.render('editCourse.ejs', {user: req.user, students:students,course: data, error: null});
-      
+    
     })
     
   }
-  
-  
 })
-
-
 /**
  * 
  */
@@ -708,8 +662,6 @@ function sendMail(to,user,tempPassword){
   if(user == null){
     return randomString;
   }
-  
-  
 }
 var deleteAllClasses = function(){
   Course.find()
