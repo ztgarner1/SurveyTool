@@ -243,13 +243,15 @@ app.post('/myClasses', checkAuthenticated,(req,res)=>{
 
 app.post('/createSurvey',(req,res)=>{
 	
-	var tempArray = [];
+	var questionsArray = [];
+	var weight = 0;
 	var count = 0;
 	
-	var tempObj = {
+	var questionObj = {
 		ask: "",
 		type: "",
-		answers: ""
+		answers: "",
+		weight: 0
 	};
 	
 	for (c in req.body) {
@@ -258,18 +260,21 @@ app.post('/createSurvey',(req,res)=>{
 			count++;
 			continue;
 		}
-		//console.log(req.body[c]);
-		if ((count % 3) == 1) {
-			tempObj.ask = req.body[c];
-		} else if ((count % 3) == 2) {
-			tempObj.type = req.body[c];
-		} else if ((count % 3) == 0) {
-			tempObj.answers = req.body[c];
-			tempArray.push(tempObj);
-			tempObj = {
+		console.log(req.body[c]);
+		if ((count % 4) == 1) {
+			questionObj.ask = req.body[c];
+		} else if ((count % 4) == 2) {
+			questionObj.type = req.body[c];
+		} else if ((count % 4) == 3) {
+			questionObj.answers = req.body[c];
+		} else if ((count % 4) == 0) {
+			questionObj.weight = req.body[c];
+			questionsArray.push(questionObj);
+			questionObj = {
 				ask: "",
 				type: "",
-				answers: ""
+				answers: "",
+				weight: 0
 			};
 		}
 		count++;
@@ -281,7 +286,7 @@ app.post('/createSurvey',(req,res)=>{
 				var template = new SurveyTemplates({
 					_id: new mongoose.Types.ObjectId(),
 					title: req.body.surveyTitle,
-					questions: tempArray,
+					questions: questionsArray,
 				})
 				template.save()
 					.then(check=>{
