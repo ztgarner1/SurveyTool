@@ -244,6 +244,7 @@ app.post('/myClasses', checkAuthenticated,(req,res)=>{
 app.post('/createSurvey',(req,res)=>{
 	
 	var tempArray = [];
+	var weight = 0;
 	var count = 0;
 	
 	var tempObj = {
@@ -259,11 +260,11 @@ app.post('/createSurvey',(req,res)=>{
 			continue;
 		}
 		console.log(req.body[c]);
-		if ((count % 3) == 1) {
+		if ((count % 4) == 1) {
 			tempObj.ask = req.body[c];
-		} else if ((count % 3) == 2) {
+		} else if ((count % 4) == 2) {
 			tempObj.type = req.body[c];
-		} else if ((count % 3) == 0) {
+		} else if ((count % 4) == 3) {
 			tempObj.answers = req.body[c];
 			tempArray.push(tempObj);
 			tempObj = {
@@ -271,6 +272,8 @@ app.post('/createSurvey',(req,res)=>{
 				type: "",
 				answers: ""
 			};
+		} else if ((count % 4) == 0) {
+			weight = req.body[c];
 		}
 		count++;
 	}
@@ -282,6 +285,7 @@ app.post('/createSurvey',(req,res)=>{
 					_id: new mongoose.Types.ObjectId(),
 					title: req.body.surveyTitle,
 					questions: tempArray,
+					weight: weight,
 				})
 				template.save()
 					.then(check=>{
