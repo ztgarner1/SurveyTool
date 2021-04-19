@@ -126,7 +126,7 @@ ul {
   -webkit-appearance: none;
   appearance: none;
   width: 25px;
-  height: 20px;
+  height: 25px;
   border-radius: 50%; 
   background: #592C88;
   cursor: pointer;
@@ -134,7 +134,7 @@ ul {
 
 .slider::-moz-range-thumb {
   width: 25px;
-  height: 20px;
+  height: 25px;
   border-radius: 50%;
   background: #592C88;
   cursor: pointer;

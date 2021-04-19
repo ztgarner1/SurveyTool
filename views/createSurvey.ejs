@@ -22,7 +22,8 @@
 			quesAnswers += "<h5>Enter the answers in a comma seperated format!</h5>";
 			quesAnswers +=   "<input type=\"text\" name=\"question" + count + "Answers\" />";
 			var slider = "<div class=\"slidecontainer\">";
-			slider += "<input type=\"range\" min=\"1\" max=\"100\" value=\"50\" class=\"slider\" id=\"myRange\">";
+			slider += "<input type=\"range\" min=\"1\" max=\"100\" value=\"50\" class=\"slider\" id=\"range\" name=\"weightq" + count + "\">";
+			slider += "<p>Value: <span id=\"value\"></span></p>";
 			slider += "</div>";
 			
 			var questionArea = document.getElementById("createSurvey");
@@ -41,6 +42,14 @@
 			document.getElementById("createSurvey").innerHTML = "<h4>Enter Survey Title</h4>";
 			document.getElementById("createSurvey").innerHTML += "<input type=\"text\" name=\"surveyTitle\" />";
 			document.getElementById("createSurvey").innerHTML += "<br><hr size=\"10\">";
+		}
+		
+		var slider = document.getElementById("range");
+		var output = document.getElementById("value");
+		output.innerHTML = slider.value;
+		
+		slider.oninput = function() {
+		output.innerHTML = this.value;
 		}
 	</script>
 	
