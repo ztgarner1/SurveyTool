@@ -23,7 +23,7 @@
 			quesAnswers +=   "<input type=\"text\" name=\"question" + count + "Answers\" />";
 			var slider = "<div class=\"slidecontainer\">";
 			slider += "<input type=\"range\" min=\"1\" max=\"100\" value=\"50\" class=\"slider\" id=\"range\" name=\"weightq" + count + "\">";
-			slider += "<p>Value: <span id=\"value\"></span></p>";
+			slider += "<p>Value: <span id=\"valuedisplay\"></span></p>";
 			slider += "</div>";
 			
 			var questionArea = document.getElementById("createSurvey");
@@ -45,7 +45,7 @@
 		}
 		
 		var slider = document.getElementById("range");
-		var output = document.getElementById("value");
+		var output = document.getElementById("valuedisplay");
 		output.innerHTML = slider.value;
 		
 		slider.oninput = function() {
