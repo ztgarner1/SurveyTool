@@ -36,6 +36,10 @@
 			questionArea.innerHTML += quesAnswers + "<br>";
 			questionArea.innerHTML += slider + "<br><hr size=\"10\">";
 			
+			slider = document.getElementById("range");
+			output = document.getElementById("valuedisplay");
+			output.innerHTML = slider.value;
+				
 			count = count + 1;
 		}
 		
@@ -44,10 +48,6 @@
 			document.getElementById("createSurvey").innerHTML += "<input type=\"text\" name=\"surveyTitle\" />";
 			document.getElementById("createSurvey").innerHTML += "<br><hr size=\"10\">";
 		}
-		
-		var slider = document.getElementById("range");
-		var output = document.getElementById("valuedisplay");
-		output.innerHTML = slider.value;
 		
 		function showVal(value) {
 			output.innerHTML = value;
