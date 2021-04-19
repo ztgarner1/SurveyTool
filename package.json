@@ -22,7 +22,7 @@
     "express-session": "^1.17.1",
     "fs": "0.0.1-security",
     "method-override": "^3.0.0",
-    "mongoose": "^5.10.10",
+    "mongoose": "^5.12.3",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.4",
     "passport": "^0.4.1",
