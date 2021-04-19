@@ -269,15 +269,16 @@ app.post('/createSurvey',(req,res)=>{
 			tempObj.answers = req.body[c];
 		} else if ((count % 4) == 0) {
 			tempObj.weight = req.body[c];
+			tempArray.push(tempObj);
+			tempObj = {
+				ask: "",
+				type: "",
+				answers: "",
+				weight: 0
+			};
 		}
 		
-		tempArray.push(tempObj);
-		tempObj = {
-			ask: "",
-			type: "",
-			answers: "",
-			weight: 0
-		};
+		
 		
 		count++;
 	}
