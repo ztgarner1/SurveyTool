@@ -1,5 +1,4 @@
 //requiring everything thats needed and setting up app.
-
 const dotenv = require('dotenv');
 dotenv.config()
 const express = require('express')
