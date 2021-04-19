@@ -328,11 +328,13 @@ app.post('/addClasses',(req,res)=>{
           if(tempStudent== null){
             //send student email
             const slash = /\//gi;
-            const period =/\./gi
+            const period =/\./gi;
             var randomString = bcrypt.hashSync(""+data.first[0]+data.last+"", bcrypt.genSaltSync(9));
             randomString = randomString.replace(slash,"");
             randomString = randomString.replace(period,"");
             var password = bcrypt.hashSync(""+data.first[0]+data.last+"", bcrypt.genSaltSync(6));
+            password = password.replace(slash,"");
+            password = password.replace(slash,"");
             //var confirmCode = sendMail(data.email,null,password) 
             //create temp password for student
             var student = new User({
@@ -387,14 +389,13 @@ app.post('/addClasses',(req,res)=>{
         .then(check =>{
           Course.updateOne({_id:course._id},{students:results})
           .then(check=>{
-            updateStudentsCourses(course._id);
-            res.redirect('/classesInfo');
+            //res.redirect('/classesInfo');
           })
           
           //res.render('classesInfo.ejs',{user:req.user,courses:courses, error: null})
         })
         //console.log("__id " + course.__id);
-        
+        updateStudentsCourses(course._id);
         //
         req.user.courses.push(course._id);
         User.updateOne({_id:req.user._id},{$push:{courses:course.id}})
@@ -538,8 +539,6 @@ app.post('/classesInfo',checkAuthenticated,(req,res)=>{
  * 
  */
 app.post("/editCourse",(req,res)=>{
-  
-  
   if(req.files){
     var file = req.files.fileName,
      filename = file.name
@@ -556,16 +555,11 @@ app.post("/editCourse",(req,res)=>{
       callback()
     }
     //making sure that the file matches the current students in the class
-    
     moveAndParse( function(){
       //console.log(req.body.myCheck);
       fs.createReadStream(__dirname +'/views/uploads/'+filename)
       .pipe(csv({}))
       .on("data", (data) => {
-       
-        //need to check here if the students information is the same
-        //if the checkbox is not clicked
-        //console.log(data);
         
         data["Prev Course"] =  "" +data["Prev Course"]+"";
         //console.log(data["Prev Course"]);
@@ -575,14 +569,12 @@ app.post("/editCourse",(req,res)=>{
       .on("end",() =>{
         
       })
+      console.log(req.body.courseName);
       var spiltText = req.body.courseName.split(",");
       var courseId;
-      //console.log(results);
-
-      //console.log(spiltText[0]);
-      //console.log(spiltText[1]);
       Course.findOne({course_id:spiltText[0],section:spiltText[1]})
       .then(dataCourse=>{
+          //dataCourse is the course that is returned that matches the values
           courseId = dataCourse.id;
           //console.log(data.id);
           //console.log(courseId)
@@ -619,9 +611,11 @@ app.post("/editCourse",(req,res)=>{
 //this is the confirmation the email sent to the user gets sent to. 
 //checking to see if the code passed through as :variable is the same verification code
 //on the users account. if it is the same then the users verified boolean turns to true.
-app.get('/confirm/:variable',(req,res)=>{
+app.get('/confirm/:variable&:variable2',(req,res)=>{
   //console.log("Made it here");
   const confirmCode = req.params.variable;
+  const password = req.params.variable2;
+
   User.updateOne({confirmCode:confirmCode},{verified:true})
   .exec()
   .then(docs =>{
@@ -631,6 +625,14 @@ app.get('/confirm/:variable',(req,res)=>{
     res.redirect("/");
   })
         
+})
+
+app.get("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
+    User.find({password:req.password.variable})
+    .then(data=>{
+      res.render('setPassword.ejs',{user:data})
+    })
+    
 })
 
 //logs the user out and redirects them to the home page
@@ -735,6 +737,18 @@ var deleteEveryonesCourses = function(){
     }
   })
 }
+
+var deleteAllStudents = function(){
+  User.deleteMany({isTeacher:false})
+  .then(data=>{
+    console.log(data);
+  })
+  .catch(error=>{
+    console.log(error)
+  })
+}
+
+//deleteAllStudents();
 //deleteAllClasses();
 //updateStudentsCourses("60729871cb153b3a249b2f5d");
 //deleteEveryonesCourses()
