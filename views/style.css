@@ -126,17 +126,17 @@ ul {
   -webkit-appearance: none;
   appearance: none;
   width: 25px;
-  height: 25px;
+  height: 20px;
   border-radius: 50%; 
-  background: #4CAF50;
+  background: #592C88;
   cursor: pointer;
 }
 
 .slider::-moz-range-thumb {
   width: 25px;
-  height: 25px;
+  height: 20px;
   border-radius: 50%;
-  background: #4CAF50;
+  background: #592C88;
   cursor: pointer;
 }
 
