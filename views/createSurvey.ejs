@@ -8,9 +8,11 @@
     <link rel="shortcut icon" href="images/favicon.ico">  
 	
 	<script>
+		var slider;
+		var output;
+		
 		var count = 1;
 		function addquestionToSurvey() {
-			console.log("BOOOOOOOO");
 			var ques = "<h4>Enter Question</h4><input type=\"text\" name=\"question" + count + "\" />";
 			var quesType = "<label for=\"qtype\">Enter Question type</label>";
 			quesType += "<select name=\"qtype" + count + "\" id=\"qtype\">";
@@ -47,8 +49,7 @@
 		var slider;
 		var output;
 		
-		slider.oninput = function() {
-			console.log("AHHHHH")
+		slider.onchange = function() {
 			output.innerHTML = this.value;
 		}
 		
