@@ -21,13 +21,17 @@
 			var quesAnswers = "<h4>Enter Question Answers (If Apply)</h4>";
 			quesAnswers += "<h5>Enter the answers in a comma seperated format!</h5>";
 			quesAnswers +=   "<input type=\"text\" name=\"question" + count + "Answers\" />";
+			var slider = "<div class=\"slidecontainer\">"
+			slider += "<input type=\"range\" min=\"1\" max=\"100\" value=\"50\" class=\"slider\" id=\"myRange\">"
+			slider += "</div>";
 			
 			var questionArea = document.getElementById("createSurvey");
 			
 			questionArea.innerHTML += "Question " + count + ":<br>";
 			questionArea.innerHTML += ques + "<br>";
 			questionArea.innerHTML += quesType + "<br>";
-			questionArea.innerHTML += quesAnswers + "<br><hr size=\"10\">";
+			questionArea.innerHTML += quesAnswers + "<br>";
+			questionArea.innerHTML += slider + "<br><hr size=\"10\">";
 			
 			count = count + 1;
 			
