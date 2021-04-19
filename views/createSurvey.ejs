@@ -45,18 +45,12 @@
 			document.getElementById("createSurvey").innerHTML += "<br><hr size=\"10\">";
 		}
 		
-		var slider;
-		var output;
+		var slider = document.getElementById("range");
+		var output = document.getElementById("valuedisplay");
+		output.innerHTML = slider.value;
 		
 		function showVal(value) {
 			output.innerHTML = value;
-		}
-		
-		window.onload = function() {
-			slider = document.getElementById("range");
-			output = document.getElementById("valuedisplay");
-			console.log(slider);
-			output.innerHTML = slider.value;
 		}
 	</script>
 	
