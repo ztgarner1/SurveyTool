@@ -12,6 +12,7 @@ const userSchema = mongoose.Schema({
     courses: Array,
     confirmCode: String,
     isTeacher: Boolean,
+    studentId: Number,
 })
 
 module.exports = mongoose.model("User", userSchema);
