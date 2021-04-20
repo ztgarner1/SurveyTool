@@ -579,11 +579,60 @@ app.get('/confirm/:variable',(req,res)=>{
 })
 
 app.get("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
-    User.find({password:req.password.variable})
-    .then(data=>{
-      res.render('setPassword.ejs',{user:data})
-    })  
+  User.findOne({_id:req.params.variable})
+  .then(data=>{
+    res.render('setPassword.ejs',{user:data,error:null})
+  })
+     
 })
+app.post("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
+  if(req.body.firstPassword == req.body.secondPassword){
+
+    User.updateOne({_id:req.params.variable},{password:bcrypt.hashSync(req.body.firstPassword, bcrypt.genSaltSync(9))})
+    .then(()=>{
+      console.log("Added new password")
+      res.redirect('/login');
+    })
+
+  }
+  else{
+    User.findOne({_id:req.params.variable})
+    .then(data=>{
+      res.render('setPassword.ejs',{user:data, error:"Passwords do not match"});
+    })
+    
+  }
+  
+})
+
+//if the user has forgotten their password
+app.get("/resetPassword",checkNotAuthenticated,(req,res)=>{
+  res.render('resetPassword.ejs',{user:null,error:null})
+
+})
+
+app.post("/resetPassword",checkNotAuthenticated,(req,res)=>{
+  
+  var to = req.body.email;
+  
+  //$2b$05$b5d3ehsOUz4k2CIvlmSTLnWkXYj3odNibLHCYozRvaUhidaPWMxK
+  
+  User.findOne({email:to})
+  .then((data)=>{
+    user = data;
+    console.log("successful")
+    sendResetPassword(to, data._id)
+  })
+  .catch(error=>{
+    console.log(error)
+  })
+  
+  res.render('resetPassword.ejs',{user:null,error:"Password Successfully changed, Please check your email"})
+  
+  
+  
+})
+
 
 //logs the user out and redirects them to the home page
 app.delete('/logout', (req, res) => {
@@ -609,7 +658,6 @@ function checkNotAuthenticated(req, res, next) {
 
 //mailing info
 const sgMail = require("@sendgrid/mail");
-const user = require('./Mongoose Models/user')
 sgMail.setApiKey(''+process.env.SENDGRID_PW+'');
 
 
@@ -654,23 +702,21 @@ function sendMail(to,user,tempPassword){
       "\n\n--WCU-SurveyTool"
     }
   }
-  sgMail.send(msg);
+  sgMail.send(msg)
+  .then(()=>{
+    console.log("Email sent")
+  })
+  .catch(error=>{
+    console.log(error);
+  })
   if(user == null){
     return randomString;
   }
 }
 
-function sendResetPassword(to, user){
-  let randomString;
+function sendResetPassword(to, id){
   
-  const slash = /\//gi;
-  const period =/\./gi
-  randomString = bcrypt.hashSync(to, bcrypt.genSaltSync(9));
-  randomString = randomString.replace(slash,"");
-  randomString = randomString.replace(period,"");
-
-  User.updateOne({_id:user._id},{password:randomString})
-  let link = "https://wcu-surveytool.herokuapp.com/passwordReset/" + user._id;
+  let link = "https://wcu-surveytool.herokuapp.com/setPassword/" + id ;
   //let link = "http://localhost:3000/confirm/" + randomString;
   //console.log(link);
   
@@ -680,11 +726,19 @@ function sendResetPassword(to, user){
     subject: "Password Reset",
     text: "Hello,\nYou are recieving this email because you have requested a password reset " + 
     "for wcu-surveytool website.\n\n" +
-    "Click the link to change your password\t"+ link +
+    "\nLogin with this your new password here:\t" +link +
     "\n\n--WCU-SurveyTool"
   }
   
-  sgMail.send(msg);
+  sgMail.send(msg)
+  .then(()=>{
+    console.log("Email sent")
+    return true;
+  })
+  .catch(error=>{
+    console.log(error);
+    return false;
+  })
 }
 
 var deleteAllClasses = function(){
