@@ -491,71 +491,143 @@ app.post('/classesInfo',checkAuthenticated,(req,res)=>{
  * 
  */
 app.post("/editCourse",(req,res)=>{
+  var courseData = null;
+  var courseName = req.body.courseName.split(",");
+  var courseObjectID;
+  Course.findOne({course_id:courseName[0],section:courseName[1]})
+  .then(data=>{
+    courseObjectID = data._id;
+  })
+  .catch(error=>{
+    console.log("ERROR " + error);
+  })
   if(req.files){
     var file = req.files.fileName,
      filename = file.name
     var results = [];
-    
+  
     var moveAndParse = function(callback){
       file.mv(__dirname + "/views/uploads/"+filename, err =>{
-        //console.log(err)
+        console.log(err)
         if(err){
-          console.log("ERROR moving " + err);
+          console.log(err);
           //res.send("error occured" + err);
         }
       })
       callback()
     }
-    //making sure that the file matches the current students in the class
     moveAndParse( function(){
-      //console.log(req.body.myCheck);
       fs.createReadStream(__dirname +'/views/uploads/'+filename)
       .pipe(csv({}))
       .on("data", (data) => {
-        
-        data["Prev Course"] =  "" +data["Prev Course"]+"";
-        //console.log(data["Prev Course"]);
-        results.push(data);
-        //console.log(results.length);
-      }) 
+        User.findOne({email:data.email})
+        .then(tempStudent=>{
+          var object = {};
+          if(tempStudent== null){
+            //send student email later
+            const slash = /\//gi;
+            const period =/\./gi;
+            //create String for the link
+            var wholeName = data.Name.split(', ');
+            var randomString = bcrypt.hashSync(""+wholeName[0]+wholeName[1]+"", bcrypt.genSaltSync(9));
+            randomString = randomString.replace(slash,"");
+            randomString = randomString.replace(period,"");
+            //create temp password
+            var password = bcrypt.hashSync(""+wholeName[0]+wholeName[1]+"", bcrypt.genSaltSync(6));
+            password = password.replace(slash,"");
+            password = password.replace(slash,"");
+            //var confirmCode = sendMail(data.email,null,password) 
+            //create temp password for student
+            var courseArray = [];
+            if(courseData != null){
+              courseArray.push(courseData._id);
+            }
+            
+            var student = new User({
+              _id: mongoose.Types.ObjectId(),
+              username: ""+data.Name[0]+wholeName[0]+"",
+              first: data.first,
+              last: data.last,
+              email: data.email,
+              password: password,
+              locked: false,
+              verified:false,
+              courses: courseArray,
+              confirmCode: randomString,
+              isTeacher:false,
+              studentId: data.id,
+            })
+            student.save()
+            .then(check=>{
+              
+              Course.updateOne({_id:courseData._id},{$push:{students:student._id}})
+              .then(()=>{
+                //console.log("Updating with student")
+              })
+              .catch(error=>{
+                console.log(error)
+              })
+              
+            })
+            .catch(error =>{
+              //console.log("Did not add to database")
+            })
+            object.student_id = student._id;
+            for(let i in data){
+              //Name,Student ID,Email
+              //console.log(i);
+              if(i != "Name"||i!="Student ID"|| i!="Email"){
+                object[i] = data[i];
+              }
+            }
+            results.push(object);
+          }
+          else{
+            //student existed in the database
+            object.student_id = tempStudent._id;
+            for(let i in data){
+              //Name,Student ID,Email
+              //console.log(i);
+              if(i != "Name"||i!="Student ID"|| i!="Email"){
+                object[i]= data[i];
+              }
+            }
+            results.push(object);
+            var check = true;
+            //checking to see if the user has already been put in the course
+            for(let i = 0; i<tempStudent.courses.length; i++){
+              if(tempStudent.courses[i] == courseObjectID){
+                check = false;
+                break;
+              }
+            }
+            if(check){
+              Course.updateOne({_id:courseArray._id},{$push:{students:tempStudent._id}});
+            }
+          }
+        })
+        //console.log("test is >> \n" + test);
+      })
       .on("end",() =>{
-        
+        console.log(results.length);
+        var surveyResults = new SurveyResults({
+          _id: mongoose.Types.ObjectId(),
+          results:results,
+          course_id:courseObjectID, 
+        })
+        surveyResults.save()
+        .then(comfirm =>{
+          console.log("saved surveyResults into database")
+        })
+        .catch(error=>{
+          console.log("ERROR : " + error);
+        })
       })
-      console.log(req.body.courseName);
-      var spiltText = req.body.courseName.split(",");
-      var courseId;
-      Course.findOne({course_id:spiltText[0],section:spiltText[1]})
-      .then(dataCourse=>{
-          //dataCourse is the course that is returned that matches the values
-          courseId = dataCourse.id;
-          //console.log(data.id);
-          //console.log(courseId)
-          //console.log(results.length);
-          var survey = new SurveyResults({
-            _id: new mongoose.Types.ObjectId(),
-            results:results,
-            course_id:courseId,
-          })
-          survey.save()
-          .then(dataN =>{
-          
-            res.render('editCourse.ejs', {user: req.user, course:dataCourse, error: "Successfully uploaded CSV file"});
-          
-          })
-          .catch(error=>{
-            console.log(error)
-            res.render('editCourse.ejs', {user: req.user, course:dataCourse, error: error});
-          })
-        
-      })
-      //res.render('classesInfo.ejs', {user: req.user, error: null});
-        //console.log(results);
     })
-    
-    
+    res.redirect('/classesInfo')
   }
   else{
-    res.render("classesInfo.ejs",{user:req.user,error:"There was no file Submitted"});
+    console.log("did not work")
   }
 
 })
@@ -642,9 +714,6 @@ app.post("/resetPassword",checkNotAuthenticated,(req,res)=>{
   })
   
   res.render('resetPassword.ejs',{user:null,error:"Password Successfully changed, Please check your email"})
-  
-  
-  
 })
 
 
