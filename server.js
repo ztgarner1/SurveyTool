@@ -579,8 +579,10 @@ app.get('/confirm/:variable',(req,res)=>{
 })
 
 app.get("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
-  User.findOne({_id:req.params.variable})
+  console.log(req.params.variable)
+  User.findOne({temporaryPassword:req.params.variable})
   .then(data=>{
+    
     res.render('setPassword.ejs',{user:data,error:null})
   })
      
@@ -588,7 +590,7 @@ app.get("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
 app.post("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
   if(req.body.firstPassword == req.body.secondPassword){
 
-    User.updateOne({_id:req.params.variable},{password:bcrypt.hashSync(req.body.firstPassword, bcrypt.genSaltSync(9))})
+    User.updateOne({temporaryPassword:req.params.variable},{password:bcrypt.hashSync(req.body.firstPassword, bcrypt.genSaltSync(9))})
     .then(()=>{
       console.log("Added new password")
       res.redirect('/login');
@@ -596,7 +598,7 @@ app.post("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
 
   }
   else{
-    User.findOne({_id:req.params.variable})
+    User.findOne({temporaryPassword:req.params.variable})
     .then(data=>{
       res.render('setPassword.ejs',{user:data, error:"Passwords do not match"});
     })
@@ -615,13 +617,25 @@ app.post("/resetPassword",checkNotAuthenticated,(req,res)=>{
   
   var to = req.body.email;
   
-  //$2b$05$b5d3ehsOUz4k2CIvlmSTLnWkXYj3odNibLHCYozRvaUhidaPWMxK
-  
   User.findOne({email:to})
   .then((data)=>{
     user = data;
     console.log("successful")
-    sendResetPassword(to, data._id)
+    var randomString;
+    const slash = /\//gi;
+    const period =/\./gi
+    randomString = bcrypt.hashSync(to, bcrypt.genSaltSync(9));
+    randomString = randomString.replace(slash,"");
+    randomString = randomString.replace(period,"");
+    User.updateOne({_id: data._id},{temporaryPassword: randomString})
+    .then(()=>{
+      console.log("assigned temporaryPassword")
+      sendResetPassword(to, data._id,randomString)
+    })
+    .catch(error=>{
+      console.log("failed to assign temporaryPassword")
+    })
+    
   })
   .catch(error=>{
     console.log(error)
@@ -714,9 +728,9 @@ function sendMail(to,user,tempPassword){
   }
 }
 
-function sendResetPassword(to, id){
-  
-  let link = "https://wcu-surveytool.herokuapp.com/setPassword/" + id ;
+function sendResetPassword(to, id,string){
+
+  let link = "https://wcu-surveytool.herokuapp.com/setPassword/" + string ;
   //let link = "http://localhost:3000/confirm/" + randomString;
   //console.log(link);
   

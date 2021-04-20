@@ -7,6 +7,7 @@ const userSchema = mongoose.Schema({
     last:String,
     email:String,
     password:String,
+    temporaryPassword:String,
     locked:Boolean,
     verified: Boolean,
     courses: Array,
