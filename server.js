@@ -411,9 +411,7 @@ app.post('/addClasses',(req,res)=>{
 
       })
     })
-
     res.redirect('/classesInfo')
-    
   }
   else{
     console.log("did not work")
@@ -565,10 +563,9 @@ app.post("/editCourse",(req,res)=>{
 //this is the confirmation the email sent to the user gets sent to. 
 //checking to see if the code passed through as :variable is the same verification code
 //on the users account. if it is the same then the users verified boolean turns to true.
-app.get('/confirm/:variable&:variable2',(req,res)=>{
+app.get('/confirm/:variable',(req,res)=>{
   //console.log("Made it here");
   const confirmCode = req.params.variable;
-  const password = req.params.variable2;
 
   User.updateOne({confirmCode:confirmCode},{verified:true})
   .exec()
@@ -585,8 +582,7 @@ app.get("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
     User.find({password:req.password.variable})
     .then(data=>{
       res.render('setPassword.ejs',{user:data})
-    })
-    
+    })  
 })
 
 //logs the user out and redirects them to the home page
@@ -653,7 +649,7 @@ function sendMail(to,user,tempPassword){
       subject: "Confirmtion",
       text: "Hello,\nYou are recieving this email because you have been registered " + 
       "for wcu-surveytool website.\n\n" +
-      "You tempary password has been set to: "+ tempPassword + "\n" + 
+      "Your tempary password has been set to: "+ tempPassword + "\n" + 
       "Please verify your email address using this link below "+ link +
       "\n\n--WCU-SurveyTool"
     }
@@ -663,6 +659,34 @@ function sendMail(to,user,tempPassword){
     return randomString;
   }
 }
+
+function sendResetPassword(to, user){
+  let randomString;
+  
+  const slash = /\//gi;
+  const period =/\./gi
+  randomString = bcrypt.hashSync(to, bcrypt.genSaltSync(9));
+  randomString = randomString.replace(slash,"");
+  randomString = randomString.replace(period,"");
+
+  User.updateOne({_id:user._id},{password:randomString})
+  let link = "https://wcu-surveytool.herokuapp.com/passwordReset/" + user._id;
+  //let link = "http://localhost:3000/confirm/" + randomString;
+  //console.log(link);
+  
+  const msg = {
+    to: to,
+    from:"wcu.SurveyTool@gmail.com",
+    subject: "Password Reset",
+    text: "Hello,\nYou are recieving this email because you have requested a password reset " + 
+    "for wcu-surveytool website.\n\n" +
+    "Click the link to change your password\t"+ link +
+    "\n\n--WCU-SurveyTool"
+  }
+  
+  sgMail.send(msg);
+}
+
 var deleteAllClasses = function(){
   Course.find()
   .then(data=>{
