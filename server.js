@@ -386,6 +386,7 @@ app.post('/addClasses',(req,res)=>{
             })
             student.save()
             .then(check=>{
+
               Course.updateOne({_id:courseData._id},{$push:{students:student._id}})
               .then(()=>{
                 console.log("Updating with student")
