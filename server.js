@@ -226,11 +226,33 @@ app.get("/profile" ,checkAuthenticated,(req,res)=>{
 
 //server responding to the myCourses post
 app.get('/myClasses',checkAuthenticated,(req,res)=>{
+  console.log(req.user.isTeacher);
   if(req.user.isTeacher){
     res.redirect('/classesInfo');
   }
   else{
-    res.render('myClasses.ejs',{user:req.user})
+    var allCourses = [];
+    
+    
+    if(req.user.courses.length == 0){
+      res.render('myClasses.ejs',{user:req.user, courses:allCourses})
+    }
+    console.log(req.user.courses.length)
+    for(let i = 0; i < req.user.courses.length; i++ ){
+      Course.findOne({_id:req.user.courses[i]})
+      .then(courseData=>{
+        console.log("adding course")
+        allCourses.push(courseData);
+        if(i == req.user.courses.length -1){
+        
+          res.render('myClasses.ejs',{user:req.user, courses:allCourses})
+        }
+      })
+      .catch(error =>{
+        console.log("Error : " + error )
+      })
+      
+    }
   }
   
 })
@@ -238,6 +260,41 @@ app.post('/myClasses', checkAuthenticated,(req,res)=>{
   if(req.user.verified == false){
     sendMail(req.user.email,req.user, null);
   }
+  else{
+
+    Course.findOne({_id:req.body.classes})
+    .then(classData =>{
+      res.redirect("/viewCourse/"+classData._id)
+    })
+    .catch(error=>{
+      console.log("ERROR: " + error)
+    })
+  }
+})
+
+app.get("/viewCourse/:variable",(req,res) =>{
+  var allSurveys = [];
+  Course.findOne({_id: req.params.variable})
+  .then(classData =>{
+    if(classData.surveys.length == 0){
+      res.render("viewCourse.ejs",{user:req.user, course:classData,surveys:allSurveys, error: null});
+    }
+    for(let i = 0; i < classData.surveys.length;i++){
+      SurveyTemplates.findOne({_id:classData.surveys[i]})
+      .then(surveyData=>{
+        allSurveys.push(surveyData);
+        if(i == classData.surveys.length -1){
+          res.render("viewCourse.ejs",{user:req.user, course:classData,surveys:allSurveys, error: null});
+        }
+      })
+      .catch()
+      
+    }
+    
+  })
+  .catch(error =>{
+    console.log("Error : "+error);
+  })
 })
 
 
@@ -368,7 +425,7 @@ app.post('/addClasses',(req,res)=>{
             var password = bcrypt.hashSync(""+data.first[0]+data.last+"", bcrypt.genSaltSync(6));
             password = password.replace(slash,"");
             password = password.replace(slash,"");
-            //var confirmCode = sendMail(data.email,null,password) 
+            var confirmCode = sendMail(data.email,null,password) 
             //create temp password for student
             var courseArray = [];
             if(courseData != null){
@@ -385,7 +442,7 @@ app.post('/addClasses',(req,res)=>{
               locked: false,
               verified:false,
               courses: courseArray,
-              confirmCode: randomString,
+              confirmCode: confirmCode,
               isTeacher:false,
               studentId: data.id,
             })
@@ -407,16 +464,19 @@ app.post('/addClasses',(req,res)=>{
           }
           else{
             //console.log("adding student that already exists in database")
+
             Course.updateOne({_id:courseArray._id},{$push:{students:tempStudent._id}});
+            User.updateOne({_id:tempStudent._id},{$push:{courses:courseArray._id}})
+
           }
         })
         //console.log("test is >> \n" + test);
       })
       .on("end",() =>{
-
+        res.redirect('/classesInfo')
       })
     })
-    res.redirect('/classesInfo')
+
   }
   else{
     console.log("did not work")
@@ -769,7 +829,7 @@ function sendMail(to,user,tempPassword){
   //let link = "http://localhost:3000/confirm/" + randomString;
   //console.log(link);
   
-  const msg = {
+  var msg = {
     to: to,
     from:"wcu.SurveyTool@gmail.com",
     subject: "Confirmation",
