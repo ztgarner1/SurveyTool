@@ -92,6 +92,8 @@
         
         getBestTeams(allPossibleTeamsScores, n2, numteams, 0, teamdata, 0);
         
+        removeIncorrectCombos();
+        
         //Print all possible team combinations 
         for (var i = 0; i < allPossibleTeamCombos.length; i++) {
           var comboscore = 0; 
@@ -204,11 +206,44 @@
         getBestTeams(arr, n, r, index, data, i + 1);
       }
 
+      function removeIncorrectCombos() {
+
+        //Loop through team combos
+        for (var i = 0; i < allPossibleTeamCombos.length; ) {
+          
+          let dupesBool = false;
+          let studentsinTeam = [];
+          
+          //Loop through teams in combo
+          for (var j = 0; j < allPossibleTeamCombos[i].length; j++) {
+            //Loop through students in team
+            for (var k = 0; k < allPossibleTeamCombos[i][j].students.length; k++) {
+              //Check if student is already in a team in this combo
+              if (studentsinTeam.includes(allPossibleTeamCombos[i][j].students[k].name)) {
+                dupesBool = true;
+              } else {
+                studentsinTeam.push(allPossibleTeamCombos[i][j].students[k].name);
+              }
+              
+            }
+            
+          }
+          //Remove i from allPossibleTeamCombos else just go to next combo
+          if (dupesBool) {
+            allPossibleTeamCombos.splice(i, 1);
+          } else {
+            i++;
+          }
+          
+        }
+        
+      }
+      
       //Helper to genteams then runs the algorithm
       function run() {
         gatherResults();
 
-        genTeams(2, 2);
+        genTeams(2, 3);
       }
       run();
     </script>
