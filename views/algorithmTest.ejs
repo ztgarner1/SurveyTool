@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+  <title>Web Page Design</title>
+  <head>
+    <script>
+      var allPossibleTeams = [];
+      var allPossibleTeamsScores = [];
+
+      var allPossibleTeamCombos = [];
+
+      var teamsSelected = [];
+
+      var surveyResults = [];
+      //Helper to generate dtudnets results
+      function addStudentResults(studentName, studentsAnswers) {
+        var temp = new Object();
+        temp.name = studentName;
+        temp.ans = studentsAnswers;
+        surveyResults.push(temp);
+      }
+
+      //Helper to generate dtudnets results
+      function gatherResults() {
+        var studentNames = [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F",
+          "G",
+          "H",
+          "I",
+          "J",
+          "K",
+          "L",
+          "M",
+          "N"
+        ];
+
+        var studentAnswers = [
+          ["a", "b", "c"],
+          ["d", "c", "c"],
+          ["a", "d", "b"],
+          ["b", "b", "b"],
+          ["d", "b", "c"],
+          ["a", "b", "c"],
+          ["d", "b", "d"],
+          ["c", "b", "c"],
+          ["a", "c", "c"],
+          ["a", "a", "c"],
+          ["b", "a", "c"],
+          ["d", "d", "c"],
+          ["d", "b", "c"],
+          ["d", "b", "d"]
+        ];
+
+        var weights = [1, 0.5, 0.5];
+
+        for (var i = 0; i < studentNames.length; i++) {
+          var answers = [];
+
+          for (var j = 0; j < studentAnswers[i].length; j++) {
+            var answerNweight = new Object();
+            answerNweight.answer = studentAnswers[i][j];
+            answerNweight.weight = weights[j];
+            answers.push(answerNweight);
+          }
+          addStudentResults(studentNames[i], answers);
+        }
+      }
+
+      //This is the actual algorithm to generate teams
+      function genTeams(teamSize, numteams) {
+        var data = [];
+        let n = surveyResults.length;
+        generateAllTeams(surveyResults, n, teamSize, 0, data, 0);
+
+        calculateTeamScores();
+
+        //Print all possible teams students names
+        ////for (var i = 0; i < allPossibleTeamsScores.length; i++) {
+        ////	for (var j = 0; j < allPossibleTeamsScores[i].students.length; j++) {
+        ////		document.write(allPossibleTeamsScores[i].students[j].name + " ");
+        ////	}
+        ////    document.write(" = SCORE: " + allPossibleTeamsScores[i].score);
+        ////    document.write("<br>");
+        ////}
+
+        var teamdata = [];
+        let n2 = allPossibleTeamsScores.length;
+        
+        getBestTeams(allPossibleTeamsScores, n2, numteams, 0, teamdata, 0);
+        
+        //Print all possible team combinations 
+        for (var i = 0; i < allPossibleTeamCombos.length; i++) {
+          var comboscore = 0; 
+          for (var j = 0; j < allPossibleTeamCombos[i].length; j++) {
+            for (var k = 0; k < allPossibleTeamCombos[i][j].students.length; k++) {
+              document.write(allPossibleTeamCombos[i][j].students[k].name + " ");
+            }
+            comboscore = comboscore + allPossibleTeamCombos[i][j].score;
+            document.write(" = SCORE: " + allPossibleTeamCombos[i][j].score);
+            document.write("<br>");
+          }
+          document.write("TEAMSCORE: " + comboscore);
+          document.write("<br>==========================<br>");
+        }
+      }
+
+      //Recursive function that loops through the list of student results
+      // and generates each possible combination
+      // Arguments:
+      // 		arr is the array of student results
+      // 		n is the size of the student results array
+      // 		r is the size of each team
+      // 		index is the current index in data
+      // 		data is the team its generating
+      // 		i is the second index used with checks
+      function generateAllTeams(arr, n, r, index, data, i) {
+        //Check if current combination is ready
+        if (index == r) {
+          var tempArr = [];
+          for (let j = 0; j < r; j++) {
+            tempArr.push(data[j]);
+          }
+          allPossibleTeams.push(tempArr);
+          tempArr = [];
+          return;
+        }
+        //Check if no more elements to place in data
+        if (i >= n) {
+          return;
+        }
+
+        data[index] = arr[i];
+        generateAllTeams(arr, n, r, index + 1, data, i + 1);
+        generateAllTeams(arr, n, r, index, data, i + 1);
+      }
+
+      //Calculates the team scores for all the possible teams
+      function calculateTeamScores() {
+        for (var i = 0; i < allPossibleTeams.length; i++) {
+          var teamScore = 0;
+          for (var q = 0; q < allPossibleTeams[i][0].ans.length; q++) {
+            var teamsAnswers = [];
+            for (var j = 0; j < allPossibleTeams[i].length; j++) {
+              teamsAnswers.push(allPossibleTeams[i][j].ans[q].answer);
+            }
+            teamScore +=
+              compareAnswers(teamsAnswers) *
+              allPossibleTeams[i][0].ans[q].weight;
+          }
+
+          var temp = new Object();
+          temp.students = allPossibleTeams[i];
+          temp.score = teamScore;
+
+          allPossibleTeamsScores.push(temp);
+        }
+      }
+
+      //Compares all the answers of an array and returns an number based on the amount of same answers
+      function compareAnswers(arrOfAns) {
+        var comparedInt = 0;
+
+        for (var i = 0; i < arrOfAns.length; i++) {
+          for (var j = i + 1; j < arrOfAns.length; j++) {
+            if (arrOfAns[i] == arrOfAns[j]) {
+              comparedInt++;
+            }
+          }
+        }
+        return comparedInt;
+      }
+
+      //Recursive function that loops through the list of team results
+      // and generates each possible combination
+      // Arguments:
+      // 		arr is the array of team results
+      // 		n is the size of the team results array
+      // 		r is the number of teams
+      // 		index is the current index in data
+      // 		data is the teams its generating
+      // 		i is the second index used with checks
+      function getBestTeams(arr, n, r, index, data, i) {
+        //Check if current combination is ready
+        if (index == r) {
+          var tempArr = [];
+          for (let j = 0; j < r; j++) {
+            tempArr.push(data[j]);
+          }
+          allPossibleTeamCombos.push(tempArr);
+          tempArr = [];
+          return;
+        }
+        //Check if no more elements to place in data
+        if (i >= n) {
+          return;
+        }
+      
+        data[index] = arr[i];
+        getBestTeams(arr, n, r, index + 1, data, i + 1);
+        getBestTeams(arr, n, r, index, data, i + 1);
+      }
+
+      //Helper to genteams then runs the algorithm
+      function run() {
+        gatherResults();
+
+        genTeams(2, 7);
+      }
+      run();
+    </script>
+  </head>
+  <body></body>
+</html>

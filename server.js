@@ -74,13 +74,13 @@ app.get('/survey', (req, res) => {
   }
 })
 
-app.get('/template', (req, res) => {
+app.get('/algtest', (req, res) => {
   
   if(req.user == undefined){
-      res.render('templateQuestions.ejs',{user:null});
+      res.render('algorithmTest.ejs',{user:null});
   }
   else{
-      res.render('templateQuestions.ejs', { user: req.user})
+      res.render('algorithmTest.ejs', { user: req.user})
   }
 })
 
