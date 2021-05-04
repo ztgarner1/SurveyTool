@@ -319,15 +319,17 @@ app.get("/studentSurvey/:variable",checkAuthenticated,async(req,res)=>{
       res.redirect("/");
     })
 })
-app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,async(req,res)=>{
+app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
   //varible will be the course_id
   var student = {};
   var results = [];
   var schedule = [];
   var check = false;
   student._id = req.user._id;
-  for( i in req.body){ 
-    if(i.include("schedule")){
+  for( let i in req.body){ 
+    console.log(i)
+    if(i.includes("schedule")){
+      
       check = true;
       schedule.push(i);
     }
@@ -358,7 +360,6 @@ app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,async(req,res
         survey_id:req.params.survey_id,
       })
       results.save()
-      .exec()
       .then(()=>{
         res.redirect("/myClasses");
       })
@@ -370,6 +371,9 @@ app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,async(req,res
     else{
       SurveyResults.updateOne({survey_id:survey.survey_id},{$push:{results:student}})
     }
+  })
+  .catch(error=>{
+    console.log(error)
   })
 
   res.redirect("/myClasses");
@@ -454,7 +458,6 @@ app.post('/createSurvey/:course_id',async(req,res)=>{
         course_id: req.params.course_id ,
       })
       template.save()
-      .exec()
       .then(check=>{
         res.redirect('/classesInfo');
       }).catch(()=>{
@@ -495,7 +498,7 @@ app.post('/addClasses',async(req,res)=>{
       })
       courseData = course;
       course.save()
-      .exec()
+      
       .then(check =>{
         req.user.courses.push(course._id);
         User.updateOne({_id:req.user._id},{$push:{courses:course._id}})
@@ -803,7 +806,6 @@ app.post("/editCourse",(req,res)=>{
           course_id:courseObjectID, 
         })
         surveyResults.save()
-        .exec()
         .then(comfirm =>{
           console.log("saved surveyResults into database")
         })
@@ -989,6 +991,18 @@ function sendMail(to,user,tempPassword){
     return randomString;
   }
 }
+
+async function makeTeams(id){
+  SurveyResults.findOne({_id:id})
+  .exec()
+  .then(allResults =>{
+    studentsResults = allResults
+  })
+  .catch()
+
+  
+}
+
 
 function sendResetPassword(to, id,string){
 
