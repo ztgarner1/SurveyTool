@@ -102,13 +102,14 @@ app.get("/contactImport",checkAuthenticated,(req,res)=>{
 })
 
 //server serving the register page where the user cant be logged in
-app.get('/register', checkNotAuthenticated, (req, res) => {
+app.get('/register', checkNotAuthenticated,async (req, res) => {
   res.render('register.ejs',{error: null})
 })
 //server getting a post request to register a new account.
-app.post('/register', checkNotAuthenticated, async (req, res) => {
+app.post('/register', checkNotAuthenticated, async(req, res) => {
   try {
-      //initializing a boolean 
+      //initializing a boolean
+      
       let emailExists = false;
       //getting all the users from the database
       if(req.body.question.toLowerCase == "no"){
@@ -117,6 +118,7 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
         .then(data=>{
           if(data==null){
             //if there isnt a student with that email
+            
             let code = sendMail(req.body.email, null, null);
 
             var student = new User({
@@ -145,6 +147,7 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
             
           }
           else{
+            console.log("should be here")
             res.render("register.ejs",{error: "Email already in use"});
           
           }
@@ -180,6 +183,9 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
               //if an error occured then they stay on the page but given an error message for the user to see
               res.render("register.ejs",{error: "User not added"})
             })
+          }
+          else{
+            res.render("register.ejs",{error: "Email already in use"});
           }
         })
       }
@@ -263,7 +269,7 @@ app.post('/myClasses', checkAuthenticated,(req,res)=>{
   }
 })
 
-app.get("/viewCourse/:variable",checkAuthenticated,(req,res) =>{
+app.get("/viewCourse/:variable",checkAuthenticated,async(req,res) =>{
   var allSurveys = [];
   
   Course.findOne({_id: req.params.variable})
@@ -292,7 +298,7 @@ app.get("/viewCourse/:variable",checkAuthenticated,(req,res) =>{
   })
 })
 
-app.post("/viewCourse/:variable",checkAuthenticated, (req,res)=>{
+app.post("/viewCourse/:variable",checkAuthenticated, async(req,res)=>{
   SurveyTemplates.findOne({_id:req.body.survey})
   .then(surveyData=>{
     //res.render("studentSurvey.ejs",{user:req.user,error:null, survey:surveyData});
@@ -303,8 +309,9 @@ app.post("/viewCourse/:variable",checkAuthenticated, (req,res)=>{
   })
 })
 
-app.get("/studentSurvey/:variable",checkAuthenticated,(req,res)=>{
+app.get("/studentSurvey/:variable",checkAuthenticated,async(req,res)=>{
     surveyTemplate.findOne({_id:req.params.variable})
+    .exec()
     .then(surveyData =>{
       res.render("studentSurvey.ejs",{user:req.user, survey:surveyData})
     })
@@ -312,7 +319,7 @@ app.get("/studentSurvey/:variable",checkAuthenticated,(req,res)=>{
       res.redirect("/");
     })
 })
-app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
+app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,async(req,res)=>{
   //varible will be the course_id
   var student = {};
   var results = [];
@@ -338,6 +345,7 @@ app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
   
   
   SurveyResults.findOne({survey_id:req.params.survey_id})
+  .exec()
   .then(survey=>{
     if(survey == null){
       //then we need to create a survey Results here
@@ -350,6 +358,7 @@ app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
         survey_id:req.params.survey_id,
       })
       results.save()
+      .exec()
       .then(()=>{
         res.redirect("/myClasses");
       })
@@ -367,10 +376,11 @@ app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
   
 })
 
-app.get('/createSurvey/:variable',checkAuthenticated, (req, res) => {
+app.get('/createSurvey/:variable',checkAuthenticated, async(req, res) => {
   var check;
   
   Course.findOne({_id: req.params.variable})
+  .exec()
   .then(courseData =>{
     if(courseData != null){
       res.render('createSurvey.ejs',{user:req.user,course:courseData});
@@ -383,7 +393,7 @@ app.get('/createSurvey/:variable',checkAuthenticated, (req, res) => {
   
 })
 
-app.post('/createSurvey/:course_id',(req,res)=>{
+app.post('/createSurvey/:course_id',async(req,res)=>{
   
 	var questionsArray = [];
   var tempSchedule= [];
@@ -434,39 +444,42 @@ app.post('/createSurvey/:course_id',(req,res)=>{
   
 	
 	SurveyTemplates.findOne({title:req.body.surveyTitle})
-		.then(data=>{
-			if (data == null) {
-				var template = new SurveyTemplates({
-					_id: new mongoose.Types.ObjectId(),
-					title: req.body.surveyTitle,
-					questions: questionsArray,
-          course_id: req.params.course_id ,
-				})
-				template.save()
-        .then(check=>{
-          res.redirect('/classesInfo');
-        }).catch(()=>{
-          res.redirect('/classesInfo');
-        })
-        var string = req.body.courseName.split(",");
-        Course.updateOne({course_id:string[0],section:string[1]},{$push:{surveys:template._id}})
-        .catch(error=>{
-          console.log("ERROR in post(createSurvey) >>" + error);
-        })
-			}
-		})
+  .exec()
+  .then(data=>{
+    if (data == null) {
+      var template = new SurveyTemplates({
+        _id: new mongoose.Types.ObjectId(),
+        title: req.body.surveyTitle,
+        questions: questionsArray,
+        course_id: req.params.course_id ,
+      })
+      template.save()
+      .exec()
+      .then(check=>{
+        res.redirect('/classesInfo');
+      }).catch(()=>{
+        res.redirect('/classesInfo');
+      })
+      var string = req.body.courseName.split(",");
+      Course.updateOne({course_id:string[0],section:string[1]},{$push:{surveys:template._id}})
+      .exec()
+      .catch(error=>{
+        console.log("ERROR in post(createSurvey) >>" + error);
+      })
+    }
+  })
 	
 })
 
 //renders the addClasses.ejs page
-app.get('/addClasses',checkAuthenticated,(req,res)=>{
+app.get('/addClasses',checkAuthenticated,async(req,res)=>{
   res.render('addClasses.ejs',{user: req.user})
 })
 
 /**
  * this will be called whenever a post method is made to /addClasses
  */
-app.post('/addClasses',(req,res)=>{
+app.post('/addClasses',async(req,res)=>{
   var courseData = null;
   Course.findOne({course_id:req.body.courseId,section:req.body.courseSection})
   .then(data=>{
@@ -482,9 +495,11 @@ app.post('/addClasses',(req,res)=>{
       })
       courseData = course;
       course.save()
+      .exec()
       .then(check =>{
         req.user.courses.push(course._id);
         User.updateOne({_id:req.user._id},{$push:{courses:course._id}})
+        .exec()
         .then(()=>{
           console.log("updated Teacher")
         })
@@ -500,7 +515,7 @@ app.post('/addClasses',(req,res)=>{
      filename = file.name
     var results = [];
   
-    var moveAndParse = function(callback){
+    var moveAndParse =  async function(callback){
       file.mv(__dirname + "/views/uploads/"+filename, err =>{
         console.log(err)
         if(err){
@@ -510,7 +525,7 @@ app.post('/addClasses',(req,res)=>{
       })
       callback()
     }
-    moveAndParse( function(){
+    moveAndParse( async function(){
       fs.createReadStream(__dirname +'/views/uploads/'+filename)
       .pipe(csv({}))
       .on("data", (data) => {
@@ -553,6 +568,7 @@ app.post('/addClasses',(req,res)=>{
             .then(check=>{
 
               Course.updateOne({_id:courseData._id},{$push:{students:student._id}})
+              .exec()
               .then(()=>{
                 console.log("Updating with student")
               })
@@ -568,7 +584,7 @@ app.post('/addClasses',(req,res)=>{
           else{
             //console.log("adding student that already exists in database")
 
-            Course.updateOne({_id:courseArray._id},{$push:{students:tempStudent._id}});
+            Course.updateOne({_id:courseArray._id},{$push:{students:tempStudent._id}})
             User.updateOne({_id:tempStudent._id},{$push:{courses:courseArray._id}})
 
           }
@@ -590,11 +606,12 @@ app.post('/addClasses',(req,res)=>{
  * This will call when a user goes to classesInfo page. This page is only for teachers
  * if the user is not a teacher they get redirected to /myClasses
  */
-app.get("/classesInfo",checkAuthenticated,(req,res)=>{
+app.get("/classesInfo",checkAuthenticated,async(req,res)=>{
   if(req.user.isTeacher){
     var courses = [];
     
     Course.find({intructor:req.user.id})
+    .exec() 
     .then(data=>{
       if(data != null){
         res.render('classesInfo.ejs', {user: req.user,courses:data, error: null});
@@ -611,7 +628,7 @@ app.get("/classesInfo",checkAuthenticated,(req,res)=>{
 /**
  * this post method gets what class is chosen to edit 
  */
-app.post('/classesInfo',checkAuthenticated,(req,res)=>{
+app.post('/classesInfo',checkAuthenticated,async (req,res)=>{
   //console.log(req.body.classes);
   if(req.body.classes == undefined){
     Course.find({intructor:req.user.id})
@@ -663,6 +680,7 @@ app.post("/editCourse",(req,res)=>{
   var courseName = req.body.courseName.split(",");
   var courseObjectID;
   Course.findOne({course_id:courseName[0],section:courseName[1]})
+  .exec()
   .then(data=>{
     courseObjectID = data._id;
   })
@@ -674,7 +692,7 @@ app.post("/editCourse",(req,res)=>{
      filename = file.name
     var results = [];
   
-    var moveAndParse = function(callback){
+    var moveAndParse = async function(callback){
       file.mv(__dirname + "/views/uploads/"+filename, err =>{
         console.log(err)
         if(err){
@@ -684,7 +702,7 @@ app.post("/editCourse",(req,res)=>{
       })
       callback()
     }
-    moveAndParse( function(){
+    moveAndParse( async function(){
       fs.createReadStream(__dirname +'/views/uploads/'+filename)
       .pipe(csv({}))
       .on("data", (data) => {
@@ -729,6 +747,7 @@ app.post("/editCourse",(req,res)=>{
             .then(check=>{
               
               Course.updateOne({_id:courseData._id},{$push:{students:student._id}})
+              .exec()
               .then(()=>{
                 //console.log("Updating with student")
               })
@@ -784,6 +803,7 @@ app.post("/editCourse",(req,res)=>{
           course_id:courseObjectID, 
         })
         surveyResults.save()
+        .exec()
         .then(comfirm =>{
           console.log("saved surveyResults into database")
         })
@@ -803,7 +823,7 @@ app.post("/editCourse",(req,res)=>{
 //this is the confirmation the email sent to the user gets sent to. 
 //checking to see if the code passed through as :variable is the same verification code
 //on the users account. if it is the same then the users verified boolean turns to true.
-app.get('/confirm/:variable',(req,res)=>{
+app.get('/confirm/:variable',checkNotAuthenticated,async(req,res)=>{
   //console.log("Made it here");
   const confirmCode = req.params.variable;
 
@@ -818,7 +838,7 @@ app.get('/confirm/:variable',(req,res)=>{
         
 })
 
-app.get("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
+app.get("/setPassword/:variable",checkNotAuthenticated,async(req,res)=>{
   console.log(req.params.variable)
   User.findOne({temporaryPassword:req.params.variable})
   .then(data=>{
@@ -848,16 +868,17 @@ app.post("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
 })
 
 //if the user has forgotten their password
-app.get("/resetPassword",checkNotAuthenticated,(req,res)=>{
+app.get("/resetPassword",checkNotAuthenticated,async(req,res)=>{
   res.render('resetPassword.ejs',{user:null,error:null})
 
 })
 
-app.post("/resetPassword",checkNotAuthenticated,(req,res)=>{
+app.post("/resetPassword",checkNotAuthenticated,async(req,res)=>{
   
   var to = req.body.email;
   
   User.findOne({email:to})
+  .exec()
   .then((data)=>{
     user = data;
     console.log("successful")
@@ -868,6 +889,7 @@ app.post("/resetPassword",checkNotAuthenticated,(req,res)=>{
     randomString = randomString.replace(slash,"");
     randomString = randomString.replace(period,"");
     User.updateOne({_id: data._id},{temporaryPassword: randomString})
+    .exec()
     .then(()=>{
       console.log("assigned temporaryPassword")
       sendResetPassword(to, data._id,randomString)
@@ -886,7 +908,7 @@ app.post("/resetPassword",checkNotAuthenticated,(req,res)=>{
 
 
 //logs the user out and redirects them to the home page
-app.delete('/logout', (req, res) => {
+app.delete('/logout', async(req, res) => {
   req.logOut()
   res.redirect('/')
 })
@@ -911,6 +933,7 @@ function checkNotAuthenticated(req, res, next) {
 const sgMail = require("@sendgrid/mail");
 const user = require('./Mongoose Models/user');
 const surveyTemplate = require('./Mongoose Models/surveyTemplate');
+const { exec } = require('child_process');
 sgMail.setApiKey(''+process.env.SENDGRID_PW+'');
 
 

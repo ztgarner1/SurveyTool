@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="/style.css" />
     <link rel="stylesheet" href="/w3.css" />
     <link rel="shortcut icon" href="images/favicon.ico">
+    <script src ="/scripts/passwordStrength.js" defer></script>
+    
     <title>Progranimate Testing</title>
   </head>
   <body>
@@ -23,14 +25,14 @@
       </header>
         
         <h1 id= 'main'></h1>
-        <div class = "w3-row" style = "text-align: center;margin-top: 2%;">
+        <div class = "w3-row" style = "text-align: center;margin-top: 2%;" id = "error-message">
             
             <% if(error != null){%>
             <%= error %>
             <% } %>
             
         </div>
-        <form action = '/register' method = "POST" >
+        <form action = '/register' method = "POST" id="formToSubmit">
             <div class = "w3-row" style = "text-align: center;padding-top: 1%;">
                 <label for="name"></label>
                 <input placeholder="Username" name = "name"  type = "text" id = "name" required>   
@@ -39,9 +41,13 @@
                 <label for="email"></label>
                 <input placeholder="Email" name = "email" type = "email" id = "email" required>
             </div>
-            <div class = "w3-row" style = "text-align: center;">
+            <div class = "w3-row" style = "text-align: center; align-items: center; margin-bottom: 1rem;" >
                 <label for="password"></label>
-                <input placeholder="Password" name= 'password'  type = "password" id = "password" required>
+                <input class="password-input" placeholder="Password" name= 'password'  type = "text" id = "password" required>
+                <div class = "strength-meter" id ="strength-meter" name = "strength-meter"></div>
+                <div id="reasons" class="reasons">
+                </div> 
+
             </div>
             <div class = "w3-row" style = "text-align: center;">
                 
@@ -53,7 +59,7 @@
             </div>
             <br>
             <div class = "w3-row" style = "text-align: center;">
-                <button type = "submit">Register</button>
+                <button id = "submitButton">Register</button>
             </div>
             <div class = "w3-row" style = "text-align: center;">
                 Already have an account? Log in on the homepage <a href = "/login" style = "color: blue">log In</a>
@@ -62,9 +68,9 @@
                 <p id = "item-notification" style = "color: green;"> </p>
             </div>
         </form>   
-
     
         
     </body>
-
+    
+    
 </html>

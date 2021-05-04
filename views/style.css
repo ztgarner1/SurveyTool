@@ -143,3 +143,31 @@ ul {
 .slider:hover {
   opacity: 1; 
 }
+
+.strength-meter {
+  position: relative;
+  margin: 0 auto;
+  height: 2rem;
+  width: 30%;
+  border: 3px solid #592C88;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+.strength-meter::before {
+  
+  content: '';
+  position:absolute;
+  left: 0;
+  height: 100%;
+  width: calc(1% * var(--strength,0));
+  background-color: #C1A875;
+  transition: width 200ms;
+}
+
+.password-input {
+  margin-bottom: 1rem;
+}
+
+.reasons > * {
+  margin-top: .5rem;
+}

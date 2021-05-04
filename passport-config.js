@@ -3,8 +3,6 @@
 const localStrategy = require("passport-local").Strategy;
 const mongoose = require("mongoose");
 var bcrypt = require("bcrypt");
-const Student = require('./Mongoose Models/student');
-const Teacher = require('./Mongoose Models/teacher');
 const User = require('./Mongoose Models/user');
 var user;
 function initialize(passport){
@@ -25,9 +23,9 @@ function initialize(passport){
                     if(bcrypt.compareSync(password, user.password)){
                     //console.log(docs[i]);
                         //console.log("comparing password")
-                        console.log(date.getTime());
+                        //console.log(date.getTime());
                         
-                        console.log(date.getTime());
+                        // console.log(date.getTime());
                         if(user.locked){
                             
                             if(date.getTime() - user.timeLocked  < 18000000){
