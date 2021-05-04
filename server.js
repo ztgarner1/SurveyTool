@@ -147,7 +147,7 @@ app.post('/register', checkNotAuthenticated, (req, res) => {
             
           }
           else{
-            console.log("should be here")
+            //console.log("should be here")
             res.render("register.ejs",{error: "Email already in use"});
           
           }
@@ -278,18 +278,20 @@ app.get("/viewCourse/:variable",checkAuthenticated,(req,res) =>{
     if(classData.surveys.length == 0){
       res.render("viewCourse.ejs",{user:req.user, course:classData,surveys:allSurveys, error: null});
     }
-    console.log("Survey number is >> "+ classData.surveys.length)
+    //console.log("Survey number is >> "+ classData.surveys.length)
     for(let i = 0; i < classData.surveys.length;i++){
       SurveyTemplates.findOne({_id:classData.surveys[i]})
       .exec()
       .then(surveyData=>{
         allSurveys.push(surveyData);
         if(i == classData.surveys.length -1){
-          console.log(allSurveys.length)
+          //console.log(allSurveys.length)
           res.render("viewCourse.ejs",{user:req.user, course:classData,surveys:allSurveys, error: null});
         }
       })
-      .catch()
+      .catch(error =>{
+        console.log(error)
+      })
     }
     
   })
@@ -343,7 +345,7 @@ app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
     results.push(schedule);
   }
   student.results = results;
-  console.log(results);
+  //console.log(results);
   
   
   SurveyResults.findOne({survey_id:req.params.survey_id})
@@ -361,7 +363,7 @@ app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
       })
       results.save()
       .then(()=>{
-        console.log("saved into database")
+        //console.log("saved into database")
         res.redirect("/myClasses");
       })
       .catch(error=>{
@@ -371,7 +373,7 @@ app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
     else{
       SurveyResults.updateOne({survey_id:survey.survey_id},{$push:{results:student}})
       .then(()=>{
-        console.log("added to the database")
+        //console.log("added to the database")
         res.redirect("/myClasses");
       })
       .catch(error=>{
@@ -424,7 +426,7 @@ app.post('/createSurvey/:course_id',(req,res)=>{
 			count++;
 			continue;
 		}
-		console.log(req.body[c]);
+		//console.log(req.body[c]);
 		if ((count % 4) == 2) {
 			questionObj.ask = req.body[c];
 		} else if ((count % 4) == 3) {
@@ -511,7 +513,7 @@ app.post('/addClasses',(req,res)=>{
         User.updateOne({_id:req.user._id},{$push:{courses:course._id}})
         .exec()
         .then(()=>{
-          console.log("updated Teacher")
+          //console.log("updated Teacher")
         })
       })
       //adding the course to the teachers teaching array
@@ -527,7 +529,7 @@ app.post('/addClasses',(req,res)=>{
   
     var moveAndParse =   function(callback){
       file.mv(__dirname + "/views/uploads/"+filename, err =>{
-        console.log(err)
+        //console.log(err)
         if(err){
           console.log(err);
           //res.send("error occured" + err);
@@ -580,7 +582,7 @@ app.post('/addClasses',(req,res)=>{
               Course.updateOne({_id:courseData._id},{$push:{students:student._id}})
               .exec()
               .then(()=>{
-                console.log("Updating with student")
+                //console.log("Updating with student")
               })
               .catch(error=>{
                 console.log(error)
@@ -588,7 +590,7 @@ app.post('/addClasses',(req,res)=>{
               
             })
             .catch(error =>{
-              console.log("Did not add to database")
+              //console.log("Did not add to database")
             })
           }
           else{
@@ -608,7 +610,7 @@ app.post('/addClasses',(req,res)=>{
 
   }
   else{
-    console.log("did not work")
+    //console.log("did not work")
   }
 })
 
@@ -704,7 +706,7 @@ app.post("/editCourse",(req,res)=>{
   
     var moveAndParse =  function(callback){
       file.mv(__dirname + "/views/uploads/"+filename, err =>{
-        console.log(err)
+        //console.log(err)
         if(err){
           console.log(err);
           //res.send("error occured" + err);
@@ -806,7 +808,7 @@ app.post("/editCourse",(req,res)=>{
         //console.log("test is >> \n" + test);
       })
       .on("end",() =>{
-        console.log(results.length);
+        //console.log(results.length);
         var surveyResults = new SurveyResults({
           _id: mongoose.Types.ObjectId(),
           results:results,
@@ -824,7 +826,7 @@ app.post("/editCourse",(req,res)=>{
     res.redirect('/classesInfo')
   }
   else{
-    console.log("did not work")
+    //console.log("did not work")
   }
 
 })
@@ -848,7 +850,7 @@ app.get('/confirm/:variable',checkNotAuthenticated,(req,res)=>{
 })
 
 app.get("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
-  console.log(req.params.variable)
+  //console.log(req.params.variable)
   User.findOne({temporaryPassword:req.params.variable})
   .then(data=>{
     
@@ -861,7 +863,7 @@ app.post("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
 
     User.updateOne({temporaryPassword:req.params.variable},{password:bcrypt.hashSync(req.body.firstPassword, bcrypt.genSaltSync(9))})
     .then(()=>{
-      console.log("Added new password")
+      //console.log("Added new password")
       res.redirect('/login');
     })
 
@@ -900,11 +902,11 @@ app.post("/resetPassword",checkNotAuthenticated,(req,res)=>{
     User.updateOne({_id: data._id},{temporaryPassword: randomString})
     .exec()
     .then(()=>{
-      console.log("assigned temporaryPassword")
+      //console.log("assigned temporaryPassword")
       sendResetPassword(to, data._id,randomString)
     })
     .catch(error=>{
-      console.log("failed to assign temporaryPassword")
+      //console.log("failed to assign temporaryPassword")
     })
     
   })
@@ -1010,7 +1012,7 @@ function sendMail(to,user,tempPassword){
     SurveyTemplates.findOne({_id:survey_id})
     .exec()
     .then(surveyObj =>{
-      console.log("here first")
+      //console.log("here first")
       makesTeam(studentsResults,surveyObj,groupsize)
     })
     .catch(error=>{
@@ -1070,7 +1072,7 @@ function makesTeam(studentsResults, survey, groupsize){
       
     }
   }
-  console.log()
+  //console.log()
   console.log(tempTeams)
   makeBestTeams(tempTeams,groupsize)
 }

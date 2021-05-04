@@ -6,6 +6,7 @@ const form = document.getElementById("formToSubmit");
 const submitButton = document.getElementById("submitButton");
 const errors = document.getElementById("error-message")
 
+//this is the total strength of the bar currently
 var totalStrength;
 passwordInput.addEventListener('focus',updateStrengthMeter)
 passwordInput.addEventListener("input",updateStrengthMeter)
@@ -14,7 +15,7 @@ submitButton.addEventListener("click",()=>{
     console.log("working")
     const weaknesses = calculatePasswordStrength(passwordInput.value)
     console.log(totalStrength)
-    if(totalStrength >= 65){
+    if(totalStrength >= 70){
         weaknesses.forEach(weakness =>{
             if(weakness.message === "Passwords do not match"){
                 error.innerText = "Passwords do not match"
