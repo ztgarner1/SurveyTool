@@ -265,22 +265,23 @@ app.post('/myClasses', checkAuthenticated,(req,res)=>{
 
 app.get("/viewCourse/:variable",checkAuthenticated,(req,res) =>{
   var allSurveys = [];
+  
   Course.findOne({_id: req.params.variable})
   .then(classData =>{
-    console.log(classData.surveys.length)
     if(classData.surveys.length == 0){
       res.render("viewCourse.ejs",{user:req.user, course:classData,surveys:allSurveys, error: null});
     }
+    console.log("Survey number is >> "+ classData.surveys.length)
     for(let i = 0; i < classData.surveys.length;i++){
       SurveyTemplates.findOne({_id:classData.surveys[i]})
       .then(surveyData=>{
         allSurveys.push(surveyData);
         if(i == classData.surveys.length -1){
+          console.log(allSurveys.length)
           res.render("viewCourse.ejs",{user:req.user, course:classData,surveys:allSurveys, error: null});
         }
       })
       .catch()
-      
     }
     
   })
@@ -313,14 +314,27 @@ app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
   //varible will be the course_id
   var student = {};
   var results = [];
+  var schedule = [];
+  var check = false;
   student._id = req.user._id;
-  for( i in req.body){
-    results.push(req.body[i]);
-    console.log();
+  for( i in req.body){ 
+    if(i.include("schedule")){
+      check = true;
+      schedule.push(i);
+    }
+    else{
+      check = false;
+      results.push(req.body[i]);
+    }
+    
+  }
+  if(check){
+    results.push(schedule);
   }
   student.results = results;
+  console.log(results);
   
-
+  
   SurveyResults.findOne({survey_id:req.params.survey_id})
   .then(survey=>{
     if(survey == null){
@@ -341,6 +355,7 @@ app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
         console.log("ERROR in student survey post >> " + error);
       })
     }
+    
     else{
       SurveyResults.updateOne({survey_id:survey.survey_id},{$push:{results:student}})
     }
@@ -369,6 +384,7 @@ app.get('/createSurvey/:variable',checkAuthenticated, (req, res) => {
 app.post('/createSurvey/:course_id',(req,res)=>{
   
 	var questionsArray = [];
+  var tempSchedule= [];
 	var weight = 0;
 	var count = 0;
 	
@@ -394,7 +410,13 @@ app.post('/createSurvey/:course_id',(req,res)=>{
 			questionObj.answers = req.body[c];
 		} else if ((count % 4) == 1) {
 			questionObj.weight = req.body[c];
-			questionsArray.push(questionObj);
+      if(questionObj.type=="schedule"){
+        tempSchedule.push(questionObj);
+      }
+      else{
+        questionsArray.push(questionObj);
+      }
+			
 			questionObj = {
 				ask: "",
 				type: "",
@@ -404,6 +426,10 @@ app.post('/createSurvey/:course_id',(req,res)=>{
 		}
 		count++;
 	}
+  for(let i = 0; i < tempSchedule.length; i++){
+    questionsArray.push(tempSchedule[i]);
+  }
+  
 	
 	SurveyTemplates.findOne({title:req.body.surveyTitle})
 		.then(data=>{

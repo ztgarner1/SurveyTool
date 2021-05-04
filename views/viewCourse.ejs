@@ -58,12 +58,12 @@
         <% } else{  %>
         <form action "/viewCourse" method="POST">
         <div class = "w3-row" style = "border-top: 1px solid black;border: 1px solid black" id="">
-            <select size = "3" name = "survey" id="question" style = "width:auto">
+            <select size = "3" name = "survey" id="question" style = "width:25%">
                 <% for(let i=0; i < surveys.length;i++){ %>
                 
-                <div id="<% i %>">
-                    <option value = "<%= surveys[i]._id %>"> <%= surveys[i].title %></option>
-                </div>     
+                  <div id="<% i %>">
+                      <option value = "<%= surveys[i]._id %>"> <%= surveys[i].title %></option>
+                  </div>     
                 <% } %>
             </select>
         </div>

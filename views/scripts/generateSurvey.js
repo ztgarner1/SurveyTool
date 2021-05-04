@@ -45,6 +45,7 @@ function genHTML() {
 			}
 		}
 		else if(surveyQues[i].type == "schedule"){
+			tempStr += "<h4>" + j + ") " + surveyQues[i].ques + "</h4>";
 			tempStr += "<table>"+
 			"<tr>"+ 
 				"<th>Time</th>"+
@@ -58,143 +59,143 @@ function genHTML() {
 			"</tr>"+
 			"<tr>"+
 				"<td>8am</td>" +
-				"<td><input type='checkbox' id='q2sun1' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2mon1' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2tue1' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2wed1' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2thr1' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2fri1' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2sat1' name='schedule'/></td>" +
+				"<td><input type='checkbox' name='schedulesun1' /></td>" +
+				"<td><input type='checkbox' name='schedulemon1' /></td>" +
+				"<td><input type='checkbox' name='scheduletue1' /></td>" +
+				"<td><input type='checkbox' name='schedulewed1' /></td>" +
+				"<td><input type='checkbox' name='schedulethr1' /></td>" +
+				"<td><input type='checkbox' name='schedulefri1' /></td>" +
+				"<td><input type='checkbox' name='schedulesat1' /></td>" +
 			"</tr>"+
 			"<tr>"+
 				"<td>9am</td>" +
-				"<td><input type='checkbox' id='q2sun2' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2mon2' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2tue2' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2wed2' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2thr2' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2fri2' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2sat2' name='schedule'/></td>" +
+				"<td><input type='checkbox' name='schedulesun2' /></td>" +
+				"<td><input type='checkbox' name='schedulemon2' /></td>" +
+				"<td><input type='checkbox' name='scheduletue2' /></td>" +
+				"<td><input type='checkbox' name='schedulewed2' /></td>" +
+				"<td><input type='checkbox' name='schedulethr2' /></td>" +
+				"<td><input type='checkbox' name='schedulefri2' /></td>" +
+				"<td><input type='checkbox' name='schedulesat2' /></td>" +
 			"</tr>"+
 			"<tr>"+
 				"<td>10am</td>" +
-				"<td><input type='checkbox' id='q2sun3' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2mon3' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2tue3' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2wed3' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2thr3' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2fri3' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2sat3' name='schedule'/></td>" +
+				"<td><input type='checkbox' name='schedulesun3' /></td>" +
+				"<td><input type='checkbox' name='schedulemon3' /></td>" +
+				"<td><input type='checkbox' name='scheduletue3' /></td>" +
+				"<td><input type='checkbox' name='schedulewed3' /></td>" +
+				"<td><input type='checkbox' name='schedulethr3' /></td>" +
+				"<td><input type='checkbox' name='schedulefri3' /></td>" +
+				"<td><input type='checkbox' name='schedulesat3' /></td>" +
 			"</tr>"+
 			"<tr>"+
 				"<td>11am</td>" +
-				"<td><input type='checkbox' id='q2sun4' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2mon4' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2tue4' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2wed4' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2thr4' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2fri4' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2sat4' name='schedule'/></td>" +
+				"<td><input type='checkbox' name='schedulesun4' /></td>" +
+				"<td><input type='checkbox' name='schedulemon4' /></td>" +
+				"<td><input type='checkbox' name='scheduletue4' /></td>" +
+				"<td><input type='checkbox' name='schedulewed4' /></td>" +
+				"<td><input type='checkbox' name='schedulethr4' /></td>" +
+				"<td><input type='checkbox' name='schedulefri4' /></td>" +
+				"<td><input type='checkbox' name='schedulesat4' /></td>" +
 			"</tr>"+
 			"<tr>"+
 				"<td>12pm</td>" +
-				"<td><input type='checkbox' id='q2sun5' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2mon5' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2tue5' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2wed5' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2thr5' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2fri5' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2sat5' name='schedule'/></td>" +
+				"<td><input type='checkbox' name='schedulesun5' /></td>" +
+				"<td><input type='checkbox' name='schedulemon5' /></td>" +
+				"<td><input type='checkbox' name='scheduletue5' /></td>" +
+				"<td><input type='checkbox' name='schedulewed5' /></td>" +
+				"<td><input type='checkbox' name='schedulethr5' /></td>" +
+				"<td><input type='checkbox' name='schedulefri5' /></td>" +
+				"<td><input type='checkbox' name='schedulesat5' /></td>" +
 			"</tr>"+
 			"<tr>"+
 				"<td>1pm</td>" +
-				"<td><input type='checkbox' id='q2sun6' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2mon6' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2tue6' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2wed6' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2thr6' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2fri6' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2sat6' name='schedule'/></td>" +
+				"<td><input type='checkbox' name='schedulesun6' /></td>" +
+				"<td><input type='checkbox' name='schedulemon6' /></td>" +
+				"<td><input type='checkbox' name='scheduletue6' /></td>" +
+				"<td><input type='checkbox' name='schedulewed6' /></td>" +
+				"<td><input type='checkbox' name='schedulethr6' /></td>" +
+				"<td><input type='checkbox' name='schedulefri6' /></td>" +
+				"<td><input type='checkbox' name='schedulesat6' /></td>" +
 			"</tr>"+
 			"<tr>"+
 				"<td>2pm</td>" +
-				"<td><input type='checkbox' id='q2sun7' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2mon7' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2tue7' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2wed7' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2thr7' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2fri7' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2sat7' name='schedule'/></td>" +
+				"<td><input type='checkbox' name='schedulesun7' /></td>" +
+				"<td><input type='checkbox' name='schedulemon7' /></td>" +
+				"<td><input type='checkbox' name='scheduletue7' /></td>" +
+				"<td><input type='checkbox' name='schedulewed7' /></td>" +
+				"<td><input type='checkbox' name='schedulethr7' /></td>" +
+				"<td><input type='checkbox' name='schedulefri7' /></td>" +
+				"<td><input type='checkbox' name='schedulesat7' /></td>" +
 			"</tr>"+
 			"<tr>"+
 				"<td>3pm</td>" +
-				"<td><input type='checkbox' id='q2sun8' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2mon8' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2tue8' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2wed8' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2thr8' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2fri8' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2sat8' name='schedule'/></td>" +
+				"<td><input type='checkbox' name='schedulesun8' /></td>" +
+				"<td><input type='checkbox' name='schedulemon8' /></td>" +
+				"<td><input type='checkbox' name='scheduletue8' /></td>" +
+				"<td><input type='checkbox' name='schedulewed8' /></td>" +
+				"<td><input type='checkbox' name='schedulethr8' /></td>" +
+				"<td><input type='checkbox' name='schedulefri8' /></td>" +
+				"<td><input type='checkbox' name='schedulesat8' /></td>" +
 			"</tr>"+
 			"<tr>"+
 				"<td>4pm</td>" +
-				"<td><input type='checkbox' id='q2sun9' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2mon9' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2tue9' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2wed9' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2thr9' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2fri9' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2sat9' name='schedule'/></td>" +
+				"<td><input type='checkbox' name='schedulesun9' /></td>" +
+				"<td><input type='checkbox' name='schedulemon9' /></td>" +
+				"<td><input type='checkbox' name='scheduletue9' /></td>" +
+				"<td><input type='checkbox' name='schedulewed9' /></td>" +
+				"<td><input type='checkbox' name='schedulethr9' /></td>" +
+				"<td><input type='checkbox' name='schedulefri9' /></td>" +
+				"<td><input type='checkbox' name='schedulesat9' /></td>" +
 			"</tr>"+
 			"<tr>"+
 				"<td>5pm</td>" +
-				"<td><input type='checkbox' id='q2sun10' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2mon10' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2tue10' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2wed10' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2thr10' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2fri10' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2sat10' name='schedule'/></td>" +
+				"<td><input type='checkbox' name='schedulesun10' /></td>" +
+				"<td><input type='checkbox' name='schedulemon10' /></td>" +
+				"<td><input type='checkbox' name='scheduletue10' /></td>" +
+				"<td><input type='checkbox' name='schedulewed10' /></td>" +
+				"<td><input type='checkbox' name='schedulethr10' /></td>" +
+				"<td><input type='checkbox' name='schedulefri10' /></td>" +
+				"<td><input type='checkbox' name='schedulesat10' /></td>" +
 			"</tr>"+
 			"<tr>"+
 				"<td>6pm</td>" +
-				"<td><input type='checkbox' id='q2sun11'name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2mon11'name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2tue11'name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2wed11'name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2thr11'name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2fri11'name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2sat11'name='schedule'/></td>" +
+				"<td><input type='checkbox' name='schedulesun11'/></td>" +
+				"<td><input type='checkbox' name='schedulemon11'/></td>" +
+				"<td><input type='checkbox' name='scheduletue11'/></td>" +
+				"<td><input type='checkbox' name='schedulewed11'/></td>" +
+				"<td><input type='checkbox' name='schedulethr11'/></td>" +
+				"<td><input type='checkbox' name='schedulefri11'/></td>" +
+				"<td><input type='checkbox' name='schedulesat11'/></td>" +
 			"</tr>"+
 			"<tr>"+
 				"<td>7pm</td>" +
-				"<td><input type='checkbox' id='q2sun12'name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2mon12'name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2tue12'name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2wed12'name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2thr12'name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2fri12'name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2sat12'name='schedule'/></td>" +
+				"<td><input type='checkbox' name='schedulesun12'/></td>" +
+				"<td><input type='checkbox' name='schedulemon12'/></td>" +
+				"<td><input type='checkbox' name='scheduletue12'/></td>" +
+				"<td><input type='checkbox' name='schedulewed12'/></td>" +
+				"<td><input type='checkbox' name='schedulethr12'/></td>" +
+				"<td><input type='checkbox' name='schedulefri12'/></td>" +
+				"<td><input type='checkbox' name='schedulesat12'/></td>" +
 			"</tr>"+
 			"<tr>"+
 				"<td>8pm</td>" +
-				"<td><input type='checkbox' id='q2sun13'name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2mon13'name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2tue13'name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2wed13'name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2thr13'name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2fri13'name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2sat13'name='schedule'/></td>" +
+				"<td><input type='checkbox' name='schedulesun13'/></td>" +
+				"<td><input type='checkbox' name='schedulemon13'/></td>" +
+				"<td><input type='checkbox' name='scheduletue13'/></td>" +
+				"<td><input type='checkbox' name='schedulewed13'/></td>" +
+				"<td><input type='checkbox' name='schedulethr13'/></td>" +
+				"<td><input type='checkbox' name='schedulefri13'/></td>" +
+				"<td><input type='checkbox' name='schedulesat13'/></td>" +
 			"</tr>"+
 			"<tr>"+
 				"<td>9pm</td>" +
-				"<td><input type='checkbox' id='q2sun14' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2mon14' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2tue14' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2wed14' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2thr14' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2fri14' name='schedule'/></td>" +
-				"<td><input type='checkbox' id='q2sat14' name='schedule'/></td>" +
+				"<td><input type='checkbox' name='schedulesun14' /></td>" +
+				"<td><input type='checkbox' name='schedulemon14' /></td>" +
+				"<td><input type='checkbox' name='scheduletue14' /></td>" +
+				"<td><input type='checkbox' name='schedulewed14' /></td>" +
+				"<td><input type='checkbox' name='schedulethr14' /></td>" +
+				"<td><input type='checkbox' name='schedulefri14' /></td>" +
+				"<td><input type='checkbox' name='schedulesat14' /></td>" +
 			"</tr>"+
 		"<table>";
 		}
