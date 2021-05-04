@@ -14,6 +14,7 @@ const userSchema = mongoose.Schema({
     confirmCode: String,
     isTeacher: Boolean,
     studentId: Number,
+    takenSurveys: Array,
 })
 
 module.exports = mongoose.model("User", userSchema);

@@ -82,7 +82,7 @@
 		<button id='submitSurvey' type='submit' form='createSurvey'>Save Survey</button>
 		<button id='resetSurvey' type="button" onclick="resetSurvey();">Reset Survey</button>
 		
-		<form action="/createSurvey" enctype="multipart/form-data" method='POST' id='createSurvey'>
+		<form action="/createSurvey/<%= course._id %>" enctype="multipart/form-data" method='POST' id='createSurvey'>
 			<h4>Survey For Class:</h4>
 			<input name="courseName" value = "<%= course.course_id %>,<%= course.section %>"    readonly>
 			<h4>Enter Survey Title</h4>

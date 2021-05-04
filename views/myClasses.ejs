@@ -57,30 +57,30 @@
               
             <%}else{ %>
               <form action="/myClasses" method="POST">
-              <div class = "w3-row" style = "border-top: 1px solid black;border: 1px solid black; align-items: center;" >
-                <select size = "3" name = "classes" id="question" style = "width:50%; background-color:gray; border-color: black;">
-                  <% for(let i=0; i < courses.length;i++){ %>
-                    
-                    <div id="<% i %>">
-                      <% if(courses[i].surveys.length !=0 ){ %>
-                        <option value = "<%= courses[i]._id %>"> <%= courses[i].course_id %>-<%= courses[i].section %> , Surveys Available </option>
-                      <% } else { %>
-                      <option value = "<%= courses[i]._id %>"> <%= courses[i].course_id %>-<%= courses[i].section %> , No Surveys Yet </option>
+                <div class = "w3-row" style = "border-top: 1px solid black;border: 1px solid black; align-items: center;" >
+                  <select size = "3" name = "classes" id="question" style = "width:50%; background-color:gray; border-color: black;">
+                    <% for(let i=0; i < courses.length;i++){ %>
+                      
+                      <div id="<% i %>">
+                        <% if(courses[i].surveys.length !=0 ){ %>
+                          <option value = "<%= courses[i]._id %>"> <%= courses[i].course_id %>-<%= courses[i].section %> , Surveys Available </option>
+                        <% } else { %>
+                        <option value = "<%= courses[i]._id %>"> <%= courses[i].course_id %>-<%= courses[i].section %> , No Surveys Yet </option>
 
-                      <% } %>
-                    </div>     
-                  <% } %>
-                </select>
-                <div class= "w3-row" style = "width:50%;align-items: center; margin-left: 35%;">
-                  <div class = "w3-col" style = "width: 20%;">
-                    <button id="addCourse"><a href = "/" style = "text-decoration: none;">Exit</a></button>
+                        <% } %>
+                      </div>     
+                    <% } %>
+                  </select>
+                  <div class= "w3-row" style = "width:50%;align-items: center; margin-left: 35%;">
+                    <div class = "w3-col" style = "width: 20%;">
+                      <button id="addCourse"><a href = "/" style = "text-decoration: none;">Exit</a></button>
+                    </div>
+                    
+                    <div class = "w3-col" style = "width: 50%">
+                      <button id="EditCourse" type = "submit">Go To Course</button>
+                    </div>
                   </div>
-                  
-                  <div class = "w3-col" style = "width: 50%">
-                    <button id="EditCourse" type = "submit">Go To Course</button>
                   </div>
-                </div>
-                </div>
                 </form>
                 
             <% }%>

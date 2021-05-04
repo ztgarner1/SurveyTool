@@ -16,7 +16,7 @@ function addQuestion(questype, question, answers) {
 
 //Generates a string to be written into the html page
 function genHTML() {
-	
+	console.log(quesSec)
 	var tempStr = "";
 	
 	var i;
@@ -26,16 +26,21 @@ function genHTML() {
 		
 		if (surveyQues[i].type == "text") {
 			tempStr += "<h4>" + j + ") " + surveyQues[i].ques + "</h4>";
-			tempStr += "<input type=\"text\" id=\"q" + j + "\" />";
+			tempStr += "<input autocomplete='false' type=\"text\" name=\"q" + j + "\" />";
 		} else if (surveyQues[i].type == "checkbox") {
 			tempStr += "<h4>" + j + ") " + surveyQues[i].ques + "</h4>";
-			tempStr += "<input type=\"checkbox\" id=\"q" + j + "\" />";
+			for (x = 0; x < surveyQues[i].ans.length; x++) {
+				var temp = surveyQues[i].ans[x];
+				tempStr += "<input autocomplete='false' type=\"checkbox\" name=\"q" + j + "\" value=\"" + temp + "\">" + temp + "</input>";
+				tempStr += "<br>"
+			}
+			
 		} else if (surveyQues[i].type == "radio") {
 			tempStr += "<h4>" + j + ") " + surveyQues[i].ques + "</h4>";
 			var x;
 			for (x = 0; x < surveyQues[i].ans.length; x++) {
 				var temp = surveyQues[i].ans[x];
-				tempStr += "<input type=\"radio\" name=\"q" + j + "\" value=\"" + temp + "\">" + temp + "</input>";
+				tempStr += "<input autocomplete='false' type=\"radio\" name=\"q" + j + "\" value=\"" + temp + "\">" + temp + "</input>";
 				tempStr += "<br>"
 			}
 			
@@ -44,18 +49,13 @@ function genHTML() {
 	}
 	quesSec.innerHTML = tempStr;
 }
-//This is a temporary function to show how the system works
-function generate() {
-	addQuestion("text", "What is your current GPA?", []);
-	addQuestion("checkbox", "Do you live on campus?", []);
-	addQuestion("text", "What is your age?", []);
-	addQuestion("checkbox", "Do you work?", []);
-	addQuestion("text", "How many hours do you put into homework?", []);
-	addQuestion("checkbox", "Have you taken CS???", []);
-	addQuestion("radio", "Do you like pie", ["Yes", "No", "Never tried it"]);
+
+function generateQuestion(ask,type, answers ){
+	console.log("adding a question")
+	addQuestion(type, ask, answers.split(/[ ]*,[ ]*/));
 	genHTML();
 }
-
-window.onload = function() {
-    quesSec = document.getElementById("questionsSections");
+function setDiv(){
+	quesSec = document.getElementById("questionsSections");
 }
+

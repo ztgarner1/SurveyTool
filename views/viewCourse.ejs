@@ -5,15 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="/style.css" />
     <link rel="stylesheet" href="/w3.css" />
-    <link rel="shortcut icon" href="images/favicon.ico">
-    <script src = "./scripts/addStudent.js"></script>
+    <link rel="shortcut icon" href="/images/favicon.ico">
     <title>Edit Course</title>
   </head>
   <body>
       <header>
         <div class="navbar">
             <img
-              src="images/wcu_logo.png"
+              src="/images/wcu_logo.png"
               alt="WCU Logo"
               id="logo"
               align="left"
@@ -57,9 +56,9 @@
             There are no surveys for this class yet
         
         <% } else{  %>
-        
+        <form action "/viewCourse" method="POST">
         <div class = "w3-row" style = "border-top: 1px solid black;border: 1px solid black" id="">
-            <select size = "3" name = "classes" id="question" style = "width:auto">
+            <select size = "3" name = "survey" id="question" style = "width:auto">
                 <% for(let i=0; i < surveys.length;i++){ %>
                 
                 <div id="<% i %>">
@@ -68,8 +67,11 @@
                 <% } %>
             </select>
         </div>
+        <div class ="w3-row">
+          <button type ="submit">Take Survey</button>
+        </div>
         <% } %>
-        
+        </form>
         
         
       </div>

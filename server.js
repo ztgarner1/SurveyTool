@@ -11,7 +11,7 @@ const fileUpload = require('express-fileupload')
 const csv = require('csv-parser')
 const fs = require('fs');
 app.use(fileUpload());
-
+const path = require('path');
 var courses;
 //this helps log a user out
 const methodOverride = require('method-override')
@@ -46,7 +46,7 @@ app.use(session({
   saveUninitialized: false,
 }))
 //telling the server which files to look at
-app.use(express.static(__dirname + "/views"));
+app.use(express.static(path.join(__dirname, 'views')));
 app.use(express.static(__dirname + "/Mongoose Models"));
 app.use(passport.initialize())
 app.use(passport.session())
@@ -263,10 +263,11 @@ app.post('/myClasses', checkAuthenticated,(req,res)=>{
   }
 })
 
-app.get("/viewCourse/:variable",(req,res) =>{
+app.get("/viewCourse/:variable",checkAuthenticated,(req,res) =>{
   var allSurveys = [];
   Course.findOne({_id: req.params.variable})
   .then(classData =>{
+    console.log(classData.surveys.length)
     if(classData.surveys.length == 0){
       res.render("viewCourse.ejs",{user:req.user, course:classData,surveys:allSurveys, error: null});
     }
@@ -288,8 +289,70 @@ app.get("/viewCourse/:variable",(req,res) =>{
   })
 })
 
+app.post("/viewCourse/:variable",checkAuthenticated, (req,res)=>{
+  SurveyTemplates.findOne({_id:req.body.survey})
+  .then(surveyData=>{
+    //res.render("studentSurvey.ejs",{user:req.user,error:null, survey:surveyData});
+    res.redirect("/studentSurvey/"+surveyData.id)
+  })
+  .catch(error=>{
+    res.redirect("/classesInfo");
+  })
+})
+
+app.get("/studentSurvey/:variable",checkAuthenticated,(req,res)=>{
+    surveyTemplate.findOne({_id:req.params.variable})
+    .then(surveyData =>{
+      res.render("studentSurvey.ejs",{user:req.user, survey:surveyData})
+    })
+    .catch(error=>{
+      res.redirect("/");
+    })
+})
+app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
+  //varible will be the course_id
+  var student = {};
+  var results = [];
+  student._id = req.user._id;
+  for( i in req.body){
+    results.push(req.body[i]);
+    console.log();
+  }
+  student.results = results;
+  
+
+  SurveyResults.findOne({survey_id:req.params.survey_id})
+  .then(survey=>{
+    if(survey == null){
+      //then we need to create a survey Results here
+      var settUp = [];
+      settUp.push(student);
+      var results = SurveyResults({
+        _id: new mongoose.Types.ObjectId(),
+        results:settUp,
+        course_id:req.params.course_id,
+        survey_id:req.params.survey_id,
+      })
+      results.save()
+      .then(()=>{
+        res.redirect("/myClasses");
+      })
+      .catch(error=>{
+        console.log("ERROR in student survey post >> " + error);
+      })
+    }
+    else{
+      SurveyResults.updateOne({survey_id:survey.survey_id},{$push:{results:student}})
+    }
+  })
+
+  res.redirect("/myClasses");
+  
+})
+
 app.get('/createSurvey/:variable',checkAuthenticated, (req, res) => {
   var check;
+  
   Course.findOne({_id: req.params.variable})
   .then(courseData =>{
     if(courseData != null){
@@ -303,7 +366,7 @@ app.get('/createSurvey/:variable',checkAuthenticated, (req, res) => {
   
 })
 
-app.post('/createSurvey',(req,res)=>{
+app.post('/createSurvey/:course_id',(req,res)=>{
   
 	var questionsArray = [];
 	var weight = 0;
@@ -349,6 +412,7 @@ app.post('/createSurvey',(req,res)=>{
 					_id: new mongoose.Types.ObjectId(),
 					title: req.body.surveyTitle,
 					questions: questionsArray,
+          course_id: req.params.course_id ,
 				})
 				template.save()
         .then(check=>{
@@ -818,6 +882,7 @@ function checkNotAuthenticated(req, res, next) {
 //mailing info
 const sgMail = require("@sendgrid/mail");
 const user = require('./Mongoose Models/user');
+const surveyTemplate = require('./Mongoose Models/surveyTemplate');
 sgMail.setApiKey(''+process.env.SENDGRID_PW+'');
 
 
