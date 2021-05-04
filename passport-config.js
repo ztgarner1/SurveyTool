@@ -32,7 +32,7 @@ function initialize(passport){
                                 return done(null, false, {message: "Account is locked"})
                             }
                             else{
-                                User.updateOne({email:user.email},{attempts:0})
+                                User.updateOne({email:user.email},{attempts:0,locked:false})
                                 .catch(error=>{
                                     console.log(error)
                                 })
@@ -64,7 +64,7 @@ function initialize(passport){
                         })
                         if(user.attempts == 5){
 
-                            User.updateOne({email:user.email}, {attempts:user.attempts,timeLocked:date.getTime()})
+                            User.updateOne({email:user.email}, {attempts:user.attempts,locked:true,timeLocked:date.getTime()})
                             .catch(error=>{
                                 console.log(error)
                             })

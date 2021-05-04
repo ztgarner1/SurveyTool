@@ -102,11 +102,11 @@ app.get("/contactImport",checkAuthenticated,(req,res)=>{
 })
 
 //server serving the register page where the user cant be logged in
-app.get('/register', checkNotAuthenticated,async (req, res) => {
+app.get('/register', checkNotAuthenticated, (req, res) => {
   res.render('register.ejs',{error: null})
 })
 //server getting a post request to register a new account.
-app.post('/register', checkNotAuthenticated, async(req, res) => {
+app.post('/register', checkNotAuthenticated, (req, res) => {
   try {
       //initializing a boolean
       
@@ -269,7 +269,7 @@ app.post('/myClasses', checkAuthenticated,(req,res)=>{
   }
 })
 
-app.get("/viewCourse/:variable",checkAuthenticated,async(req,res) =>{
+app.get("/viewCourse/:variable",checkAuthenticated,(req,res) =>{
   var allSurveys = [];
   
   Course.findOne({_id: req.params.variable})
@@ -298,7 +298,7 @@ app.get("/viewCourse/:variable",checkAuthenticated,async(req,res) =>{
   })
 })
 
-app.post("/viewCourse/:variable",checkAuthenticated, async(req,res)=>{
+app.post("/viewCourse/:variable",checkAuthenticated, (req,res)=>{
   SurveyTemplates.findOne({_id:req.body.survey})
   .then(surveyData=>{
     //res.render("studentSurvey.ejs",{user:req.user,error:null, survey:surveyData});
@@ -309,7 +309,7 @@ app.post("/viewCourse/:variable",checkAuthenticated, async(req,res)=>{
   })
 })
 
-app.get("/studentSurvey/:variable",checkAuthenticated,async(req,res)=>{
+app.get("/studentSurvey/:variable",checkAuthenticated,(req,res)=>{
     surveyTemplate.findOne({_id:req.params.variable})
     .exec()
     .then(surveyData =>{
@@ -387,7 +387,7 @@ app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
   
 })
 
-app.get('/createSurvey/:variable',checkAuthenticated, async(req, res) => {
+app.get('/createSurvey/:variable',checkAuthenticated, (req, res) => {
   var check;
   
   Course.findOne({_id: req.params.variable})
@@ -404,7 +404,7 @@ app.get('/createSurvey/:variable',checkAuthenticated, async(req, res) => {
   
 })
 
-app.post('/createSurvey/:course_id',async(req,res)=>{
+app.post('/createSurvey/:course_id',(req,res)=>{
   
 	var questionsArray = [];
   var tempSchedule= [];
@@ -482,14 +482,14 @@ app.post('/createSurvey/:course_id',async(req,res)=>{
 })
 
 //renders the addClasses.ejs page
-app.get('/addClasses',checkAuthenticated,async(req,res)=>{
+app.get('/addClasses',checkAuthenticated,(req,res)=>{
   res.render('addClasses.ejs',{user: req.user})
 })
 
 /**
  * this will be called whenever a post method is made to /addClasses
  */
-app.post('/addClasses',async(req,res)=>{
+app.post('/addClasses',(req,res)=>{
   var courseData = null;
   Course.findOne({course_id:req.body.courseId,section:req.body.courseSection})
   .then(data=>{
@@ -525,7 +525,7 @@ app.post('/addClasses',async(req,res)=>{
      filename = file.name
     var results = [];
   
-    var moveAndParse =  async function(callback){
+    var moveAndParse =   function(callback){
       file.mv(__dirname + "/views/uploads/"+filename, err =>{
         console.log(err)
         if(err){
@@ -535,7 +535,7 @@ app.post('/addClasses',async(req,res)=>{
       })
       callback()
     }
-    moveAndParse( async function(){
+    moveAndParse(  function(){
       fs.createReadStream(__dirname +'/views/uploads/'+filename)
       .pipe(csv({}))
       .on("data", (data) => {
@@ -616,7 +616,7 @@ app.post('/addClasses',async(req,res)=>{
  * This will call when a user goes to classesInfo page. This page is only for teachers
  * if the user is not a teacher they get redirected to /myClasses
  */
-app.get("/classesInfo",checkAuthenticated,async(req,res)=>{
+app.get("/classesInfo",checkAuthenticated,(req,res)=>{
   if(req.user.isTeacher){
     var courses = [];
     
@@ -638,7 +638,7 @@ app.get("/classesInfo",checkAuthenticated,async(req,res)=>{
 /**
  * this post method gets what class is chosen to edit 
  */
-app.post('/classesInfo',checkAuthenticated,async (req,res)=>{
+app.post('/classesInfo',checkAuthenticated, (req,res)=>{
   //console.log(req.body.classes);
   if(req.body.classes == undefined){
     Course.find({intructor:req.user.id})
@@ -702,7 +702,7 @@ app.post("/editCourse",(req,res)=>{
      filename = file.name
     var results = [];
   
-    var moveAndParse = async function(callback){
+    var moveAndParse =  function(callback){
       file.mv(__dirname + "/views/uploads/"+filename, err =>{
         console.log(err)
         if(err){
@@ -712,7 +712,7 @@ app.post("/editCourse",(req,res)=>{
       })
       callback()
     }
-    moveAndParse( async function(){
+    moveAndParse(  function(){
       fs.createReadStream(__dirname +'/views/uploads/'+filename)
       .pipe(csv({}))
       .on("data", (data) => {
@@ -832,7 +832,7 @@ app.post("/editCourse",(req,res)=>{
 //this is the confirmation the email sent to the user gets sent to. 
 //checking to see if the code passed through as :variable is the same verification code
 //on the users account. if it is the same then the users verified boolean turns to true.
-app.get('/confirm/:variable',checkNotAuthenticated,async(req,res)=>{
+app.get('/confirm/:variable',checkNotAuthenticated,(req,res)=>{
   //console.log("Made it here");
   const confirmCode = req.params.variable;
 
@@ -847,7 +847,7 @@ app.get('/confirm/:variable',checkNotAuthenticated,async(req,res)=>{
         
 })
 
-app.get("/setPassword/:variable",checkNotAuthenticated,async(req,res)=>{
+app.get("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
   console.log(req.params.variable)
   User.findOne({temporaryPassword:req.params.variable})
   .then(data=>{
@@ -877,15 +877,15 @@ app.post("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
 })
 
 //if the user has forgotten their password
-app.get("/resetPassword",checkNotAuthenticated,async(req,res)=>{
+app.get("/resetPassword",checkNotAuthenticated,(req,res)=>{
   res.render('resetPassword.ejs',{user:null,error:null})
 
 })
 
-app.post("/resetPassword",checkNotAuthenticated,async(req,res)=>{
+app.post("/resetPassword",checkNotAuthenticated,(req,res)=>{
   
   var to = req.body.email;
-  
+  var user;
   User.findOne({email:to})
   .exec()
   .then((data)=>{
@@ -917,7 +917,7 @@ app.post("/resetPassword",checkNotAuthenticated,async(req,res)=>{
 
 
 //logs the user out and redirects them to the home page
-app.delete('/logout', async(req, res) => {
+app.delete('/logout', (req, res) => {
   req.logOut()
   res.redirect('/')
 })
@@ -999,7 +999,7 @@ function sendMail(to,user,tempPassword){
   }
 }
 
-async function searchForSurvey(id,groupsize){
+ function searchForSurvey(id,groupsize){
   var survey_id;
   var studentsResults;
   SurveyResults.findOne({_id:id})
@@ -1072,7 +1072,7 @@ function makesTeam(studentsResults, survey, groupsize){
   }
   console.log()
   console.log(tempTeams)
-  makeBestTeams(tempTeams,groupSize)
+  makeBestTeams(tempTeams,groupsize)
 }
 
 function makeBestTeams(tempTeams,groupSize){
