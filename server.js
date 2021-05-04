@@ -223,7 +223,7 @@ app.get("/profile" ,checkAuthenticated,(req,res)=>{
 
 //server responding to the myCourses post
 app.get('/myClasses',checkAuthenticated,(req,res)=>{
-  console.log(req.user.isTeacher);
+  //console.log(req.user.isTeacher);
   if(req.user.isTeacher){
     res.redirect('/classesInfo');
   }
@@ -234,11 +234,11 @@ app.get('/myClasses',checkAuthenticated,(req,res)=>{
     if(req.user.courses.length == 0){
       res.render('myClasses.ejs',{user:req.user, courses:allCourses})
     }
-    console.log(req.user.courses.length)
+    //console.log(req.user.courses.length)
     for(let i = 0; i < req.user.courses.length; i++ ){
       Course.findOne({_id:req.user.courses[i]})
       .then(courseData=>{
-        console.log("adding course")
+        //console.log("adding course")
         allCourses.push(courseData);
         if(i == req.user.courses.length -1){
         
@@ -327,7 +327,7 @@ app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
   var check = false;
   student._id = req.user._id;
   for( let i in req.body){ 
-    console.log(i)
+    //console.log(i)
     if(i.includes("schedule")){
       
       check = true;
@@ -361,15 +361,22 @@ app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
       })
       results.save()
       .then(()=>{
+        console.log("saved into database")
         res.redirect("/myClasses");
       })
       .catch(error=>{
         console.log("ERROR in student survey post >> " + error);
       })
     }
-    
     else{
       SurveyResults.updateOne({survey_id:survey.survey_id},{$push:{results:student}})
+      .then(()=>{
+        console.log("added to the database")
+        res.redirect("/myClasses");
+      })
+      .catch(error=>{
+        console.log(error)
+      })
     }
   })
   .catch(error=>{
@@ -992,15 +999,87 @@ function sendMail(to,user,tempPassword){
   }
 }
 
-async function makeTeams(id){
+async function makeTeams(id,groupsize){
+  var survey_id;
+  var studentsResults;
   SurveyResults.findOne({_id:id})
   .exec()
   .then(allResults =>{
-    studentsResults = allResults
+    studentsResults = allResults.results
+    survey_id = allResults.survey_id
+    SurveyTemplates.findOne({_id:survey_id})
+    .exec()
+    .then(surveyObj =>{
+      console.log("here first")
+      makesTeam2(studentsResults,surveyObj,groupsize)
+    })
+    .catch(error=>{
+      console.log(error);
+    })
   })
-  .catch()
-
+  .catch(error =>{
+    console.log(error)
+  })
   
+}
+
+function makesTeam2(studentsResults, survey, groupsize){
+  console.log("here second")
+  var tempTeams = [];
+  var added = {};
+  var maxScore = 0;
+  for(let i = 0; i < studentsResults.length; i++){
+    //now go through all the students comparing them to each other.
+    var objcompare = {};
+    var firstStudent = studentsResults[i];
+    //console.log(firstStudent);
+    for(let j = 1; j < studentsResults.length; j++){
+      var secondStudent = studentsResults[j];
+      
+      //now go through all the answers for each student
+      var score = 0;
+      for(let k = 0; k < survey.questions.length; k++){
+        if(Array.isArray(firstStudent.results[k])){
+          let arrayScore = 0;
+          for(let m = 0; m < firstStudent.results[k].length; m++){
+            for(let n = 0; n < secondStudent.results[k].length; n++){
+              if(firstStudent.results[k][m] === secondStudent.results[k][n]){
+                arrayScore++;
+              }
+            }
+          }
+          //console.log(score);
+          console.log("Weight is >> "+survey.questions[k].weight)
+          console.log("Value is >>"+survey.questions[k].weight /10 )
+          
+          score+= arrayScore * (survey.questions[k].weight /10 );
+        }
+        else if(firstStudent.results[k] === secondStudent.results[k]){
+          score+= 1 * (survey.questions[k].weight /10);
+          
+        }
+        
+      }
+      objcompare.firstStudent = firstStudent._id;
+      objcompare.secondStudent = secondStudent._id;
+      objcompare.score = score;
+      
+      if(added[firstStudent._id] != true && added[secondStudent._id] != true){
+        added[firstStudent._id] = true;
+        added[secondStudent._id] = true;
+        tempTeams.push(objcompare);
+      }
+      
+      
+    }
+  }
+  console.log()
+  console.log(tempTeams)
+  makeBestTeams(tempTeams,groupSize)
+}
+
+function makeBestTeams(tempTeams,groupSize){
+
 }
 
 
@@ -1067,7 +1146,7 @@ var deleteAllStudents = function(){
     console.log(error)
   })
 }
-
+//makeTeams("6091a17d929eb44640c415f7",2)
 //deleteAllStudents();
 //deleteAllClasses();
 //updateStudentsCourses("60729871cb153b3a249b2f5d");
