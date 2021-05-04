@@ -999,7 +999,7 @@ function sendMail(to,user,tempPassword){
   }
 }
 
-async function makeTeams(id,groupsize){
+async function searchForSurvey(id,groupsize){
   var survey_id;
   var studentsResults;
   SurveyResults.findOne({_id:id})
@@ -1011,7 +1011,7 @@ async function makeTeams(id,groupsize){
     .exec()
     .then(surveyObj =>{
       console.log("here first")
-      makesTeam2(studentsResults,surveyObj,groupsize)
+      makesTeam(studentsResults,surveyObj,groupsize)
     })
     .catch(error=>{
       console.log(error);
@@ -1023,8 +1023,8 @@ async function makeTeams(id,groupsize){
   
 }
 
-function makesTeam2(studentsResults, survey, groupsize){
-  console.log("here second")
+function makesTeam(studentsResults, survey, groupsize){
+  
   var tempTeams = [];
   var added = {};
   var maxScore = 0;
@@ -1048,9 +1048,6 @@ function makesTeam2(studentsResults, survey, groupsize){
               }
             }
           }
-          //console.log(score);
-          console.log("Weight is >> "+survey.questions[k].weight)
-          console.log("Value is >>"+survey.questions[k].weight /10 )
           
           score+= arrayScore * (survey.questions[k].weight /10 );
         }
@@ -1146,7 +1143,7 @@ var deleteAllStudents = function(){
     console.log(error)
   })
 }
-//makeTeams("6091a17d929eb44640c415f7",2)
+//searchForSurvey("6091a17d929eb44640c415f7",2)
 //deleteAllStudents();
 //deleteAllClasses();
 //updateStudentsCourses("60729871cb153b3a249b2f5d");
