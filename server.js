@@ -84,15 +84,6 @@ app.get('/algtest', (req, res) => {
   }
 })
 
-app.get('/createSurvey', (req, res) => {
-  
-  if(req.user == undefined){
-      res.render('createSurvey.ejs',{user:null});
-  }
-  else{
-      res.render('createSurvey.ejs', { user: req.user})
-  }
-})
 
 //server serving the login page where user cant be logged in
 app.get("/login", checkNotAuthenticated, (req,res)=>{
@@ -297,8 +288,23 @@ app.get("/viewCourse/:variable",(req,res) =>{
   })
 })
 
+app.get('/createSurvey/:variable',checkAuthenticated, (req, res) => {
+  var check;
+  Course.findOne({_id: req.params.variable})
+  .then(courseData =>{
+    if(courseData != null){
+      res.render('createSurvey.ejs',{user:req.user,course:courseData});
+    }
+    
+  })
+  .catch(error=>{
+    console.log("ERROR in get (createSurvey): " + error);
+  })
+  
+})
 
 app.post('/createSurvey',(req,res)=>{
+  
 	var questionsArray = [];
 	var weight = 0;
 	var count = 0;
@@ -312,18 +318,18 @@ app.post('/createSurvey',(req,res)=>{
 	
 	for (c in req.body) {
 		
-		if (count == 0) {
+		if (count == 0 || count == 1) {
 			count++;
 			continue;
 		}
 		console.log(req.body[c]);
-		if ((count % 4) == 1) {
+		if ((count % 4) == 2) {
 			questionObj.ask = req.body[c];
-		} else if ((count % 4) == 2) {
-			questionObj.type = req.body[c];
 		} else if ((count % 4) == 3) {
-			questionObj.answers = req.body[c];
+			questionObj.type = req.body[c];
 		} else if ((count % 4) == 0) {
+			questionObj.answers = req.body[c];
+		} else if ((count % 4) == 1) {
 			questionObj.weight = req.body[c];
 			questionsArray.push(questionObj);
 			questionObj = {
@@ -345,11 +351,16 @@ app.post('/createSurvey',(req,res)=>{
 					questions: questionsArray,
 				})
 				template.save()
-					.then(check=>{
-						res.redirect('/createSurvey');
-					}).catch(()=>{
-						res.redirect('/createSurvey');
-					})
+        .then(check=>{
+          res.redirect('/classesInfo');
+        }).catch(()=>{
+          res.redirect('/classesInfo');
+        })
+        var string = req.body.courseName.split(",");
+        Course.updateOne({course_id:string[0],section:string[1]},{$push:{surveys:template._id}})
+        .catch(error=>{
+          console.log("ERROR in post(createSurvey) >>" + error);
+        })
 			}
 		})
 	
@@ -806,6 +817,7 @@ function checkNotAuthenticated(req, res, next) {
 
 //mailing info
 const sgMail = require("@sendgrid/mail");
+const user = require('./Mongoose Models/user');
 sgMail.setApiKey(''+process.env.SENDGRID_PW+'');
 
 

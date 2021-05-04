@@ -10,6 +10,7 @@ const courseSchema = mongoose.Schema({
     description:String,
     students:Array,
     surveys:Array,
+    
 })
 
 module.exports = mongoose.model("Course", courseSchema);

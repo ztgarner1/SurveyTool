@@ -13,11 +13,11 @@
       <header>
         <div class="navbar">
             <img
-				src="images/wcu_logo.png"
-				alt="WCU Logo"
-				id="logo"
-				align="left"
-				/>
+              src="images/wcu_logo.png"
+              alt="WCU Logo"
+              id="logo"
+              align="left"
+				    />
             <a href="/">Home</a>
             <% if(user != null) { %>
               <a href="/myClasses">My Classes</a> 
@@ -44,24 +44,31 @@
     <div class="w3-row" id = "purplediv">
       <div class="w3-rest w3-container  w3-padding-32" style= "text-align: center; ">
 
-          <% if(error != null){%>
+          <% if(error != null){ %>
           <%= error %>
           <% } %>
           <br>
         <button><a href= "/classesInfo" style = "text-decoration: none;">Exit</a></button><br>
-        Class: <%= course.course_id %>-<%=course.section %> 
+        Class: <%= course.course_id %>-<%= course.section %> 
         
         <br>
         
-        <% if(course.surveys.length == 0){ %>
+        <% if(surveys.length == 0){ %>
             There are no surveys for this class yet
         
-        <% }else{ %>
-
-
-
+        <% } else{  %>
+        
+        <div class = "w3-row" style = "border-top: 1px solid black;border: 1px solid black" id="">
+            <select size = "3" name = "classes" id="question" style = "width:auto">
+                <% for(let i=0; i < surveys.length;i++){ %>
+                
+                <div id="<% i %>">
+                    <option value = "<%= surveys[i]._id %>"> <%= surveys[i].title %></option>
+                </div>     
+                <% } %>
+            </select>
+        </div>
         <% } %>
-
         
         
         

@@ -72,13 +72,11 @@
           
           
           <div class = 'w3-row' >
-              <h3>Upload CSV file of survey results</h3>
+              Create Survey
               
-              For Class :
-              <input type = "text" name = "courseName" value = "<%= course.course_id %>,<%=course.section %>" readonly><br>
-              <input placeholder='Enter description of course' type = 'file' name='fileName'style = width:50%,height: 25%;></div>
-              <div class = 'w3-row'>
-                <button id = 'submitButton' type = 'submit' >Submit CSV</button></div>
+              For Class :<br>
+              <input type = "text" name = "courseName" value = "<%= course.course_id %>,<%=course.section %>" readonly><br><br>
+              <button><a href = "/createSurvey/<%= course._id %>" style="text-decoration: none;">Survey</a> </button>
           </div>
         </form>
 
