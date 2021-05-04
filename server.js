@@ -267,6 +267,7 @@ app.get("/viewCourse/:variable",checkAuthenticated,(req,res) =>{
   var allSurveys = [];
   
   Course.findOne({_id: req.params.variable})
+  .exec()
   .then(classData =>{
     if(classData.surveys.length == 0){
       res.render("viewCourse.ejs",{user:req.user, course:classData,surveys:allSurveys, error: null});
@@ -274,6 +275,7 @@ app.get("/viewCourse/:variable",checkAuthenticated,(req,res) =>{
     console.log("Survey number is >> "+ classData.surveys.length)
     for(let i = 0; i < classData.surveys.length;i++){
       SurveyTemplates.findOne({_id:classData.surveys[i]})
+      .exec()
       .then(surveyData=>{
         allSurveys.push(surveyData);
         if(i == classData.surveys.length -1){

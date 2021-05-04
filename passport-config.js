@@ -15,41 +15,63 @@ function initialize(passport){
         .exec()
         .then(data=>{
             user = data;
+            var date;
             try {
-                if(user == null){
-                    console.log("checked here");
-                    Student.findOne({email:email})
-                    .exec()
-                    .then(result =>{
-                        user = result;
-                        try {
-                            if(user == null){
-                                //console.log("Not in either");
-                                return done(null, false, {message: "Email or password is incorrect"})
-                            }
-                            if(bcrypt.compareSync(password, user.password)){
-                                //console.log(docs[i]);
-                                //console.log("comparing password")
-                                return done(null, user)
-                            }
-                            else{
-                                return done(null, false, {message: "Email or password is incorrect"})
-                            }
-                        } catch (error) {
-                            return done(error);
-                        }
-                    })
-                    .catch(error=>{
-                        return done(null, false, {message: "Email or password is incorrect"})
-                    })
+                if(user== null){
+                    return done(null, false, {message: "Email or password is incorrect"})
                 }
                 else{
+                    date = new Date()
                     if(bcrypt.compareSync(password, user.password)){
                     //console.log(docs[i]);
                         //console.log("comparing password")
-                        return done(null, user)
+                        console.log(date.getTime());
+                        
+                        console.log(date.getTime());
+                        if(user.locked){
+                            
+                            if(date.getTime() - user.timeLocked  < 18000000){
+                                return done(null, false, {message: "Account is locked"})
+                            }
+                            else{
+                                User.updateOne({email:user.email},{attempts:0})
+                                .catch(error=>{
+                                    console.log(error)
+                                })
+                                return done(null, user);
+                            }
+                            
+                        }
+                        else{
+                            User.updateOne({email:user.email},{attempts:0})
+                            .catch(error=>{
+                                console.log(error)
+                            })
+                            return done(null, user)
+                        }
+                        
                     }
                     else{
+                        let date = new Date()
+                        
+                        if(user.attempts == null || user.attempts == undefined){
+                            user.attempts = 1;
+                        }
+                        else{
+                            user.attempts+= 1;
+                        }
+                        User.updateOne({email:user.email},{attempts:user.attempts})
+                        .catch(error=>{
+                            console.log(error)
+                        })
+                        if(user.attempts == 5){
+
+                            User.updateOne({email:user.email}, {attempts:user.attempts,timeLocked:date.getTime()})
+                            .catch(error=>{
+                                console.log(error)
+                            })
+                        }
+                        
                         return done(null, false, {message: "Email or password is incorrect"})
                     }
                 }

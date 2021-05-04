@@ -15,6 +15,8 @@ const userSchema = mongoose.Schema({
     isTeacher: Boolean,
     studentId: Number,
     takenSurveys: Array,
+    attempts:Number,
+    timeLocked: Number,
 })
 
 module.exports = mongoose.model("User", userSchema);
