@@ -101,6 +101,7 @@
             for (var k = 0; k < allPossibleTeamCombos[i][j].students.length; k++) {
               document.write(allPossibleTeamCombos[i][j].students[k].name + " ");
             }
+            //Could change this to average score============================================
             comboscore = comboscore + allPossibleTeamCombos[i][j].score;
             document.write(" = SCORE: " + allPossibleTeamCombos[i][j].score);
             document.write("<br>");
