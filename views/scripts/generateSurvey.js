@@ -26,12 +26,12 @@ function genHTML() {
 		
 		if (surveyQues[i].type == "text") {
 			tempStr += "<h4>" + j + ") " + surveyQues[i].ques + "</h4>";
-			tempStr += "<input autocomplete='false' type=\"text\" name=\"q" + j + "\" />";
+			tempStr += "<input autocomplete=\"chrome-off\" type=\"text\" name=\"q" + j + "\" />";
 		} else if (surveyQues[i].type == "checkbox") {
 			tempStr += "<h4>" + j + ") " + surveyQues[i].ques + "</h4>";
 			for (x = 0; x < surveyQues[i].ans.length; x++) {
 				var temp = surveyQues[i].ans[x];
-				tempStr += "<input autocomplete='false' type=\"checkbox\" name=\"q" + j + "\" value=\"" + temp + "\">" + temp + "</input>";
+				tempStr += "<input autocomplete=\"chrome-off\" type=\"checkbox\" name=\"q" + j + "\" value=\"" + temp + "\">" + temp + "</input>";
 				tempStr += "<br>"
 			}
 			
@@ -40,7 +40,7 @@ function genHTML() {
 			var x;
 			for (x = 0; x < surveyQues[i].ans.length; x++) {
 				var temp = surveyQues[i].ans[x];
-				tempStr += "<input autocomplete='false' type=\"radio\" name=\"q" + j + "\" value=\"" + temp + "\">" + temp + "</input>";
+				tempStr += "<input autocomplete=\"chrome-off\" type=\"radio\" name=\"q" + j + "\" value=\"" + temp + "\">" + temp + "</input>";
 				tempStr += "<br>"
 			}
 			
