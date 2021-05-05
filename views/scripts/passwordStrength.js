@@ -28,7 +28,7 @@ submitButton.addEventListener("click",()=>{
     }
     else{
         errors.innerText = "Password not strong enough"
-        form.reset();
+        return
     }
     
 })
