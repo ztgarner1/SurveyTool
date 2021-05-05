@@ -861,7 +861,7 @@ app.get("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
 app.post("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
   if(req.body.firstPassword == req.body.secondPassword){
 
-    User.updateOne({temporaryPassword:req.params.variable},{password:bcrypt.hashSync(req.body.firstPassword, bcrypt.genSaltSync(9))})
+    User.updateOne({temporaryPassword:req.params.variable},{password:bcrypt.hashSync(req.body.firstPassword, bcrypt.genSaltSync(9)),temporaryPassword:""})
     .then(()=>{
       //console.log("Added new password")
       res.redirect('/login');
