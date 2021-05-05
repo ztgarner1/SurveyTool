@@ -12,23 +12,25 @@ passwordInput.addEventListener('focus',updateStrengthMeter)
 passwordInput.addEventListener("input",updateStrengthMeter)
 
 submitButton.addEventListener("click",()=>{
-    console.log("working")
+    //console.log("working")
     const weaknesses = calculatePasswordStrength(passwordInput.value)
     console.log(totalStrength)
     if(totalStrength >= 70){
+        console.log("inside here")
         weaknesses.forEach(weakness =>{
+            if(weakness == null){
+                form.submit();
+            }
             if(weakness.message === "Passwords do not match"){
                 error.innerText = "Passwords do not match"
                 return
             }
-            else{
-                form.submit();
-            }
         })
     }
     else{
+        console.log("Less than 70")
         errors.innerText = "Password not strong enough"
-        return
+        //form.reset()
     }
     
 })

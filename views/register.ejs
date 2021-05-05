@@ -32,7 +32,7 @@
             <% } %>
             
         </div>
-        <form action = '/register' method = "POST" id="formToSubmit">
+        <form action = '/register' method = "POST" id="formToSubmit" onsubmit= "event.preventDefault()">
             <div class = "w3-row" style = "text-align: center;padding-top: 1%;">
                 <label for="name"></label>
                 <input placeholder="Username" name = "name"  type = "text" id = "name" required>   
@@ -43,7 +43,7 @@
             </div>
             <div class = "w3-row" style = "text-align: center; align-items: center; margin-bottom: 1rem;" >
                 <label for="password"></label>
-                <input class="password-input" placeholder="Password" name= 'password'  type = "text" id = "password" required>
+                <input class="password-input" placeholder="Password" name= 'password'  type = "password" id = "password" required>
                 <div class = "strength-meter" id ="strength-meter" name = "strength-meter"></div>
                 <div id="reasons" class="reasons">
                 </div> 
