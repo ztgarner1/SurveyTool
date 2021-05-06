@@ -322,6 +322,28 @@ app.get("/studentSurvey/:variable",checkAuthenticated,(req,res)=>{
     })
 })
 app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
+  User.findOne({_id:req.user._id})
+  .then(studentData=>{
+    //console.log(studentData.takenSurveys)
+    if(studentData.takenSurveys != null || studentData.takenSurveys != undefined || studentData.takenSurveys.length == 0){
+      User.updateOne({_id:studentData._id},{$push:{takenSurveys:req.params.survey_id}})
+      .catch(error=>{
+        console.log(error);
+      })
+    }
+    else{
+      var temp = [];
+      temp.push(req.params.survey_id)
+      User.updateOne({_id:studentData._id},{takenSurveys:temp})
+      .catch(error=>{
+        console.log(error);
+      })
+    }
+  })
+  .catch(error=>{
+    console.log(error);
+  })
+  
   //varible will be the course_id
   var student = {};
   var results = [];
@@ -456,10 +478,9 @@ app.post('/createSurvey/:course_id',(req,res)=>{
   }
   
 	
-	SurveyTemplates.findOne({title:req.body.surveyTitle})
-  .exec()
+	SurveyTemplates.findOne({title:req.body.surveyTitle,course_id:req.params.course_id})
   .then(data=>{
-    if (data == null) {
+    if(data == null) {
       var template = new SurveyTemplates({
         _id: new mongoose.Types.ObjectId(),
         title: req.body.surveyTitle,
@@ -474,7 +495,6 @@ app.post('/createSurvey/:course_id',(req,res)=>{
       })
       var string = req.body.courseName.split(",");
       Course.updateOne({course_id:string[0],section:string[1]},{$push:{surveys:template._id}})
-      .exec()
       .catch(error=>{
         console.log("ERROR in post(createSurvey) >>" + error);
       })
@@ -557,10 +577,7 @@ app.post('/addClasses',(req,res)=>{
             password = password.replace(slash,"");
             var confirmCode = sendMail(data.email,null,password) 
             //create temp password for student
-            var courseArray = [];
-            if(courseData != null){
-              courseArray.push(courseData._id);
-            }
+            
             
             var student = new User({
               _id: mongoose.Types.ObjectId(),
@@ -594,10 +611,16 @@ app.post('/addClasses',(req,res)=>{
             })
           }
           else{
-            //console.log("adding student that already exists in database")
+            console.log("adding student that already exists in database")
 
-            Course.updateOne({_id:courseArray._id},{$push:{students:tempStudent._id}})
-            User.updateOne({_id:tempStudent._id},{$push:{courses:courseArray._id}})
+            Course.updateOne({_id:courseData._id},{$push:{students:tempStudent._id}})
+            .catch(error =>{
+              console.log(error);
+            })
+            User.updateOne({_id:tempStudent._id},{$push:{courses:courseData._id}})
+            .catch(error =>{
+              console.log(error);
+            })
 
           }
         })
@@ -944,7 +967,9 @@ function checkNotAuthenticated(req, res, next) {
 const sgMail = require("@sendgrid/mail");
 const user = require('./Mongoose Models/user');
 const surveyTemplate = require('./Mongoose Models/surveyTemplate');
-const { exec } = require('child_process');
+const { exec, execSync } = require('child_process');
+const { group } = require('console');
+const { exit } = require('process');
 sgMail.setApiKey(''+process.env.SENDGRID_PW+'');
 
 
@@ -1027,15 +1052,16 @@ function sendMail(to,user,tempPassword){
 
 function makesTeam(studentsResults, survey, groupsize){
   
-  var tempTeams = [];
   var added = {};
   var maxScore = 0;
+  var objcompare = {};
   for(let i = 0; i < studentsResults.length; i++){
     //now go through all the students comparing them to each other.
-    var objcompare = {};
+    
     var firstStudent = studentsResults[i];
+    objcompare[firstStudent._id] = [];
     //console.log(firstStudent);
-    for(let j = 1; j < studentsResults.length; j++){
+    for(let j = i+1; j < studentsResults.length; j++){
       var secondStudent = studentsResults[j];
       
       //now go through all the answers for each student
@@ -1050,35 +1076,165 @@ function makesTeam(studentsResults, survey, groupsize){
               }
             }
           }
+          //console.log(arrayScore * (survey.questions[k].weight/5 ))
+          score+= arrayScore * (survey.questions[k].weight/5 );
           
-          score+= arrayScore * (survey.questions[k].weight /10 );
         }
-        else if(firstStudent.results[k] === secondStudent.results[k]){
-          score+= 1 * (survey.questions[k].weight /10);
+        else if(firstStudent.results[k] == secondStudent.results[k]){
+          score+= 1 * (survey.questions[k].weight/5);
           
+        }
+        //console.log(survey.questions[k].weight)
+      }
+      //adds one way
+      objInner = {};
+      objInner[secondStudent._id]=false;
+      objInner.score = score;
+      
+      //then adds the oposite way
+      objInner2 = {};
+      objInner2[firstStudent._id]=false;
+      objInner2.score = score;
+      
+      
+      
+      
+      //console.log(objInner)
+      //console.log(objInner2)
+      let h = j;
+      let location = 0;
+      //checks to see if objcompare[firstStudent._id]'s array is empty
+      
+      if( j != i+1){
+        //checks to see where to place the the objInner. this is so that the highest score will be at objcompare[firstStudent._id][0]
+        if(objcompare[firstStudent._id] != undefined && added[firstStudent._id] != true){
+          while(objcompare[firstStudent._id][location]!= undefined && objInner.score < objcompare[firstStudent._id][location].score){
+            location++;
+          }
+          
+          objcompare[firstStudent._id].splice(location,0,objInner);
+        }
+        else{
+          objcompare[firstStudent._id] = [];
+        }
+        added[firstStudent._id]= true;
+        objcompare[firstStudent._id].push(objInner2)
+        if(objcompare[secondStudent._id] != undefined && added[secondStudent._id] != true){
+          location = 0;
+          while(objcompare[secondStudent._id][location]!= undefined && objInner2.score < objcompare[secondStudent._id][location].score){
+            location++;
+          }
+          
+          objcompare[secondStudent._id].splice(location,0,objInner2)
+        }
+        else{
+          objcompare[secondStudent._id] = [];
         }
         
-      }
-      objcompare.firstStudent = firstStudent._id;
-      objcompare.secondStudent = secondStudent._id;
-      objcompare.score = score;
-      
-      if(added[firstStudent._id] != true && added[secondStudent._id] != true){
-        added[firstStudent._id] = true;
         added[secondStudent._id] = true;
-        tempTeams.push(objcompare);
+        objcompare[secondStudent._id].push(objInner2)
       }
-      
-      
+      else{
+        objcompare[firstStudent._id].push(objInner);
+        //objcompare[secondStudent._id].push(objInner);
+        if(objcompare[secondStudent._id] == undefined){
+          var temp = [];
+          temp.push(objInner2);
+          objcompare[secondStudent._id] = temp;
+        }
+        else{
+          objcompare[secondStudent._id].push(objInner2)
+        }
+        
+        
+        //console.log("\n")
+      }
+    }
+    if(i == studentsResults.length -2){
+      //console.log(objcompare)
+      makeBestTeams(objcompare,groupsize,studentsResults.length)
     }
   }
   //console.log()
-  console.log(tempTeams)
-  makeBestTeams(tempTeams,groupsize)
+  //console.log(objcompare)
+  //makeBestTeams(objcompare,groupsize)
 }
 
-function makeBestTeams(tempTeams,groupSize){
+function makeBestTeams(tempTeams,groupSize,resultsSize){
+  //console.log(tempTeams);
+  check = false;
+  if(resultsSize % groupSize  == 0){
+    check == true;
+  }
+  else{
+    while(resultsSize % groupSize != 0){
+       groupSize--;
+    }
+    console.log("now it will work >>" + groupSize)
+  }
+  var groupNumber = (resultsSize / groupSize);
+  //console.log(groupNumber)
+  //the finished results
+  var completeTeams = [];
+  var added = {};
+  //console.log(tempTeams)
+  //console.log("\n")
+  for(let i = 0; i < groupNumber; i++){
+    let j = 0;
+    var smallerTeams = [];
+    var current = Object.entries(tempTeams)[0][0]
+    
+    while(j < groupSize && tempTeams[current] != undefined){
+      //console.log(tempTeams[current][0][Object.keys(tempTeams[current][0])[0]])
+      if(added[current]){
+        
+        while(added[tempTeams[current][0]] == true ){
+          
+          tempTeams[current].shift();
+        }
+        smallerTeams.push(tempTeams[current][0])
+      }
+      added[current]= true;
+      
+      
+      var temp = current;
+      current = Object.keys(tempTeams[current][0])[0]
+      delete tempTeams[temp]
+      j++;
+    }
+    completeTeams.push(smallerTeams); 
+  }
+  console.log(completeTeams);
 
+  for(let i = 0; i < completeTeams.length; i++){
+    console.log("\nTeam " + (i+1) + " is >>")
+    var smallerTeams = completeTeams[i];
+    var string = "";
+    var similarites = 0;
+    for(let j = 0; j < groupSize; j++){
+      console.log(smallerTeams[j])
+      similarites += smallerTeams[j].score
+      User.findOne({_id:Object.keys(smallerTeams[j])[0]})
+      .exec()
+      .then(studentData =>{
+        console.log(studentData.first +", "+studentData.last);
+        if(j == groupSize-1){
+          console.log("With " + (similarites/groupSize)+ " points of similarities")
+        }
+      })
+      .catch(error=>{
+        console.log(error)
+      })
+    }
+    //console.log(Object.keys(smallerTeams[0])[0])
+  }
+  
+  
+  
+    
+  
+
+  
 }
 
 
@@ -1145,7 +1301,49 @@ var deleteAllStudents = function(){
     console.log(error)
   })
 }
-//searchForSurvey("6091a17d929eb44640c415f7",2)
+
+function addStudentsFromFile(){
+  var filename = "Example_Survey_Data.csv";
+  var results = []
+  fs.createReadStream(__dirname +'/views/Example_Survey_Data.csv')
+  .pipe(csv({}))
+  .on("data", (data) => {
+    console.log(data);
+    results.push(data);
+  })
+  .on("end",() =>{
+    for(let i = 0; i < results.length; i++){
+      console.log(results[i])
+      User.findOne({email:results[i].Email})
+      .then(studentData =>{
+        if(i != 0){
+          var objResults = {}
+          var arrResults = [];
+          objResults._id = studentData._id;
+          //populate arrResults
+          arrResults.push(results[i][0])
+          arrResults.push(results[i][1])
+          arrResults.push(results[i][2])
+          console.log(arrResults)
+          objResults.results = arrResults;
+          console.log(objResults)
+          SurveyResults.updateOne({_id:"60938cb5bd111245a8984cdb"},{$push:{results:objResults}})
+          .then(()=>{
+            //console.log("made it")
+          })
+        }
+        
+        //
+      })
+      
+    }
+  })
+
+
+}
+//searchForSurvey("60935d698b9bab46d40db4ed",3)
+//addStudentsFromFile()
+
 //deleteAllStudents();
 //deleteAllClasses();
 //updateStudentsCourses("60729871cb153b3a249b2f5d");
