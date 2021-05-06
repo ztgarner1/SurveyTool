@@ -1061,9 +1061,11 @@ function makesTeam(studentsResults, survey, groupsize){
     var firstStudent = studentsResults[i];
     objcompare[firstStudent._id] = [];
     //console.log(firstStudent);
-    for(let j = i+1; j < studentsResults.length; j++){
+    for(let j = 0; j < studentsResults.length; j++){
       var secondStudent = studentsResults[j];
-      
+      if(firstStudent._id == secondStudent._id){
+        continue;
+      }
       //now go through all the answers for each student
       var score = 0;
       for(let k = 0; k < survey.questions.length; k++){
@@ -1091,66 +1093,28 @@ function makesTeam(studentsResults, survey, groupsize){
       objInner[secondStudent._id]=false;
       objInner.score = score;
       
-      //then adds the oposite way
-      objInner2 = {};
-      objInner2[firstStudent._id]=false;
-      objInner2.score = score;
-      
-      
-      
-      
-      //console.log(objInner)
-      //console.log(objInner2)
       let h = j;
       let location = 0;
       //checks to see if objcompare[firstStudent._id]'s array is empty
-      
-      if( j != i+1){
-        //checks to see where to place the the objInner. this is so that the highest score will be at objcompare[firstStudent._id][0]
-        if(objcompare[firstStudent._id] != undefined && added[firstStudent._id] != true){
-          while(objcompare[firstStudent._id][location]!= undefined && objInner.score < objcompare[firstStudent._id][location].score){
-            location++;
-          }
-          
-          objcompare[firstStudent._id].splice(location,0,objInner);
+      //checks to see where to place the the objInner. this is so that the highest score will be at objcompare[firstStudent._id][0]
+      if(objcompare[firstStudent._id] != undefined && !objcompare[firstStudent._id].includes(objInner)){
+        while(objcompare[firstStudent._id][location]!= undefined && objInner.score < objcompare[firstStudent._id][location].score){
+          location++;
         }
-        else{
-          objcompare[firstStudent._id] = [];
-        }
-        added[firstStudent._id]= true;
-        objcompare[firstStudent._id].push(objInner2)
-        if(objcompare[secondStudent._id] != undefined && added[secondStudent._id] != true){
-          location = 0;
-          while(objcompare[secondStudent._id][location]!= undefined && objInner2.score < objcompare[secondStudent._id][location].score){
-            location++;
-          }
-          
-          objcompare[secondStudent._id].splice(location,0,objInner2)
-        }
-        else{
-          objcompare[secondStudent._id] = [];
-        }
-        
-        added[secondStudent._id] = true;
-        objcompare[secondStudent._id].push(objInner2)
+        //assigning into location where objInner score needs to be.
+        objcompare[firstStudent._id].splice(location,0,objInner);
       }
       else{
-        objcompare[firstStudent._id].push(objInner);
-        //objcompare[secondStudent._id].push(objInner);
-        if(objcompare[secondStudent._id] == undefined){
-          var temp = [];
-          temp.push(objInner2);
-          objcompare[secondStudent._id] = temp;
-        }
-        else{
-          objcompare[secondStudent._id].push(objInner2)
-        }
-        
-        
-        //console.log("\n")
+        objcompare[firstStudent._id] = [];
       }
+      
+      if(!objcompare[firstStudent._id].includes(objInner)){
+        added[firstStudent._id]= true;
+        objcompare[firstStudent._id].push(objInner)
+      }
+      
     }
-    if(i == studentsResults.length -2){
+    if(i == studentsResults.length -1){
       //console.log(objcompare)
       makeBestTeams(objcompare,groupsize,studentsResults.length)
     }
@@ -1172,68 +1136,57 @@ function makeBestTeams(tempTeams,groupSize,resultsSize){
     }
     console.log("now it will work >>" + groupSize)
   }
+  
   var groupNumber = (resultsSize / groupSize);
   //console.log(groupNumber)
   //the finished results
   var completeTeams = [];
   var added = {};
-  //console.log(tempTeams)
-  //console.log("\n")
+  
+
+  //start adding them into groups
   for(let i = 0; i < groupNumber; i++){
     let j = 0;
     var smallerTeams = [];
     var current = Object.entries(tempTeams)[0][0]
-    
-    while(j < groupSize && tempTeams[current] != undefined){
-      //console.log(tempTeams[current][0][Object.keys(tempTeams[current][0])[0]])
-      if(added[current]){
+    //goes through until it reaches the groupsize
+    while(j < groupSize){
+      
+      //checking to see if current has already been added to a group
+      if(added[current] != true){
         
-        while(added[tempTeams[current][0]] == true ){
-          
+        added[current]= true;
+        smallerTeams.push(tempTeams[current][0])
+
+      }
+      else{
+        
+        //this while loop is finding the next location in the array of choses
+        while(added[Object.keys(tempTeams[current][0])[0]] == true){
+          //shifts so that the first one
           tempTeams[current].shift();
         }
+        //adds the student_id to the added to check later
+        added[Object.keys(tempTeams[current][0])[0]] = true;
+        //pushes the student object to the smallerTeams 
         smallerTeams.push(tempTeams[current][0])
       }
-      added[current]= true;
       
-      
-      var temp = current;
+      //sets the current to the next one to continue
       current = Object.keys(tempTeams[current][0])[0]
-      delete tempTeams[temp]
       j++;
     }
+    
     completeTeams.push(smallerTeams); 
   }
-  console.log(completeTeams);
-
+  
+  sendGroupData(completeTeams);
+}
+function sendGroupData(completeTeams){
   for(let i = 0; i < completeTeams.length; i++){
-    console.log("\nTeam " + (i+1) + " is >>")
-    var smallerTeams = completeTeams[i];
-    var string = "";
-    var similarites = 0;
-    for(let j = 0; j < groupSize; j++){
-      console.log(smallerTeams[j])
-      similarites += smallerTeams[j].score
-      User.findOne({_id:Object.keys(smallerTeams[j])[0]})
-      .exec()
-      .then(studentData =>{
-        console.log(studentData.first +", "+studentData.last);
-        if(j == groupSize-1){
-          console.log("With " + (similarites/groupSize)+ " points of similarities")
-        }
-      })
-      .catch(error=>{
-        console.log(error)
-      })
-    }
-    //console.log(Object.keys(smallerTeams[0])[0])
+    console.log("Group " +(i+1) +":")
+    console.log(completeTeams[i])
   }
-  
-  
-  
-    
-  
-
   
 }
 
@@ -1341,12 +1294,10 @@ function addStudentsFromFile(){
 
 
 }
-//searchForSurvey("60935d698b9bab46d40db4ed",3)
 //addStudentsFromFile()
 
 //deleteAllStudents();
 //deleteAllClasses();
-//updateStudentsCourses("60729871cb153b3a249b2f5d");
 //deleteEveryonesCourses()
 
 //makes sure the server is listening on a specified port number. 
