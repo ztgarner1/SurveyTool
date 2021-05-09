@@ -1029,11 +1029,13 @@ function sendMail(to,user,tempPassword){
  function searchForSurvey(id,groupsize){
   var survey_id;
   var studentsResults;
+  //goes and grabs the surveyResults from the database
   SurveyResults.findOne({_id:id})
   .exec()
   .then(allResults =>{
     studentsResults = allResults.results
     survey_id = allResults.survey_id
+    //grabs the surveyTemplate from the database
     SurveyTemplates.findOne({_id:survey_id})
     .exec()
     .then(surveyObj =>{
@@ -1089,6 +1091,7 @@ function makesTeam(studentsResults, survey, groupsize){
         //console.log(survey.questions[k].weight)
       }
       //adds one way
+
       objInner = {};
       objInner[secondStudent._id]=false;
       objInner.score = score;
@@ -1126,6 +1129,7 @@ function makesTeam(studentsResults, survey, groupsize){
 
 function makeBestTeams(tempTeams,groupSize,resultsSize){
   //console.log(tempTeams);
+  
   check = false;
   if(resultsSize % groupSize  == 0){
     check == true;
@@ -1134,30 +1138,27 @@ function makeBestTeams(tempTeams,groupSize,resultsSize){
     while(resultsSize % groupSize != 0){
        groupSize--;
     }
-    console.log("now it will work >>" + groupSize)
+    //console.log("now it will work >>" + groupSize)
   }
+  
   
   var groupNumber = (resultsSize / groupSize);
   //console.log(groupNumber)
-  //the finished results
   var completeTeams = [];
   var added = {};
-  
-
+  //console.log(Object.keys(tempTeams).length)
   //start adding them into groups
   for(let i = 0; i < groupNumber; i++){
     let j = 0;
     var smallerTeams = [];
-    var current = Object.entries(tempTeams)[0][0]
+    var current = Object.keys(tempTeams)[0]
     //goes through until it reaches the groupsize
     while(j < groupSize){
       
       //checking to see if current has already been added to a group
       if(added[current] != true){
-        
         added[current]= true;
         smallerTeams.push(tempTeams[current][0])
-
       }
       else{
         
@@ -1176,17 +1177,32 @@ function makeBestTeams(tempTeams,groupSize,resultsSize){
       current = Object.keys(tempTeams[current][0])[0]
       j++;
     }
-    
     completeTeams.push(smallerTeams); 
   }
-  
   sendGroupData(completeTeams);
 }
+
 function sendGroupData(completeTeams){
+  
+  console.log(completeTeams)
+  //going through the each team and each subset
   for(let i = 0; i < completeTeams.length; i++){
-    console.log("Group " +(i+1) +":")
-    console.log(completeTeams[i])
+    
+    for(let j = 0; j < completeTeams[i].length; j++){
+      User.findOne({_id:Object.keys(completeTeams[i][j])[0]})
+      .then(studentData=>{
+        console.log("Group " +(i+1) +":")
+        console.log(studentData.first + ", " + studentData.last )
+        console.log("\n")
+      })
+      .catch(error=>{
+        console.log(error)
+      })
+      
+    }
   }
+  
+  
   
 }
 
@@ -1294,6 +1310,8 @@ function addStudentsFromFile(){
 
 
 }
+
+//searchForSurvey("60938cb5bd111245a8984cdb",3) 
 //addStudentsFromFile()
 
 //deleteAllStudents();
