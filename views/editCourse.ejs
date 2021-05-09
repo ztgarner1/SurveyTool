@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="/style.css" />
     <link rel="stylesheet" href="/w3.css" />
-    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="shortcut icon" href="/images/favicon.ico">
     <script src = "./scripts/addStudent.js"></script>
     <title>Edit Course</title>
   </head>
@@ -13,7 +13,7 @@
       <header>
         <div class="navbar">
             <img
-				src="images/wcu_logo.png"
+				src="/images/wcu_logo.png"
 				alt="WCU Logo"
 				id="logo"
 				align="left"
@@ -68,15 +68,31 @@
                 
             </div> 
         </div>
+        
         <form action='/editCourse' enctype="multipart/form-data" method ='POST' name = 'addSurvey'>
-          
-          
+          <% if(surveys.length == 0){  %>  
+            <div class = 'w3-row'>
+              
+            </div>
+          <% }else{  %>
+
+              <h4>Surveys</h4>
+                <select size = "10" name = "classes" id= "clases" style = "width:auto; text-align: center;">
+
+                    <% for(let i=0; i < surveys.length;i++){ %>
+                        
+                        <option value = "<%= surveys[i]._id %>"> <%= surveys[i].title %>, Question Count : <%= surveys[i].questions.length %></option>
+                    
+                    <% } %>
+                </select>
+
+          <% } %>
           <div class = 'w3-row' >
               Create Survey
               
               For Class :<br>
               <input type = "text" name = "courseName" value = "<%= course.course_id %>,<%=course.section %>" readonly><br><br>
-              <button><a href = "/createSurvey/<%= course._id %>" style="text-decoration: none;">Survey</a> </button>
+              <button><a href = "/createSurvey/<%= course._id %>" style="text-decoration: none;">Create New Survey</a> </button>
           </div>
         </form>
 

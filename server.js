@@ -680,37 +680,64 @@ app.post('/classesInfo',checkAuthenticated, (req,res)=>{
   }
   else{
     var result = req.body.classes.split(",");
-    var course = null; 
     
-    
-    Course.findOne({course_id:result[0],section:result[1]})
-    .exec()
-    .then(data=>{
-      course= data;
-      //console.log(data);
-      var students = [];
-      for(let i= 0; i < data.students.length;i++){
-        User.findOne({_id:data.students[i]})
-        .exec()
-        .then(student=>{
-          
-          students.push(student);
-          //console.log("adding student")
-          if(i == data.students.length-1){
-            res.render('editCourse.ejs', {user: req.user, students:students,course: course, error: null});
-          }
-        })
-        
-      }
-    
-    })
+    res.redirect("/editCourse/"+result[0]+"&"+result[1])
     
   }
+})
+
+app.get("/editCourse/:course_id&:section",checkAuthenticated,(req,res)=>{
+  console.log(req.params.course_id)
+  console.log(req.params.section)
+  
+  var students = [];
+  Course.findOne({course_id:req.params.course_id, section:req.params.section})
+  .then(courseData=>{
+    
+    for(let i = 0; i < courseData.students.length; i++){
+      User.findOne({_id:courseData.students[i]})
+      .then(studentObj =>{
+        //go through and grab the data for each student in the course
+        students.push(studentObj);
+        
+      })
+      .catch(error=>{
+        console.log(error);
+      })
+      
+    }
+    var surveys = [];
+    if(courseData.surveys.length == 0){
+      res.render('editCourse.ejs', {user: req.user, students:students,course: courseData,surveys:surveys, error: null});
+    }
+    else{
+      console.log(courseData.surveys.length)
+      for(let i = 0; i < courseData.surveys.length; i++){
+        SurveyTemplates.findOne({_id:courseData.surveys[i]})
+        .then(surveyData =>{
+          surveys.push(surveyData);
+          if(i == courseData.surveys.length -1){
+            console.log("Student data length is >> ")
+            console.log(students.length)
+            res.render('editCourse.ejs', {user: req.user, students:students,course: courseData,surveys:surveys, error: null});
+          }
+        })
+          
+      }
+    }
+    
+    
+  })
+  .catch(error=>{
+    console.log(error);
+  })
+
+  
 })
 /**
  * 
  */
-app.post("/editCourse",(req,res)=>{
+app.post("/editCourse",checkAuthenticated,(req,res)=>{
   var courseData = null;
   var courseName = req.body.courseName.split(",");
   var courseObjectID;
@@ -1080,15 +1107,14 @@ function makesTeam(studentsResults, survey, groupsize){
               }
             }
           }
-          //console.log(arrayScore * (survey.questions[k].weight/5 ))
+          //making the weight 
           score+= arrayScore * (survey.questions[k].weight/5 );
           
         }
         else if(firstStudent.results[k] == secondStudent.results[k]){
-          score+= 1 * (survey.questions[k].weight/5);
-          
+          //adding another similarity
+          score+= 1 * (survey.questions[k].weight/5); 
         }
-        //console.log(survey.questions[k].weight)
       }
       //adds one way
 
@@ -1122,9 +1148,7 @@ function makesTeam(studentsResults, survey, groupsize){
       makeBestTeams(objcompare,groupsize,studentsResults.length)
     }
   }
-  //console.log()
-  //console.log(objcompare)
-  //makeBestTeams(objcompare,groupsize)
+
 }
 
 function makeBestTeams(tempTeams,groupSize,resultsSize){
@@ -1202,8 +1226,25 @@ function sendGroupData(completeTeams){
     }
   }
   
-  
-  
+}
+
+
+function messageToSend(to,message,sub){
+  const msg = {
+    to: to,
+    from: "wcu.SurveyTool@gmail.com",
+    subject: sub,
+    text: message
+  }
+  sgMail.send(msg)
+  .then(()=>{
+    console.log("Email sent")
+    return true;
+  })
+  .catch(error=>{
+    console.log(error);
+    return false;
+  })
 }
 
 
