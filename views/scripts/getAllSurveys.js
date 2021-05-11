@@ -10,7 +10,7 @@ groupButton.addEventListener("click",()=>{
     console.log(courseSection)
     
     //add styles to the div
-    fetch('http://localhost:3000/group/'+courseName+"&"+courseSection)
+    fetch('https://wcu-surveytool.herokuapp.com/group/'+courseName+"&"+courseSection)
     .then(response => response.json())
     .then(data => {
         //populate here
