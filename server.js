@@ -765,7 +765,7 @@ app.get("/group/:courseName&:section",checkAuthenticated,(req,res)=>{
   .then(courseData=>{
     if(courseData != null){
       
-      console.log(courseData[groups])
+      //console.log(courseData[groups])
       
 
 
