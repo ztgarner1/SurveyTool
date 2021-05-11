@@ -283,7 +283,10 @@ app.get("/viewCourse/:variable",checkAuthenticated,(req,res) =>{
       SurveyTemplates.findOne({_id:classData.surveys[i]})
       .exec()
       .then(surveyData=>{
-        allSurveys.push(surveyData);
+        if(!req.user.takenSurveys.includes(surveyData._id)){
+          allSurveys.push(surveyData);
+        }
+        
         if(i == classData.surveys.length -1){
           //console.log(allSurveys.length)
           res.render("viewCourse.ejs",{user:req.user, course:classData,surveys:allSurveys, error: null});
@@ -328,12 +331,14 @@ app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
     if(studentData.takenSurveys != null || studentData.takenSurveys != undefined || studentData.takenSurveys.length == 0){
       User.updateOne({_id:studentData._id},{$push:{takenSurveys:req.params.survey_id}})
       .catch(error=>{
+        req.user.takenSurveys.push(req.params.survey_id);
         console.log(error);
       })
     }
     else{
       var temp = [];
       temp.push(req.params.survey_id)
+      req.user.takenSurveys = temp;
       User.updateOne({_id:studentData._id},{takenSurveys:temp})
       .catch(error=>{
         console.log(error);
@@ -539,6 +544,7 @@ app.post('/addClasses',(req,res)=>{
       //adding the course to the teachers teaching array
     }
     else{
+      
       res.redirect('/classesInfo');
     }
   })
@@ -611,7 +617,7 @@ app.post('/addClasses',(req,res)=>{
             })
           }
           else{
-            console.log("adding student that already exists in database")
+            //console.log("adding student that already exists in database")
 
             Course.updateOne({_id:courseData._id},{$push:{students:tempStudent._id}})
             .catch(error =>{
@@ -687,8 +693,8 @@ app.post('/classesInfo',checkAuthenticated, (req,res)=>{
 })
 
 app.get("/editCourse/:course_id&:section",checkAuthenticated,(req,res)=>{
-  console.log(req.params.course_id)
-  console.log(req.params.section)
+  //console.log(req.params.course_id)
+  //console.log(req.params.section)
   
   var students = [];
   Course.findOne({course_id:req.params.course_id, section:req.params.section})
@@ -711,22 +717,20 @@ app.get("/editCourse/:course_id&:section",checkAuthenticated,(req,res)=>{
       res.render('editCourse.ejs', {user: req.user, students:students,course: courseData,surveys:surveys, error: null});
     }
     else{
-      console.log(courseData.surveys.length)
+      //console.log(courseData.surveys.length)
       for(let i = 0; i < courseData.surveys.length; i++){
         SurveyTemplates.findOne({_id:courseData.surveys[i]})
         .then(surveyData =>{
           surveys.push(surveyData);
           if(i == courseData.surveys.length -1){
-            console.log("Student data length is >> ")
-            console.log(students.length)
+            //console.log("Student data length is >> ")
+            //console.log(students.length)
             res.render('editCourse.ejs', {user: req.user, students:students,course: courseData,surveys:surveys, error: null});
           }
         })
           
       }
     }
-    
-    
   })
   .catch(error=>{
     console.log(error);
@@ -749,136 +753,59 @@ app.post("/editCourse",checkAuthenticated,(req,res)=>{
   .catch(error=>{
     console.log("ERROR " + error);
   })
-  if(req.files){
-    var file = req.files.fileName,
-     filename = file.name
-    var results = [];
   
-    var moveAndParse =  function(callback){
-      file.mv(__dirname + "/views/uploads/"+filename, err =>{
-        //console.log(err)
-        if(err){
-          console.log(err);
-          //res.send("error occured" + err);
-        }
-      })
-      callback()
-    }
-    moveAndParse(  function(){
-      fs.createReadStream(__dirname +'/views/uploads/'+filename)
-      .pipe(csv({}))
-      .on("data", (data) => {
-        User.findOne({email:data.email})
-        .then(tempStudent=>{
-          var object = {};
-          if(tempStudent== null){
-            //send student email later
-            const slash = /\//gi;
-            const period =/\./gi;
-            //create String for the link
-            var wholeName = data.Name.split(', ');
-            var randomString = bcrypt.hashSync(""+wholeName[0]+wholeName[1]+"", bcrypt.genSaltSync(9));
-            randomString = randomString.replace(slash,"");
-            randomString = randomString.replace(period,"");
-            //create temp password
-            var password = bcrypt.hashSync(""+wholeName[0]+wholeName[1]+"", bcrypt.genSaltSync(6));
-            password = password.replace(slash,"");
-            password = password.replace(slash,"");
-            //var confirmCode = sendMail(data.email,null,password) 
-            //create temp password for student
-            var courseArray = [];
-            if(courseData != null){
-              courseArray.push(courseData._id);
-            }
-            
-            var student = new User({
-              _id: mongoose.Types.ObjectId(),
-              username: ""+data.Name[0]+wholeName[0]+"",
-              first: data.first,
-              last: data.last,
-              email: data.email,
-              password: password,
-              locked: false,
-              verified:false,
-              courses: courseArray,
-              confirmCode: randomString,
-              isTeacher:false,
-              studentId: data.id,
-            })
-            student.save()
-            .then(check=>{
-              
-              Course.updateOne({_id:courseData._id},{$push:{students:student._id}})
-              .exec()
-              .then(()=>{
-                //console.log("Updating with student")
-              })
-              .catch(error=>{
-                console.log(error)
-              })
-              
-            })
-            .catch(error =>{
-              //console.log("Did not add to database")
-            })
-            object.student_id = student._id;
-            for(let i in data){
-              //Name,Student ID,Email
-              //console.log(i);
-              if(i != "Name"||i!="Student ID"|| i!="Email"){
-                object[i] = data[i];
-              }
-            }
-            results.push(object);
-          }
-          else{
-            //student existed in the database
-            object.student_id = tempStudent._id;
-            for(let i in data){
-              //Name,Student ID,Email
-              //console.log(i);
-              if(i != "Name"||i!="Student ID"|| i!="Email"){
-                object[i]= data[i];
-              }
-            }
-            results.push(object);
-            var check = true;
-            //checking to see if the user has already been put in the course
-            for(let i = 0; i<tempStudent.courses.length; i++){
-              if(tempStudent.courses[i] == courseObjectID){
-                check = false;
-                break;
-              }
-            }
-            if(check){
-              Course.updateOne({_id:courseArray._id},{$push:{students:tempStudent._id}});
-            }
-          }
-        })
-        //console.log("test is >> \n" + test);
-      })
-      .on("end",() =>{
-        //console.log(results.length);
-        var surveyResults = new SurveyResults({
-          _id: mongoose.Types.ObjectId(),
-          results:results,
-          course_id:courseObjectID, 
-        })
-        surveyResults.save()
-        .then(comfirm =>{
-          console.log("saved surveyResults into database")
-        })
-        .catch(error=>{
-          console.log("ERROR : " + error);
-        })
-      })
-    })
-    res.redirect('/classesInfo')
-  }
-  else{
-    //console.log("did not work")
-  }
+  res.redirect('/group/:'+courseName[0]+"&:") 
 
+})
+
+app.get("/group/:courseName&:section",checkAuthenticated,(req,res)=>{
+  var courseData = null;
+ 
+  Course.findOne({course_id:req.params.courseName,section:req.params.section})
+
+  .then(courseData=>{
+    if(courseData != null){
+      var groupSize = courseData.groups[0].length;
+      
+      var completeGroups = [];
+      for(let i = 0; i < courseData.groups.length; i++){
+        completeGroups[i] = [];
+      }
+      //console.log(courseData.groups.length)
+      console.log("size of groups.length is" + courseData.groups.length)
+      console.log("size of groups[i].length is" + courseData.groups[0].length)
+      for(let j = 0; j < courseData.groups[0].length; j++){
+        for(let i = 0; i < courseData.groups.length;i++){
+          User.findOne({_id:courseData.groups[i][j]})
+          .then(studentData=>{
+            var studObj = {};
+            studObj.first = studentData.first;
+            studObj.last = studentData.last;
+            completeGroups[i].push(studObj);
+            if(j == courseData.groups[0].length -1 && i ==courseData.groups.length-1){
+              res.status(200)
+              console.log(completeGroups)
+              res.send(completeGroups)
+            }
+          })
+          .catch(error=>{
+            console.log()
+          })
+        }
+      }
+      
+
+      
+      //console.log(completeGroups)
+      //res.status(200)
+      //res.send(completeGroups)
+    }
+    
+  })
+  .catch(error=>{
+    console.log("ERROR : "+error)
+  })
+  
 })
 
 //this is the confirmation the email sent to the user gets sent to. 
@@ -966,7 +893,10 @@ app.post("/resetPassword",checkNotAuthenticated,(req,res)=>{
   
   res.render('resetPassword.ejs',{user:null,error:"Password Successfully changed, Please check your email"})
 })
-
+app.get("/getGroups/:courseName&:courseSection",(req,res)=>{
+  
+  
+})
 
 //logs the user out and redirects them to the home page
 app.delete('/logout', (req, res) => {
@@ -997,6 +927,9 @@ const surveyTemplate = require('./Mongoose Models/surveyTemplate');
 const { exec, execSync } = require('child_process');
 const { group } = require('console');
 const { exit } = require('process');
+const { json } = require('body-parser');
+const course = require('./Mongoose Models/course');
+const { SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG } = require('constants');
 sgMail.setApiKey(''+process.env.SENDGRID_PW+'');
 
 
@@ -1067,7 +1000,7 @@ function sendMail(to,user,tempPassword){
     .exec()
     .then(surveyObj =>{
       //console.log("here first")
-      makesTeam(studentsResults,surveyObj,groupsize)
+      makesTeam(studentsResults,surveyObj,groupsize,allResults.course_id)
     })
     .catch(error=>{
       console.log(error);
@@ -1079,7 +1012,7 @@ function sendMail(to,user,tempPassword){
   
 }
 
-function makesTeam(studentsResults, survey, groupsize){
+function makesTeam(studentsResults, survey, groupsize,course_id){
   
   var added = {};
   var maxScore = 0;
@@ -1145,13 +1078,13 @@ function makesTeam(studentsResults, survey, groupsize){
     }
     if(i == studentsResults.length -1){
       //console.log(objcompare)
-      makeBestTeams(objcompare,groupsize,studentsResults.length)
+      makeBestTeams(objcompare,groupsize,studentsResults.length,course_id)
     }
   }
 
 }
 
-function makeBestTeams(tempTeams,groupSize,resultsSize){
+function makeBestTeams(tempTeams,groupSize,resultsSize,course_id){
   //console.log(tempTeams);
   
   check = false;
@@ -1203,28 +1136,45 @@ function makeBestTeams(tempTeams,groupSize,resultsSize){
     }
     completeTeams.push(smallerTeams); 
   }
-  sendGroupData(completeTeams);
+  sendGroupData(completeTeams,course_id);
 }
 
-function sendGroupData(completeTeams){
+function sendGroupData(completeTeams,course_id){
   
   console.log(completeTeams)
   //going through the each team and each subset
+  var finalGroups = [];
   for(let i = 0; i < completeTeams.length; i++){
-    
+    var smallerGroups = [];
     for(let j = 0; j < completeTeams[i].length; j++){
-      User.findOne({_id:Object.keys(completeTeams[i][j])[0]})
-      .then(studentData=>{
-        console.log("Group " +(i+1) +":")
-        console.log(studentData.first + ", " + studentData.last )
-        console.log("\n")
-      })
-      .catch(error=>{
-        console.log(error)
-      })
       
+      smallerGroups.push(Object.keys(completeTeams[i][j])[0])
     }
+    finalGroups.push(smallerGroups)
   }
+  var final
+  //console.log(finalGroups)
+  
+  console.log(course_id)
+  Course.updateOne({_id:course_id},{groups:finalGroups})
+  .then(()=>{
+    console.log("updated")
+  })
+  .catch(error=>{
+    console.log("did not update")
+  })
+  
+  /*
+  User.findOne({_id:Object.keys(completeTeams[i][j])[0]})
+  .then(studentData=>{
+    console.log("Group " +(i+1) +":")
+    console.log(studentData.first + ", " + studentData.last )
+    console.log("\n")
+  })
+  .catch(error=>{
+    console.log(error)
+  })
+  */
   
 }
 

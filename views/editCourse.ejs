@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/style.css" />
     <link rel="stylesheet" href="/w3.css" />
     <link rel="shortcut icon" href="/images/favicon.ico">
-    <script src = "./scripts/addStudent.js"></script>
+    <script src = "/scripts/getAllSurveys.js" defer></script>
     <title>Edit Course</title>
   </head>
   <body>
@@ -49,8 +49,9 @@
           <% } %>
           <br>
         <button><a href= "/classesInfo" style = "text-decoration: none;">Exit</a></button><br>
+        <div class="w3-row" id = "courseInfo">
         Class: <%= course.course_id %>-<%=course.section %> 
-        
+        </div>
         <br>
         
         <div class = "w3-row" style = "border-top: 1px solid black;border: 1px solid black; ">
@@ -77,7 +78,7 @@
           <% }else{  %>
 
               <h4>Surveys</h4>
-                <select size = "10" name = "classes" id= "clases" style = "width:auto; text-align: center;">
+                <select size = "10" name = "classes" id= "allsurveys" style = "width:auto; text-align: center;">
 
                     <% for(let i=0; i < surveys.length;i++){ %>
                         
@@ -95,7 +96,14 @@
               <button><a href = "/createSurvey/<%= course._id %>" style="text-decoration: none;">Create New Survey</a> </button>
           </div>
         </form>
+        <div class = 'w3-row' >
+          Create Groups
+          <br>
+          
+          <button id= "groupButton"> Create Groups </button>
+      </div>
 
+      <div class="w3-row" id="addGroups" style = "align-items: center;width: 25%;background: white;margin: 0 auto;margin-top: 3%;"></div>
         
         
         
