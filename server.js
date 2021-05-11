@@ -583,7 +583,7 @@ app.post('/addClasses',(req,res)=>{
             password = password.replace(slash,"");
             var confirmCode = sendMail(data.email,null,password) 
             //create temp password for student
-            
+            var courseArray =[];
             var student = new User({
               _id: mongoose.Types.ObjectId(),
               username: ""+data.first[0]+data.last+"",
