@@ -8,9 +8,6 @@
     <link rel="shortcut icon" href="/images/favicon.ico">  
 	
 	<script>
-		var slider;
-		var output;
-		
 		var count = 1;
 		function addquestionToSurvey() {
 			
@@ -26,8 +23,8 @@
 			quesAnswers += "<h5>Enter the answers in a comma seperated format!</h5>";
 			quesAnswers +=   "<input type=\"text\" name=\"question" + count + "Answers\" />";
 			var slider = "<div class=\"slidecontainer\">";
-			slider += "<input type=\"range\" min=\"1\" max=\"10\" value=\"5\" class=\"slider\" id=\"range\" name=\"weightq" + count + "\" oninput=\"showVal(this.value)\" onchange=\"showVal(this.value)\">";
-			slider += "<p>Value: <span id=\"valuedisplay\"></span></p>";
+			slider += "<input type=\"range\" min=\"1\" max=\"10\" value=\"5\" class=\"slider\" id=\"range" + count + "\" name=\"weightq" + count + "\">";
+			slider += "<p>Value: <span id=\"valuedisplay" + count + "\"></span></p>";
 			slider += "</div>";
 			
 			
@@ -39,9 +36,15 @@
 			questionArea.innerHTML += quesAnswers + "<br>";
 			questionArea.innerHTML += slider + "<br><hr size=\"10\">";
 			
-			slider = document.getElementById("range");
-			output = document.getElementById("valuedisplay");
-			output.innerHTML = slider.value;
+			var slideritem = document.getElementById("range" + count);
+			var output = document.getElementById("valuedisplay" + count);
+			
+			slideritem.oninput = function() {
+				var num = this.id;
+				num = num.substring(5);
+				console.log(num);
+				document.getElementById("valuedisplay" + num).innerHTML = this.value;
+			};
 			
 			count = count + 1;
 			
@@ -51,10 +54,6 @@
 			document.getElementById("createSurvey").innerHTML = "<h4>Enter Survey Title</h4>";
 			document.getElementById("createSurvey").innerHTML += "<input type=\"text\" name=\"surveyTitle\" />";
 			document.getElementById("createSurvey").innerHTML += "<br><hr size=\"10\">";
-		}
-		
-		function showVal(value) {
-			output.innerHTML = value;
 		}
 	</script>
 	
