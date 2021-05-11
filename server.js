@@ -774,25 +774,30 @@ app.get("/group/:courseName&:section",checkAuthenticated,(req,res)=>{
       //console.log(courseData.groups.length)
       //console.log("size of groups.length is" + courseData.groups.length)
       //console.log("size of groups[i].length is" + courseData.groups[0].length)
-      for(let i = 0; i < courseData.groups.length;i++){
-        for(let j = 0; j < courseData.groups[i].length; j++){
-          User.findOne({_id:courseData.groups[i][j]})
-          .then(studentData=>{
-            var studObj = {};
-            studObj.first = studentData.first;
-            studObj.last = studentData.last;
-            completeGroups[i].push(studObj);
-            if(j == courseData.groups[0].length -1 && i ==courseData.groups.length-1){
-              res.status(200)
-              //console.log(completeGroups)
-              res.send(completeGroups)
-            }
-          })
-          .catch(error=>{
-            console.log()
-          })
+      if(courseData.groups != undefined){
+        for(let i = 0; i < courseData.groups.length;i++){
+          for(let j = 0; j < courseData.groups[i].length; j++){
+            User.findOne({_id:courseData.groups[i][j]})
+            .then(studentData=>{
+              var studObj = {};
+              studObj.first = studentData.first;
+              studObj.last = studentData.last;
+              completeGroups[i].push(studObj);
+              if(j == courseData.groups[0].length -1 && i ==courseData.groups.length-1){
+                res.status(200)
+                //console.log(completeGroups)
+                res.send(completeGroups)
+              }
+            })
+            .catch(error=>{
+              console.log()
+            })
+          }
         }
       }
+      res.status(404)
+      res.send()
+      
       
 
       
