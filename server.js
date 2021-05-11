@@ -584,7 +584,6 @@ app.post('/addClasses',(req,res)=>{
             var confirmCode = sendMail(data.email,null,password) 
             //create temp password for student
             
-            
             var student = new User({
               _id: mongoose.Types.ObjectId(),
               username: ""+data.first[0]+data.last+"",
@@ -605,7 +604,7 @@ app.post('/addClasses',(req,res)=>{
               Course.updateOne({_id:courseData._id},{$push:{students:student._id}})
               .exec()
               .then(()=>{
-                //console.log("Updating with student")
+                console.log("Updating with student")
               })
               .catch(error=>{
                 console.log(error)
@@ -613,11 +612,11 @@ app.post('/addClasses',(req,res)=>{
               
             })
             .catch(error =>{
-              //console.log("Did not add to database")
+              console.log("Did not add to database")
             })
           }
           else{
-            //console.log("adding student that already exists in database")
+            console.log("adding student that already exists in database")
 
             Course.updateOne({_id:courseData._id},{$push:{students:tempStudent._id}})
             .catch(error =>{
