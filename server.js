@@ -762,10 +762,9 @@ app.get("/group/:courseName&:section",checkAuthenticated,(req,res)=>{
   var courseData = null;
  
   Course.findOne({course_id:req.params.courseName,section:req.params.section})
-
   .then(courseData=>{
     if(courseData != null){
-      
+     
       
       var completeGroups = [];
       for(let i = 0; i < courseData.groups.length; i++){
@@ -774,7 +773,9 @@ app.get("/group/:courseName&:section",checkAuthenticated,(req,res)=>{
       //console.log(courseData.groups.length)
       //console.log("size of groups.length is" + courseData.groups.length)
       //console.log("size of groups[i].length is" + courseData.groups[0].length)
+      console.log("")
       console.log(courseData.groups)
+      console.log("")/*
       if(courseData.groups != undefined){
         for(let i = 0; i < courseData.groups.length;i++){
           for(let j = 0; j < courseData.groups[i].length; j++){
@@ -796,11 +797,11 @@ app.get("/group/:courseName&:section",checkAuthenticated,(req,res)=>{
           }
         }
       }
-      else{
+      else{*/
         res.status(404)
-        res.send()
+        res.send()/*
       }
-      
+      */
       
       
 
