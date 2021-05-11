@@ -764,10 +764,8 @@ app.get("/group/:courseName&:section",checkAuthenticated,(req,res)=>{
   Course.findOne({course_id:req.params.courseName,section:req.params.section})
   .then(courseData=>{
     if(courseData != null){
-     
-      console.log("")
-      console.log(courseData.groups)
-      console.log("")
+      console.log(courseData)
+
       var completeGroups = [];
       
       if(courseData.groups != undefined){
