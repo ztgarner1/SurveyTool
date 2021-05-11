@@ -283,10 +283,8 @@ app.get("/viewCourse/:variable",checkAuthenticated,(req,res) =>{
       SurveyTemplates.findOne({_id:classData.surveys[i]})
       .exec()
       .then(surveyData=>{
-        if(!req.user.takenSurveys.includes(surveyData._id)){
-          allSurveys.push(surveyData);
-        }
         
+        allSurveys.push(surveyData);
         if(i == classData.surveys.length -1){
           //console.log(allSurveys.length)
           res.render("viewCourse.ejs",{user:req.user, course:classData,surveys:allSurveys, error: null});
@@ -331,7 +329,7 @@ app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
     if(studentData.takenSurveys != null || studentData.takenSurveys != undefined || studentData.takenSurveys.length == 0){
       User.updateOne({_id:studentData._id},{$push:{takenSurveys:req.params.survey_id}})
       .catch(error=>{
-        req.user.takenSurveys.push(req.params.survey_id);
+        //req.user.takenSurveys.push(req.params.survey_id);
         console.log(error);
       })
     }
