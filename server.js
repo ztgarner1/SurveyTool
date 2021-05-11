@@ -796,8 +796,11 @@ app.get("/group/:courseName&:section",checkAuthenticated,(req,res)=>{
           }
         }
       }
-      res.status(404)
-      res.send()
+      else{
+        res.status(404)
+        res.send()
+      }
+      
       
       
 
