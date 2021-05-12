@@ -63,7 +63,7 @@ app.get('/', (req, res) => {
       res.render('index.ejs', { user: req.user})
   }
 })
-
+//Survey page
 app.get('/survey', (req, res) => {
   
   if(req.user == undefined){
@@ -73,7 +73,7 @@ app.get('/survey', (req, res) => {
       res.render('questions.ejs', { user: req.user})
   }
 })
-
+//Algorithm test page
 app.get('/algtest', (req, res) => {
   
   if(req.user == undefined){
@@ -253,6 +253,7 @@ app.get('/myClasses',checkAuthenticated,(req,res)=>{
   }
   
 })
+//View of the classes
 app.post('/myClasses', checkAuthenticated,(req,res)=>{
   if(req.user.verified == false){
     sendMail(req.user.email,req.user, null);
@@ -268,7 +269,7 @@ app.post('/myClasses', checkAuthenticated,(req,res)=>{
     })
   }
 })
-
+//view a class
 app.get("/viewCourse/:variable",checkAuthenticated,(req,res) =>{
   var allSurveys = [];
   
@@ -300,7 +301,7 @@ app.get("/viewCourse/:variable",checkAuthenticated,(req,res) =>{
     console.log("Error : "+error);
   })
 })
-
+//view a specific course
 app.post("/viewCourse/:variable",checkAuthenticated, (req,res)=>{
   SurveyTemplates.findOne({_id:req.body.survey})
   .then(surveyData=>{
@@ -311,7 +312,7 @@ app.post("/viewCourse/:variable",checkAuthenticated, (req,res)=>{
     res.redirect("/classesInfo");
   })
 })
-
+//View a specifc survey
 app.get("/studentSurvey/:variable",checkAuthenticated,(req,res)=>{
     surveyTemplate.findOne({_id:req.params.variable})
     .exec()
@@ -322,6 +323,7 @@ app.get("/studentSurvey/:variable",checkAuthenticated,(req,res)=>{
       res.redirect("/");
     })
 })
+//View a specifc survey
 app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
   User.findOne({_id:req.user._id})
   .then(studentData=>{
@@ -413,7 +415,7 @@ app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
   res.redirect("/myClasses");
   
 })
-
+//Create a survey
 app.get('/createSurvey/:variable',checkAuthenticated, (req, res) => {
   var check;
   
@@ -430,11 +432,10 @@ app.get('/createSurvey/:variable',checkAuthenticated, (req, res) => {
   })
   
 })
-
+//Create a survey
 app.post('/createSurvey/:course_id',(req,res)=>{
-  
 	var questionsArray = [];
-  var tempSchedule= [];
+	var tempSchedule= [];
 	var weight = 0;
 	var count = 0;
 	
@@ -444,7 +445,7 @@ app.post('/createSurvey/:course_id',(req,res)=>{
 		answers: "",
 		weight: 0
 	};
-	
+	//Loop through the body
 	for (c in req.body) {
 		
 		if (count == 0 || count == 1) {
@@ -691,7 +692,7 @@ app.post('/classesInfo',checkAuthenticated, (req,res)=>{
     
   }
 })
-
+//Edit a specifc course
 app.get("/editCourse/:course_id&:section",checkAuthenticated,(req,res)=>{
   //console.log(req.params.course_id)
   //console.log(req.params.section)
@@ -737,7 +738,7 @@ app.get("/editCourse/:course_id&:section",checkAuthenticated,(req,res)=>{
   
 })
 /**
- * 
+ * Edit a course
  */
 app.post("/editCourse",checkAuthenticated,(req,res)=>{
   var courseData = null;
@@ -755,7 +756,7 @@ app.post("/editCourse",checkAuthenticated,(req,res)=>{
   res.redirect('/group/:'+courseName[0]+"&:") 
 
 })
-
+//the group view
 app.get("/group/:courseName&:section",checkAuthenticated,(req,res)=>{
   var courseData = null;
  
@@ -832,7 +833,7 @@ app.get('/confirm/:variable',checkNotAuthenticated,(req,res)=>{
   })
         
 })
-
+//Set password view
 app.get("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
   //console.log(req.params.variable)
   User.findOne({temporaryPassword:req.params.variable})
@@ -842,6 +843,7 @@ app.get("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
   })
      
 })
+//Set password view
 app.post("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
   if(req.body.firstPassword == req.body.secondPassword){
 
@@ -867,7 +869,7 @@ app.get("/resetPassword",checkNotAuthenticated,(req,res)=>{
   res.render('resetPassword.ejs',{user:null,error:null})
 
 })
-
+//Reset password view
 app.post("/resetPassword",checkNotAuthenticated,(req,res)=>{
   
   var to = req.body.email;
@@ -992,7 +994,7 @@ function sendMail(to,user,tempPassword){
     return randomString;
   }
 }
-
+//Find the specific survey
  function searchForSurvey(id,groupsize){
   var survey_id;
   var studentsResults;
@@ -1018,7 +1020,7 @@ function sendMail(to,user,tempPassword){
   })
   
 }
-
+//Algorithm to make teams
 function makesTeam(studentsResults, survey, groupsize,course_id){
   
   var added = {};
@@ -1090,7 +1092,7 @@ function makesTeam(studentsResults, survey, groupsize,course_id){
   }
 
 }
-
+//Function to make best teams
 function makeBestTeams(tempTeams,groupSize,resultsSize,course_id){
   //console.log(tempTeams);
   
@@ -1145,7 +1147,7 @@ function makeBestTeams(tempTeams,groupSize,resultsSize,course_id){
   }
   sendGroupData(completeTeams,course_id);
 }
-
+//Send group data to screen
 function sendGroupData(completeTeams,course_id){
   
   console.log(completeTeams)
@@ -1204,7 +1206,7 @@ function messageToSend(to,message,sub){
   })
 }
 
-
+//Send email to reset passwrod
 function sendResetPassword(to, id,string){
 
   let link = "https://wcu-surveytool.herokuapp.com/setPassword/" + string ;
@@ -1231,7 +1233,7 @@ function sendResetPassword(to, id,string){
     return false;
   })
 }
-
+//Delete all the classes from the databse
 var deleteAllClasses = function(){
   Course.find()
   .then(data=>{
@@ -1247,6 +1249,7 @@ var deleteAllClasses = function(){
     
   })
 }
+//Delete all the classes form users
 var deleteEveryonesCourses = function(){
   User.find()
   .then(data=>{
@@ -1258,7 +1261,7 @@ var deleteEveryonesCourses = function(){
     }
   })
 }
-
+//delete all the users
 var deleteAllStudents = function(){
   User.deleteMany({isTeacher:false})
   .then(data=>{
@@ -1268,7 +1271,7 @@ var deleteAllStudents = function(){
     console.log(error)
   })
 }
-
+//deleste students from files
 function addStudentsFromFile(){
   var filename = "Example_Survey_Data.csv";
   var results = []
