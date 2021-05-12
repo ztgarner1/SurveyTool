@@ -3,7 +3,7 @@ var courseData = document.getElementById("courseInfo");
 var parentDiv = document.getElementById("replace");
 
 
-fetch('https://wcu-surveytool.herokuapp.com/')
+fetch('https://wcu-surveytool.herokuapp.com/getCourses')
     .then(response => response.json())
     .then(data => {
         //console.log(data)

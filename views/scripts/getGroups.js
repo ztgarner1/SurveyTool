@@ -16,7 +16,7 @@ groupButton.addEventListener("click",()=>{
     //will need to change this line here for whatever your application is called
     //replace http://localhost:300 with something else.
     //fetch('http://localhost:3000/group/'+courseName+"&"+courseSection)
-    fetch('https://wcu-surveytool.herokuapp.com/'+courseName+"&"+courseSection)
+    fetch('https://wcu-surveytool.herokuapp.com/group/'+courseName+"&"+courseSection)
     .then(response => response.json())
     .then(data => {
         //populate here

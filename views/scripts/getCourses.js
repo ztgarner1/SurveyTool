@@ -2,7 +2,7 @@ var allCourses = document.getElementById("addCourse");
 var parentDiv = document.getElementById("replace");
 
 //fetch('http://localhost:3000')
-fetch('https://wcu-surveytool.herokuapp.com/')
+fetch('https://wcu-surveytool.herokuapp.com/getCourses')
     .then(response => response.json())
     .then(data => {
         console.log(data)
