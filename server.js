@@ -1,6 +1,7 @@
 //requiring everything thats needed and setting up app.
 const dotenv = require('dotenv');
 dotenv.config()
+//Requiring all the files
 const express = require('express')
 const app = express()
 const bcrypt = require('bcrypt')
@@ -12,7 +13,6 @@ const csv = require('csv-parser')
 const fs = require('fs');
 app.use(fileUpload());
 const path = require('path');
-var courses;
 //this helps log a user out
 const methodOverride = require('method-override')
 //sendgrid for the mail.
@@ -1308,13 +1308,7 @@ function addStudentsFromFile(){
       
     }
   })
-
-
 }
-
-//searchForSurvey("60938cb5bd111245a8984cdb",3) 
-//addStudentsFromFile()
-
 //deleteAllStudents();
 //deleteAllClasses();
 //deleteEveryonesCourses()
