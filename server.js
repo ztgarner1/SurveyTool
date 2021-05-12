@@ -602,7 +602,7 @@ app.post('/addClasses',(req,res)=>{
               
             })
             .catch(error =>{
-              console.log("Did not add to database")
+              console.log("ERROR >>"+error)
             })
           }
           else{
