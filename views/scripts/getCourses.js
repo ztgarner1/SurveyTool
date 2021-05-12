@@ -2,10 +2,10 @@ var allCourses = document.getElementById("addCourse");
 var parentDiv = document.getElementById("replace");
 
 //fetch('http://localhost:3000')
-fetch('https://wcu-surveytool.herokuapp.com/getCourses')
+fetch('/getCourses')
     .then(response => response.json())
     .then(data => {
-        console.log(data)
+        
         if(data.length == 0){
             parentDiv.innerHTML = "There are no classes yet"
         }

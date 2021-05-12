@@ -4,8 +4,8 @@ var courseData = document.getElementById("courseInfo")
 var courseName = courseData.innerText.split(/ |-/)[1]
 var courseSection = courseData.innerText.split(/ |-/)[2]
 
-//fetch('http://localhost:3000/getSurveys/'+courseName+"&"+courseSection)
-fetch('https://wcu-surveytool.herokuapp.com/getSurveys/'+courseName+"&"+courseSection)
+fetch('/getSurveys/'+courseName+"&"+courseSection)
+//fetch('https://wcu-surveytool.herokuapp.com/getSurveys/'+courseName+"&"+courseSection)
 .then(response => response.json())
 .then(data =>{
     //console.log(data);
