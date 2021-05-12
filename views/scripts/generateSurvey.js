@@ -23,7 +23,7 @@ function genHTML() {
 	for (i = 0; i < surveyQues.length; i++) {
 		
 		var j = i + 1;
-		
+		//Check out what type it is
 		if (surveyQues[i].type == "text") {
 			tempStr += "<h4>" + j + ") " + surveyQues[i].ques + "</h4>";
 			tempStr += "<input autocomplete=\"chrome-off\" type=\"text\" name=\"q" + j + "\" />";
@@ -203,12 +203,13 @@ function genHTML() {
 	}
 	quesSec.innerHTML = tempStr;
 }
-
+//Print the questions onto the site
 function generateQuestion(ask,type, answers ){
 	console.log("adding a question")
 	addQuestion(type, ask, answers.split(/[ ]*,[ ]*/));
 	genHTML();
 }
+//Set the div to print to
 function setDiv(){
 	quesSec = document.getElementById("questionsSections");
 }

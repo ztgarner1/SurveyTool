@@ -63,7 +63,7 @@ app.get('/', (req, res) => {
       res.render('index.ejs', { user: req.user})
   }
 })
-
+//This is the example survey page
 app.get('/survey', (req, res) => {
   
   if(req.user == undefined){
@@ -73,7 +73,7 @@ app.get('/survey', (req, res) => {
       res.render('questions.ejs', { user: req.user})
   }
 })
-
+//This is the algorithm testing page
 app.get('/algtest', (req, res) => {
   
   if(req.user == undefined){
@@ -83,7 +83,6 @@ app.get('/algtest', (req, res) => {
       res.render('algorithmTest.ejs', { user: req.user})
   }
 })
-
 
 //server serving the login page where user cant be logged in
 app.get("/login", checkNotAuthenticated, (req,res)=>{
@@ -251,8 +250,8 @@ app.get('/myClasses',checkAuthenticated,(req,res)=>{
       
     }
   }
-  
 })
+//This page is the teachers classes page
 app.post('/myClasses', checkAuthenticated,(req,res)=>{
   if(req.user.verified == false){
     sendMail(req.user.email,req.user, null);
@@ -268,7 +267,7 @@ app.post('/myClasses', checkAuthenticated,(req,res)=>{
     })
   }
 })
-
+//This the view of the selected course 
 app.get("/viewCourse/:variable",checkAuthenticated,(req,res) =>{
   var allSurveys = [];
   
@@ -299,7 +298,7 @@ app.get("/viewCourse/:variable",checkAuthenticated,(req,res) =>{
     console.log("Error : "+error);
   })
 })
-
+//This is the view of the student survey 
 app.post("/viewCourse/:variable",checkAuthenticated, (req,res)=>{
   SurveyTemplates.findOne({_id:req.body.survey})
   .then(surveyData=>{
@@ -310,7 +309,7 @@ app.post("/viewCourse/:variable",checkAuthenticated, (req,res)=>{
     res.redirect("/classesInfo");
   })
 })
-
+//This is the view of the selected survey
 app.get("/studentSurvey/:variable",checkAuthenticated,(req,res)=>{
     surveyTemplate.findOne({_id:req.params.variable})
     .exec()
@@ -321,6 +320,7 @@ app.get("/studentSurvey/:variable",checkAuthenticated,(req,res)=>{
       res.redirect("/");
     })
 })
+//This is the view of the selected survey
 app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
   User.findOne({_id:req.user._id})
   .then(studentData=>{
@@ -410,7 +410,7 @@ app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
   res.redirect("/myClasses");
   
 })
-
+//This is the create survey page 
 app.get('/createSurvey/:variable',checkAuthenticated, (req, res) => {
   var check;
   
@@ -427,7 +427,7 @@ app.get('/createSurvey/:variable',checkAuthenticated, (req, res) => {
   })
   
 })
-
+//This is the to create a survey for a specifc class
 app.post('/createSurvey/:course_id',(req,res)=>{
   
 	var questionsArray = [];
@@ -441,7 +441,7 @@ app.post('/createSurvey/:course_id',(req,res)=>{
 		answers: "",
 		weight: 0
 	};
-	
+	//Grab all items on page
 	for (c in req.body) {
 		
 		if (count == 0 || count == 1) {
@@ -477,7 +477,7 @@ app.post('/createSurvey/:course_id',(req,res)=>{
     questionsArray.push(tempSchedule[i]);
   }
   
-	
+	//add survey to database
 	SurveyTemplates.findOne({title:req.body.surveyTitle,course_id:req.params.course_id})
   .then(data=>{
     if(data == null) {
@@ -685,7 +685,7 @@ app.post('/classesInfo',checkAuthenticated, (req,res)=>{
     
   }
 })
-
+//This is the view to edit a specifc course
 app.get("/editCourse/:course_id&:section",checkAuthenticated,(req,res)=>{
   console.log(req.params.course_id)
   console.log(req.params.section)
@@ -725,8 +725,6 @@ app.get("/editCourse/:course_id&:section",checkAuthenticated,(req,res)=>{
           
       }
     }
-    
-    
   })
   .catch(error=>{
     console.log(error);
@@ -735,7 +733,7 @@ app.get("/editCourse/:course_id&:section",checkAuthenticated,(req,res)=>{
   
 })
 /**
- * 
+ * this is the view of edit course
  */
 app.post("/editCourse",checkAuthenticated,(req,res)=>{
   var courseData = null;
@@ -898,7 +896,7 @@ app.get('/confirm/:variable',checkNotAuthenticated,(req,res)=>{
   })
         
 })
-
+//This is the setpassword screen
 app.get("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
   //console.log(req.params.variable)
   User.findOne({temporaryPassword:req.params.variable})
@@ -908,6 +906,7 @@ app.get("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
   })
      
 })
+//This is the setpassword screen
 app.post("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
   if(req.body.firstPassword == req.body.secondPassword){
 
@@ -933,7 +932,7 @@ app.get("/resetPassword",checkNotAuthenticated,(req,res)=>{
   res.render('resetPassword.ejs',{user:null,error:null})
 
 })
-
+//if the user has forgotten their password
 app.post("/resetPassword",checkNotAuthenticated,(req,res)=>{
   
   var to = req.body.email;
@@ -1078,7 +1077,7 @@ function sendMail(to,user,tempPassword){
   })
   
 }
-
+//Algorithm to generate teams
 function makesTeam(studentsResults, survey, groupsize){
   
   var added = {};
@@ -1150,7 +1149,7 @@ function makesTeam(studentsResults, survey, groupsize){
   }
 
 }
-
+//Helper to make the teams
 function makeBestTeams(tempTeams,groupSize,resultsSize){
   //console.log(tempTeams);
   
@@ -1205,7 +1204,7 @@ function makeBestTeams(tempTeams,groupSize,resultsSize){
   }
   sendGroupData(completeTeams);
 }
-
+//Send data to screen
 function sendGroupData(completeTeams){
   
   console.log(completeTeams)
@@ -1228,7 +1227,6 @@ function sendGroupData(completeTeams){
   
 }
 
-
 function messageToSend(to,message,sub){
   const msg = {
     to: to,
@@ -1247,7 +1245,7 @@ function messageToSend(to,message,sub){
   })
 }
 
-
+//Send emial to reset password
 function sendResetPassword(to, id,string){
 
   let link = "https://wcu-surveytool.herokuapp.com/setPassword/" + string ;
@@ -1274,7 +1272,7 @@ function sendResetPassword(to, id,string){
     return false;
   })
 }
-
+//Function to delete all classes
 var deleteAllClasses = function(){
   Course.find()
   .then(data=>{
@@ -1290,6 +1288,7 @@ var deleteAllClasses = function(){
     
   })
 }
+//Function to delete all courses from users
 var deleteEveryonesCourses = function(){
   User.find()
   .then(data=>{
@@ -1301,7 +1300,7 @@ var deleteEveryonesCourses = function(){
     }
   })
 }
-
+//delete all users
 var deleteAllStudents = function(){
   User.deleteMany({isTeacher:false})
   .then(data=>{
@@ -1311,7 +1310,7 @@ var deleteAllStudents = function(){
     console.log(error)
   })
 }
-
+//Function to add students from file
 function addStudentsFromFile(){
   var filename = "Example_Survey_Data.csv";
   var results = []

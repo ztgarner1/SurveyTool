@@ -1,6 +1,6 @@
 
 var navArea;
-
+//Generate the navbar onto the pages
 function genNavbar() {
 	
 	var temp = "<a href=\"\/\">Home</a>";

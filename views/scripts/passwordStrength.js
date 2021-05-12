@@ -10,13 +10,10 @@ const errors = document.getElementById("error-message")
 var totalStrength;
 passwordInput.addEventListener('focus',updateStrengthMeter)
 passwordInput.addEventListener("input",updateStrengthMeter)
-
+//Set up the event listener
 submitButton.addEventListener("click",()=>{
-    //console.log("working")
     const weaknesses = calculatePasswordStrength(passwordInput.value)
-    console.log(totalStrength)
     if(totalStrength >= 70){
-        console.log("inside here")
         weaknesses.forEach(weakness =>{
             if(weakness == null){
                 form.submit();
@@ -32,11 +29,9 @@ submitButton.addEventListener("click",()=>{
         errors.innerText = "Password not strong enough"
         //form.reset()
     }
-    
 })
 
-
-//updateStrengthMeter();
+//function to update the meter within html
 function updateStrengthMeter(){
     const weaknesses = calculatePasswordStrength(passwordInput.value)
     let strength = 100;
@@ -53,7 +48,7 @@ function updateStrengthMeter(){
     totalStrength = strength;
     strengthMeter.style.setProperty('--strength',strength)
 }
-
+//method to calcualte what the weakness of the password
 function calculatePasswordStrength(password){
     const weaknesses = [];
     weaknesses.push(lengthWeakness(password))
@@ -62,6 +57,7 @@ function calculatePasswordStrength(password){
     weaknesses.push(matchWeakness())
     return weaknesses;
 }
+//Function to find out it the length of the password is long enough
 function lengthWeakness(password){
 
     const length = password.length;
@@ -80,9 +76,8 @@ function lengthWeakness(password){
         }
     }
 
-
 }
-
+//Check if both password are equal
 function matchWeakness(){
     if(passwordInput2 != null || passwordInput2 != undefined){
         if(passwordInput.value !== passwordInput2.value){
@@ -94,15 +89,15 @@ function matchWeakness(){
     }
     return;
 }
+//helper to turn the passwords to lowercase
 function lowercaseWeakness(password){
     return characterTypeWeakness(password,/[a-z]/g, "Lowercase")
 }
-
+//helper to turn the password to uppercase
 function uppercaseWeakness(password){
     return characterTypeWeakness(password,/[A-Z]/g, "Uppercase")
-    
 }
-
+//helper function to check if the password contains 'type'
 function characterTypeWeakness(password, regex, type){
     var matches = password.match(regex) || []
     if(matches.length === 0){

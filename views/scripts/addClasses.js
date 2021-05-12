@@ -31,11 +31,3 @@ addCourseButton.addEventListener("click", ()=>{
     space.style = "style = width:50%,height: 25%;"
     
 })
-/*
-addTutButton.addEventListener("click"()=>{
-    addingTo.innerHTML=""
-})
-*/
-function writeToFile(msg){
-
-}
