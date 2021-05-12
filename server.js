@@ -269,6 +269,8 @@ app.post('/myClasses', checkAuthenticated,(req,res)=>{
     })
   }
 })
+
+
 //view a class
 app.get("/viewCourse/:variable",checkAuthenticated,(req,res) =>{
   var allSurveys = [];
@@ -276,31 +278,15 @@ app.get("/viewCourse/:variable",checkAuthenticated,(req,res) =>{
   Course.findOne({_id: req.params.variable})
   .exec()
   .then(classData =>{
-    if(classData.surveys.length == 0){
-      res.render("viewCourse.ejs",{user:req.user, course:classData,surveys:allSurveys, error: null});
-    }
-    //console.log("Survey number is >> "+ classData.surveys.length)
-    for(let i = 0; i < classData.surveys.length;i++){
-      SurveyTemplates.findOne({_id:classData.surveys[i]})
-      .exec()
-      .then(surveyData=>{
-        
-        allSurveys.push(surveyData);
-        if(i == classData.surveys.length -1){
-          //console.log(allSurveys.length)
-          res.render("viewCourse.ejs",{user:req.user, course:classData,surveys:allSurveys, error: null});
-        }
-      })
-      .catch(error =>{
-        console.log(error)
-      })
-    }
+      res.render("viewCourse.ejs",{user:req.user, course:classData, error: null});
     
   })
   .catch(error =>{
     console.log("Error : "+error);
   })
 })
+
+
 //view a specific course
 app.post("/viewCourse/:variable",checkAuthenticated, (req,res)=>{
   SurveyTemplates.findOne({_id:req.body.survey})
@@ -312,6 +298,7 @@ app.post("/viewCourse/:variable",checkAuthenticated, (req,res)=>{
     res.redirect("/classesInfo");
   })
 })
+
 //View a specifc survey
 app.get("/studentSurvey/:variable",checkAuthenticated,(req,res)=>{
     surveyTemplate.findOne({_id:req.params.variable})
@@ -415,6 +402,7 @@ app.post("/studentSurvey/:course_id&:survey_id",checkAuthenticated,(req,res)=>{
   res.redirect("/myClasses");
   
 })
+
 //Create a survey
 app.get('/createSurvey/:variable',checkAuthenticated, (req, res) => {
   var check;
@@ -700,36 +688,7 @@ app.get("/editCourse/:course_id&:section",checkAuthenticated,(req,res)=>{
   var students = [];
   Course.findOne({course_id:req.params.course_id, section:req.params.section})
   .then(courseData=>{
-    
-    for(let i = 0; i < courseData.students.length; i++){
-      User.findOne({_id:courseData.students[i]})
-      .then(studentObj =>{
-        //go through and grab the data for each student in the course
-        students.push(studentObj);
-        if(courseData.surveys.length == 0 && i ==courseData.students.length-1){
-          console.log(courseData.students.length)
-          res.render('editCourse.ejs', {user: req.user, students:students,course: courseData,surveys:surveys, error: null});
-        }
-      })
-      .catch(error=>{
-        console.log(error);
-      })
-       
-    } 
-    //console.log(courseData.surveys.length)
-    for(let i = 0; i < courseData.surveys.length; i++){
-      SurveyTemplates.findOne({_id:courseData.surveys[i]})
-      .then(surveyData =>{
-        surveys.push(surveyData);
-        if(i == courseData.surveys.length -1){
-          //console.log("Student data length is >> ")
-          //console.log(students.length)
-          res.render('editCourse.ejs', {user: req.user, students:students,course: courseData,surveys:surveys, error: null});
-        }
-      })
-        
-    }
-    
+    res.render('editCourse.ejs', {user: req.user,course: courseData, error: null});
   })
   .catch(error=>{
     console.log(error);
@@ -752,11 +711,92 @@ app.post("/editCourse",checkAuthenticated,(req,res)=>{
   .catch(error=>{
     console.log("ERROR " + error);
   })
-  
-  res.redirect('/group/:'+courseName[0]+"&:") 
 
 })
-//the group view
+//starting all the api
+app.get("/getSurveys/:courseName&:section",checkAuthenticated,(req,res)=>{
+  var surveys = [];
+  Course.findOne({course_id:req.params.courseName,section:req.params.section})
+  .then(courseData =>{
+    if(courseData.surveys.length == 0){
+      res.status(200)
+      res.send(surveys);
+    }
+    for(let i = 0; i < courseData.surveys.length; i++){
+      SurveyTemplates.findOne({_id:courseData.surveys[i]})
+      .then(surveyData =>{
+
+        surveys.push(surveyData)
+        if(surveys.length == courseData.surveys.length){
+          res.status(200)
+          res.send(surveys);
+        }
+      })
+
+      
+    }
+  })
+})
+//api call to get all the courses for the current user.
+app.get("/getCourses",checkAuthenticated,(req,res)=>{
+  var courses = [];
+  User.findOne({_id:req.user._id})
+  .then(userData =>{
+    if(userData.courses.length ==0){
+      res.status(200)
+      res.send(courses)
+    }
+    for(let i = 0; i<userData.courses.length;i++){
+      Course.findOne({_id:userData.courses[i]})
+      .then(courseData =>{
+        courses.push(courseData) 
+        if(courses.length == userData.courses.length){
+          res.status(200)
+          res.send(courses)
+        }
+      })
+      .catch(error=>{
+        console.log("Error in app.getCourses inner >> "+ error)
+      })
+    }
+  })
+  .catch(error=>{
+    console.log("Error in app.getCourses >> "+ error)
+  })
+})
+//an api call for getting all the students from a course
+app.get("/getStudents/:courseName&:section", checkAuthenticated,(req,res)=>{
+  Course.findOne({course_id:req.params.courseName,section:req.params.section})
+  .then(courseData=>{
+    if(courseData != null){
+      var studentsData = [];
+      if(courseData.students.length==0){
+        res.status(200)
+        res.send(studentsData);
+      }
+      for(let i = 0; i < courseData.students.length; i++){
+        User.findOne({_id:courseData.students[i]})
+        .then(student=>{
+          studentsData.push(student);
+          if(studentsData.length ==courseData.students.length){
+            //console.log(studentsData.length)
+            res.status(200)
+            res.send(studentsData);
+          }
+        })
+        .catch(error=>{
+          console.log("Error in app.getStudents Inner >> "+error)
+        })
+
+        
+      }
+    }
+  })
+  .catch(error=>{
+    console.log("Error in app.getStudents >> "+error)
+  })
+})
+//an api call for getting all the group members from a specified class
 app.get("/group/:courseName&:section",checkAuthenticated,(req,res)=>{
   var courseData = null;
  
@@ -765,9 +805,6 @@ app.get("/group/:courseName&:section",checkAuthenticated,(req,res)=>{
     if(courseData != null){
       
       //console.log(courseData[groups])
-      
-
-
       var completeGroups = [];
       
       if(courseData.groups != undefined){
@@ -800,13 +837,6 @@ app.get("/group/:courseName&:section",checkAuthenticated,(req,res)=>{
         res.send()
       }
       
-      
-      
-
-      
-      //console.log(completeGroups)
-      //res.status(200)
-      //res.send(completeGroups)
     }
     
   })

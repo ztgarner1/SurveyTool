@@ -6,7 +6,10 @@
     <link rel="stylesheet" href="/style.css" />
     <link rel="stylesheet" href="/w3.css" />
     <link rel="shortcut icon" href="/images/favicon.ico">
-    <script src = "/scripts/getAllSurveys.js" defer></script>
+    <script src = "/scripts/getGroups.js" defer></script>
+    <script src = "/scripts/getStudents.js" defer></script>
+    <script src = "/scripts/getSurveys.js" defer></script>
+    
     <title>Edit Course</title>
   </head>
   <body>
@@ -55,39 +58,27 @@
         <br>
         
         <div class = "w3-row" style = "border-top: 1px solid black;border: 1px solid black; ">
-            <div class = "w3-col" style ="align-items: left;">
+            <div class = "w3-col" name = "allStudents" style ="align-items: left;">
                 
                 <h4>Students</h4>
-                <select size = "10" name = "classes" id= "clases" style = "width:auto; text-align: center;">
+                <select size = '10' name = 'classes' id= 'clases' style = 'width:auto; text-align: center;'>
 
-                    <% for(let i=0; i < students.length;i++){ %>
-                        
-                        <option value = "<%= students[i]._id %>"> <%= students[i].first %> , <%= students[i].last %> , <%= students[i].email %> , <%= students[i].studentId %></option>
-                    
-                    <% } %>
                 </select>
                 
             </div> 
         </div>
         
         <form action='/editCourse' enctype="multipart/form-data" method ='POST' name = 'addSurvey'>
-          <% if(surveys.length == 0){  %>  
-            <div class = 'w3-row'>
+ 
+            <div class = 'w3-row' id = "replace">
               
-            </div>
-          <% }else{  %>
-
               <h4>Surveys</h4>
                 <select size = "10" name = "classes" id= "allsurveys" style = "width:auto; text-align: center;">
 
-                    <% for(let i=0; i < surveys.length;i++){ %>
-                        
-                        <option value = "<%= surveys[i]._id %>"> <%= surveys[i].title %>, Question Count : <%= surveys[i].questions.length %></option>
-                    
-                    <% } %>
+                  
                 </select>
-
-          <% } %>
+            </div>
+         
           <div class = 'w3-row' >
               Create Survey
               

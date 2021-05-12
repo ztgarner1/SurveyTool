@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/style.css" />
     <link rel="stylesheet" href="/w3.css" />
     <link rel="shortcut icon" href="/images/favicon.ico">
+    <script src = "/scripts/getSurveys.js" defer></script>
     <title>Edit Course</title>
   </head>
   <body>
@@ -48,29 +49,23 @@
           <% } %>
           <br>
         <button><a href= "/classesInfo" style = "text-decoration: none;">Exit</a></button><br>
-        Class: <%= course.course_id %>-<%= course.section %> 
+        <div class="w3-row" id = "courseInfo">
+          Class: <%= course.course_id %>-<%=course.section %> 
+          </div>
         
         <br>
         
-        <% if(surveys.length == 0){ %>
-            There are no surveys for this class yet
         
-        <% } else{  %>
         <form action "/viewCourse" method="POST">
-        <div class = "w3-row" style = "border-top: 1px solid black;border: 1px solid black" id="">
-            <select size = "3" name = "survey" id="question" style = "width:25%">
-                <% for(let i=0; i < surveys.length;i++){ %>
+        <div class = "w3-row" style = "border-top: 1px solid black;border: 1px solid black" id="replace">
+            <select size = "3" name = "survey" id="allsurveys" id="question" style = "width:fit-content">
                 
-                  <div id="<% i %>">
-                      <option value = "<%= surveys[i]._id %>"> <%= surveys[i].title %></option>
-                  </div>     
-                <% } %>
             </select>
         </div>
         <div class ="w3-row">
           <button type ="submit">Take Survey</button>
         </div>
-        <% } %>
+        
         </form>
         
         
