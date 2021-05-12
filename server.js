@@ -539,6 +539,9 @@ app.post('/addClasses',(req,res)=>{
           //console.log("updated Teacher")
         })
       })
+      .catch(error=>{
+        console.log("line 542 "+ error)
+      })
       //adding the course to the teachers teaching array
     }
     else{
@@ -551,7 +554,7 @@ app.post('/addClasses',(req,res)=>{
      filename = file.name
     var results = [];
   
-    var moveAndParse =   function(callback){
+    var moveAndParse = function(callback){
       file.mv(__dirname + "/views/uploads/"+filename, err =>{
         //console.log(err)
         if(err){
@@ -615,7 +618,7 @@ app.post('/addClasses',(req,res)=>{
           }
           else{
             console.log("adding student that already exists in database")
-
+            //error right here
             Course.updateOne({_id:courseData._id},{$push:{students:tempStudent._id}})
             .catch(error =>{
               console.log(error);
@@ -692,7 +695,7 @@ app.post('/classesInfo',checkAuthenticated, (req,res)=>{
 app.get("/editCourse/:course_id&:section",checkAuthenticated,(req,res)=>{
   //console.log(req.params.course_id)
   //console.log(req.params.section)
-  
+  var surveys = [];
   var students = [];
   Course.findOne({course_id:req.params.course_id, section:req.params.section})
   .then(courseData=>{
@@ -702,32 +705,30 @@ app.get("/editCourse/:course_id&:section",checkAuthenticated,(req,res)=>{
       .then(studentObj =>{
         //go through and grab the data for each student in the course
         students.push(studentObj);
-        
+        if(courseData.surveys.length == 0 && i ==courseData.students.length-1){
+          console.log(courseData.students.length)
+          res.render('editCourse.ejs', {user: req.user, students:students,course: courseData,surveys:surveys, error: null});
+        }
       })
       .catch(error=>{
         console.log(error);
       })
-      
+       
+    } 
+    //console.log(courseData.surveys.length)
+    for(let i = 0; i < courseData.surveys.length; i++){
+      SurveyTemplates.findOne({_id:courseData.surveys[i]})
+      .then(surveyData =>{
+        surveys.push(surveyData);
+        if(i == courseData.surveys.length -1){
+          //console.log("Student data length is >> ")
+          //console.log(students.length)
+          res.render('editCourse.ejs', {user: req.user, students:students,course: courseData,surveys:surveys, error: null});
+        }
+      })
+        
     }
-    var surveys = [];
-    if(courseData.surveys.length == 0){
-      res.render('editCourse.ejs', {user: req.user, students:students,course: courseData,surveys:surveys, error: null});
-    }
-    else{
-      //console.log(courseData.surveys.length)
-      for(let i = 0; i < courseData.surveys.length; i++){
-        SurveyTemplates.findOne({_id:courseData.surveys[i]})
-        .then(surveyData =>{
-          surveys.push(surveyData);
-          if(i == courseData.surveys.length -1){
-            //console.log("Student data length is >> ")
-            //console.log(students.length)
-            res.render('editCourse.ejs', {user: req.user, students:students,course: courseData,surveys:surveys, error: null});
-          }
-        })
-          
-      }
-    }
+    
   })
   .catch(error=>{
     console.log(error);
