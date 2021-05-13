@@ -719,7 +719,9 @@ app.post("/addStudent/:courseName&:section",checkAuthenticated,(req,res)=>{
   User.findOne({email:req.body.email.toLowerCase()})
     .then(studentData=>{
       if(studentData != null){
-        
+        if(studentData.studentId == undefined){
+          User.updateOne({_id:studentData._id},{studentId:req.body.id})
+        }
         Course.findOne({course_id:req.params.courseName,section:req.params.section})
         .then(courseData =>{
           if(courseData.students.length == 0){
