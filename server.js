@@ -797,7 +797,7 @@ app.post("/addStudent/:courseName&:section",checkAuthenticated,(req,res)=>{
 })
 //this calculates the Results bases on the survey taken in and the groupsize
 app.get("/calculateResults/:surveyId&:groupSize",checkAuthenticated,(req,res)=>{
-  console.log("made it here")
+  
   searchForSurvey(req.params.surveyId, req.params.groupSize);
   res.status(200);
   res.send();
@@ -888,7 +888,7 @@ app.get("/getStudents/:courseName&:section", checkAuthenticated,(req,res)=>{
 })
 //an api call for getting all the group members from a specified class
 app.get("/group/:courseName&:section",checkAuthenticated,(req,res)=>{
-  console.log("here")
+  //console.log("here")
   var courseData = null;
  
   Course.findOne({course_id:req.params.courseName,section:req.params.section})
@@ -1232,8 +1232,6 @@ function makeBestTeams(tempTeams,groupSize,resultsSize,course_id){
       else{
         
         //this while loop is finding the next location in the array of choses
-        console.log(tempTeams[current][0])
-        
         while(tempTeams[current].length > 0 && added[Object.keys(tempTeams[current][0])[0]] == true){
           //shifts so that the first one
           tempTeams[current].shift();
@@ -1280,13 +1278,13 @@ function sendGroupData(completeTeams,course_id){
   
   //console.log(finalGroups)
   
-  console.log(course_id)
+  //console.log(course_id)
   Course.updateOne({_id:course_id},{groups:finalGroups})
   .then(()=>{
-    console.log("updated")
+    console.log("Updated Groups in Database")
   })
   .catch(error=>{
-    console.log("did not update")
+    console.log("Did not update groups in Database >> "+error)
   })
   
   

@@ -68,7 +68,7 @@ groupButton.addEventListener("click",()=>{
     //this runs after the groupButton is clicked
     //console.log(courseData.innerText)
     //splitting the data up so we can send them to the server
-    console.log("printing group")
+    
     let courseName = courseData.innerText.split(/ |-/)[1]
     let courseSection = courseData.innerText.split(/ |-/)[2]
     //console.log(courseSection)
@@ -79,7 +79,7 @@ groupButton.addEventListener("click",()=>{
     .then(data => {
         //populate here
         //goes through the arrays to get the names out of it
-        console.log(data)
+        //console.log(data)
         addGroups.innerHTML =""
         for(let i = 0; i < data.length; i++){
             //going into the inner arrays
