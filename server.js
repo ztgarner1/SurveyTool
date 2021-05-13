@@ -716,9 +716,10 @@ app.post("/editCourse",checkAuthenticated,(req,res)=>{
 })
 //starting all the api
 app.post("/addStudent/:courseName&:section",checkAuthenticated,(req,res)=>{
-  User.findOne({email:req.body.email})
+  User.findOne({email:req.body.email.toLowerCase()})
     .then(studentData=>{
       if(studentData != null){
+        
         Course.findOne({course_id:req.params.courseName,section:req.params.section})
         .then(courseData =>{
           if(courseData.students.length == 0){
@@ -728,7 +729,16 @@ app.post("/addStudent/:courseName&:section",checkAuthenticated,(req,res)=>{
 
           }
           else{
-            Course.updateOne({course_id:req.params.courseName,section:req.params.section},{$push:{students:studentData._id}})
+            if(!courseData.students.includes(studentData._id)){
+              Course.updateOne({course_id:req.params.courseName,section:req.params.section},{$push:{students:studentData._id}})
+              .then(()=>{
+                console.log("adding student")
+              })
+              .catch(error=>{
+                console.log("Error adding student that already exist")
+              })
+            }
+            
           }
         })
         .catch(error=>{
@@ -752,17 +762,17 @@ app.post("/addStudent/:courseName&:section",checkAuthenticated,(req,res)=>{
         var courseArray =[];
         var student = new User({
           _id: mongoose.Types.ObjectId(),
-          username: ""+data.first[0]+data.last+"",
-          first: data.first,
-          last: data.last,
-          email: data.email,
+          username: ""+req.body.first[0]+data.last+"",
+          first: req.body.first,
+          last: req.body.last,
+          email: req.body.email,
           password: password,
           locked: false,
           verified:false,
           courses: courseArray,
           confirmCode: confirmCode,
           isTeacher:false,
-          studentId: data.id,
+          studentId: req.body.id,
           temporaryPassword:randomString,
         })
 
@@ -771,11 +781,17 @@ app.post("/addStudent/:courseName&:section",checkAuthenticated,(req,res)=>{
           //if an error occured then they stay on the page but given an error message for the user to see
           console.log("Error in post.addStudent saving new user to database >> "+ err)
         })
+        Course.updateOne({course_id:req.params.courseName,section:req.params.section},{$push:{students:student._id}})
+        .catch(error=>{
+          console.log("Did not add student do class >> "+ error)
+        })
         
       }
     })
+    .catch(error=>{
+      console.log("Error getting students info >> "+error)
+    })
   
-  console.log(req.body);
 })
 //this calculates the Results bases on the survey taken in and the groupsize
 app.get("/calculateResults/:surveyId&:groupSize",checkAuthenticated,(req,res)=>{
