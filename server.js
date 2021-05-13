@@ -888,21 +888,22 @@ app.get("/getStudents/:courseName&:section", checkAuthenticated,(req,res)=>{
 })
 //an api call for getting all the group members from a specified class
 app.get("/group/:courseName&:section",checkAuthenticated,(req,res)=>{
+  console.log("here")
   var courseData = null;
  
   Course.findOne({course_id:req.params.courseName,section:req.params.section})
   .then(courseData=>{
     if(courseData != null){
       
-      //console.log(courseData[groups])
       var completeGroups = [];
       
       if(courseData.groups != undefined){
+        
         for(let i = 0; i < courseData.groups.length; i++){
           completeGroups[i] = [];
         }
-      
         for(let i = 0; i < courseData.groups.length;i++){
+          
           for(let j = 0; j < courseData.groups[i].length; j++){
             User.findOne({_id:courseData.groups[i][j]})
             .then(studentData=>{
@@ -910,15 +911,16 @@ app.get("/group/:courseName&:section",checkAuthenticated,(req,res)=>{
               studObj.first = studentData.first;
               studObj.last = studentData.last;
               completeGroups[i].push(studObj);
-              if(j == courseData.groups[0].length -1 && i ==courseData.groups.length-1){
+              
+              if(i == courseData.groups.length -1 && j == courseData.groups[i].length -1){
                 res.status(200)
-                //console.log(completeGroups)
                 res.send(completeGroups)
               }
             })
             .catch(error=>{
-              console.log()
+              console.log("Error in finding user "+ error)
             })
+            
           }
         }
       }
@@ -928,10 +930,16 @@ app.get("/group/:courseName&:section",checkAuthenticated,(req,res)=>{
       }
       
     }
+    else{
+      res.status(200)
+      res.send(false)
+    }
     
   })
   .catch(error=>{
     console.log("ERROR : "+error)
+    res.status(200)
+    res.send(false)
   })
   
 })
@@ -1202,17 +1210,6 @@ function makesTeam(studentsResults, survey, groupsize,course_id){
 function makeBestTeams(tempTeams,groupSize,resultsSize,course_id){
   //console.log(tempTeams);
   
-  check = false;
-  if(resultsSize % groupSize  == 0){
-    check == true;
-  }
-  else{
-    while(resultsSize % groupSize != 0){
-       groupSize--;
-    }
-    //console.log("now it will work >>" + groupSize)
-  }
-  
   
   var groupNumber = (resultsSize / groupSize);
   //console.log(groupNumber)
@@ -1235,18 +1232,31 @@ function makeBestTeams(tempTeams,groupSize,resultsSize,course_id){
       else{
         
         //this while loop is finding the next location in the array of choses
-        while(added[Object.keys(tempTeams[current][0])[0]] == true){
+        console.log(tempTeams[current][0])
+        
+        while(tempTeams[current].length > 0 && added[Object.keys(tempTeams[current][0])[0]] == true){
           //shifts so that the first one
           tempTeams[current].shift();
         }
         //adds the student_id to the added to check later
-        added[Object.keys(tempTeams[current][0])[0]] = true;
-        //pushes the student object to the smallerTeams 
-        smallerTeams.push(tempTeams[current][0])
+        if(tempTeams[current].length > 0){
+          added[Object.keys(tempTeams[current][0])[0]] = true;
+          //pushes the student object to the smallerTeams 
+          smallerTeams.push(tempTeams[current][0])
+        }
+        
+        
+        
       }
       
       //sets the current to the next one to continue
-      current = Object.keys(tempTeams[current][0])[0]
+      if(tempTeams[current].length > 0){
+        current = Object.keys(tempTeams[current][0])[0]
+      }
+      else{
+        break;
+      }
+      
       j++;
     }
     completeTeams.push(smallerTeams); 
