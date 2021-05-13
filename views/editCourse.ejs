@@ -64,35 +64,50 @@
                 <select size = '10' name = 'classes' id= 'clases' style = 'width:auto; text-align: center;'>
 
                 </select>
-                
+                <br>
+                <div class= "w3-row" id="StudentAddition">
+                  <button id="addStudent">AddStudent</button>
+                </div>
+                <br>
+                <div class= "w3-row" id="addStudentInfo">
+                  
+                </div>
             </div> 
         </div>
         
-        <form action='/editCourse' enctype="multipart/form-data" method ='POST' name = 'addSurvey'>
+        
  
-            <div class = 'w3-row' id = "replace">
-              
-              <h4>Surveys</h4>
-                <select size = "10" name = "classes" id= "allsurveys" style = "width:auto; text-align: center;">
-
-                  
-                </select>
+          <div class = 'w3-row' id = "replace" style = "text-align: center;">
+            
+            <h4>Surveys</h4>
+            <select size = "10" name = "classes" id= "allsurveys" style = "width:auto; text-align: center;">
+            </select>
+            <div class = "w3-row">
+              <h5>Select Survey to use to calculate groups with</h5><br>
+              <label for="GroupSize">Enter GroupSize:</label><br>
+              <input name = "groupSize" placeHolder ="Enter GroupSize here" id="groupSize"><br>
+              <button id="calculateResults" >Calculate Groups</button>
             </div>
-         
-          <div class = 'w3-row' >
-              Create Survey
-              
-              For Class :<br>
-              <input type = "text" name = "courseName" value = "<%= course.course_id %>,<%=course.section %>" readonly><br><br>
-              <button><a href = "/createSurvey/<%= course._id %>" style="text-decoration: none;">Create New Survey</a> </button>
+            
+            <% if( course.groups != ""){  %>
+              <div class = 'w3-row' style="margin-top:2%;" >
+                Print Groups
+                <br>
+                
+                <button id= "groupButton"> Create Groups </button>
+              </div>
+             <% } %>
           </div>
-        </form>
+        
         <div class = 'w3-row' >
-          Create Groups
-          <br>
-          
-          <button id= "groupButton"> Create Groups </button>
-      </div>
+            Create Survey
+            
+            For Class :<br>
+            <input type = "text" name = "courseName" value = "<%= course.course_id %>,<%=course.section %>" readonly><br><br>
+            <button><a href = "/createSurvey/<%= course._id %>" style="text-decoration: none;">Create New Survey</a> </button>
+        </div>
+        
+        
 
       <div class="w3-row" id="addGroups" style = "align-items: center;width: 25%;background: white;margin: 0 auto;margin-top: 3%;"></div>
         

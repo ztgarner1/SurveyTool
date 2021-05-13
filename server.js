@@ -12,6 +12,7 @@ const fileUpload = require('express-fileupload')
 const csv = require('csv-parser')
 const fs = require('fs');
 app.use(fileUpload());
+app.use(express.json({limit:"100kb"}))
 const path = require('path');
 //this helps log a user out
 const methodOverride = require('method-override')
@@ -714,6 +715,77 @@ app.post("/editCourse",checkAuthenticated,(req,res)=>{
 
 })
 //starting all the api
+app.post("/addStudent/:courseName&:section",checkAuthenticated,(req,res)=>{
+  User.findOne({email:req.body.email})
+    .then(studentData=>{
+      if(studentData != null){
+        Course.findOne({course_id:req.params.courseName,section:req.params.section})
+        .then(courseData =>{
+          if(courseData.students.length == 0){
+            var temp = [];
+            temp.push(studentData._id)
+            Course.updateOne({course_id:req.params.courseName,section:req.params.section},{students:temp})
+
+          }
+          else{
+            Course.updateOne({course_id:req.params.courseName,section:req.params.section},{$push:{students:studentData._id}})
+          }
+        })
+        .catch(error=>{
+          console.log("Error in post.addStudent >>" + error)
+        })
+      }
+      else{
+        //create a new user for this student
+        const slash = /\//gi;
+        const period =/\./gi;
+        //create String for the link
+        var randomString = bcrypt.hashSync(""+req.body.first[0]+req.body.last+"", bcrypt.genSaltSync(9));
+        randomString = randomString.replace(slash,"");
+        randomString = randomString.replace(period,"");
+        //create temp password
+        var password = bcrypt.hashSync(""+req.body.first[0]+req.body.last+"", bcrypt.genSaltSync(6));
+        password = password.replace(slash,"");
+        password = password.replace(slash,"");
+        var confirmCode = sendMail(data.email,null,randomString) 
+        //create temp password for student
+        var courseArray =[];
+        var student = new User({
+          _id: mongoose.Types.ObjectId(),
+          username: ""+data.first[0]+data.last+"",
+          first: data.first,
+          last: data.last,
+          email: data.email,
+          password: password,
+          locked: false,
+          verified:false,
+          courses: courseArray,
+          confirmCode: confirmCode,
+          isTeacher:false,
+          studentId: data.id,
+          temporaryPassword:randomString,
+        })
+
+        student.save()
+        .catch(err =>{
+          //if an error occured then they stay on the page but given an error message for the user to see
+          console.log("Error in post.addStudent saving new user to database >> "+ err)
+        })
+        
+      }
+    })
+  
+  console.log(req.body);
+})
+//this calculates the Results bases on the survey taken in and the groupsize
+app.get("/calculateResults/:surveyId&:groupSize",checkAuthenticated,(req,res)=>{
+  console.log("made it here")
+  searchForSurvey(req.params.surveyId, req.params.groupSize);
+  res.status(200);
+  res.send();
+})
+
+//this gets all the surveys and passes them back
 app.get("/getSurveys/:courseName&:section",checkAuthenticated,(req,res)=>{
   var surveys = [];
   Course.findOne({course_id:req.params.courseName,section:req.params.section})
@@ -868,29 +940,24 @@ app.get("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
   //console.log(req.params.variable)
   User.findOne({temporaryPassword:req.params.variable})
   .then(data=>{
+    if(data != null){
+      res.render('setPassword.ejs',{user:data,error:null})
+    }
+    else{
+      res.redirect("/")
+    }
     
-    res.render('setPassword.ejs',{user:data,error:null})
   })
-     
 })
 //Set password view
 app.post("/setPassword/:variable",checkNotAuthenticated,(req,res)=>{
-  if(req.body.firstPassword == req.body.secondPassword){
+  
+  User.updateOne({temporaryPassword:req.params.variable},{password:bcrypt.hashSync(req.body.firstPassword, bcrypt.genSaltSync(9)),temporaryPassword:"",verified:true})
+  .then(()=>{
+    //console.log("Added new password")
+    res.redirect('/login');
+  })
 
-    User.updateOne({temporaryPassword:req.params.variable},{password:bcrypt.hashSync(req.body.firstPassword, bcrypt.genSaltSync(9)),temporaryPassword:""})
-    .then(()=>{
-      //console.log("Added new password")
-      res.redirect('/login');
-    })
-
-  }
-  else{
-    User.findOne({temporaryPassword:req.params.variable})
-    .then(data=>{
-      res.render('setPassword.ejs',{user:data, error:"Passwords do not match"});
-    })
-    
-  }
   
 })
 
@@ -920,6 +987,7 @@ app.post("/resetPassword",checkNotAuthenticated,(req,res)=>{
     .then(()=>{
       //console.log("assigned temporaryPassword")
       sendResetPassword(to, data._id,randomString)
+      res.render('resetPassword.ejs',{user:null,error:"Password Successfully changed, Please check your email"})
     })
     .catch(error=>{
       //console.log("failed to assign temporaryPassword")
@@ -927,15 +995,13 @@ app.post("/resetPassword",checkNotAuthenticated,(req,res)=>{
     
   })
   .catch(error=>{
+    res.render('resetPassword.ejs',{user:null,error:"Error Unknown Email"})
     console.log(error)
   })
   
-  res.render('resetPassword.ejs',{user:null,error:"Password Successfully changed, Please check your email"})
-})
-app.get("/getGroups/:courseName&:courseSection",(req,res)=>{
-  
   
 })
+
 
 //logs the user out and redirects them to the home page
 app.delete('/logout', (req, res) => {
@@ -963,12 +1029,6 @@ function checkNotAuthenticated(req, res, next) {
 const sgMail = require("@sendgrid/mail");
 const user = require('./Mongoose Models/user');
 const surveyTemplate = require('./Mongoose Models/surveyTemplate');
-const { exec, execSync } = require('child_process');
-const { group } = require('console');
-const { exit } = require('process');
-const { json } = require('body-parser');
-const course = require('./Mongoose Models/course');
-const { SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG } = require('constants');
 sgMail.setApiKey(''+process.env.SENDGRID_PW+'');
 
 
@@ -1002,13 +1062,13 @@ function sendMail(to,user,tempPassword){
     "\n\n--WCU-SurveyTool"
   }
   if(tempPassword != null){
+    link = "https://wcu-surveytool.herokuapp.com/setPassword/" + tempPassword;
     msg = {
       to: to,
       from: "wcu.SurveyTool@gmail.com",
       subject: "Confirmtion",
       text: "Hello,\nYou are recieving this email because you have been registered " + 
       "for wcu-surveytool website.\n\n" +
-      "Your tempary password has been set to: "+ tempPassword + "\n" + 
       "Please verify your email address using this link below "+ link +
       "\n\n--WCU-SurveyTool"
     }
@@ -1025,15 +1085,13 @@ function sendMail(to,user,tempPassword){
   }
 }
 //Find the specific survey
- function searchForSurvey(id,groupsize){
-  var survey_id;
+ function searchForSurvey(survey_id,groupsize){
   var studentsResults;
   //goes and grabs the surveyResults from the database
-  SurveyResults.findOne({_id:id})
+  SurveyResults.findOne({survey_id:survey_id})
   .exec()
   .then(allResults =>{
     studentsResults = allResults.results
-    survey_id = allResults.survey_id
     //grabs the surveyTemplate from the database
     SurveyTemplates.findOne({_id:survey_id})
     .exec()
@@ -1180,7 +1238,7 @@ function makeBestTeams(tempTeams,groupSize,resultsSize,course_id){
 //Send group data to screen
 function sendGroupData(completeTeams,course_id){
   
-  console.log(completeTeams)
+  //console.log(completeTeams)
   //going through the each team and each subset
   var finalGroups = [];
   for(let i = 0; i < completeTeams.length; i++){
@@ -1191,7 +1249,7 @@ function sendGroupData(completeTeams,course_id){
     }
     finalGroups.push(smallerGroups)
   }
-  var final
+  
   //console.log(finalGroups)
   
   console.log(course_id)
@@ -1203,20 +1261,8 @@ function sendGroupData(completeTeams,course_id){
     console.log("did not update")
   })
   
-  /*
-  User.findOne({_id:Object.keys(completeTeams[i][j])[0]})
-  .then(studentData=>{
-    console.log("Group " +(i+1) +":")
-    console.log(studentData.first + ", " + studentData.last )
-    console.log("\n")
-  })
-  .catch(error=>{
-    console.log(error)
-  })
-  */
   
 }
-
 
 function messageToSend(to,message,sub){
   const msg = {
@@ -1301,44 +1347,7 @@ var deleteAllStudents = function(){
     console.log(error)
   })
 }
-//deleste students from files
-function addStudentsFromFile(){
-  var filename = "Example_Survey_Data.csv";
-  var results = []
-  fs.createReadStream(__dirname +'/views/Example_Survey_Data.csv')
-  .pipe(csv({}))
-  .on("data", (data) => {
-    console.log(data);
-    results.push(data);
-  })
-  .on("end",() =>{
-    for(let i = 0; i < results.length; i++){
-      console.log(results[i])
-      User.findOne({email:results[i].Email})
-      .then(studentData =>{
-        if(i != 0){
-          var objResults = {}
-          var arrResults = [];
-          objResults._id = studentData._id;
-          //populate arrResults
-          arrResults.push(results[i][0])
-          arrResults.push(results[i][1])
-          arrResults.push(results[i][2])
-          console.log(arrResults)
-          objResults.results = arrResults;
-          console.log(objResults)
-          SurveyResults.updateOne({_id:"60938cb5bd111245a8984cdb"},{$push:{results:objResults}})
-          .then(()=>{
-            //console.log("made it")
-          })
-        }
-        
-        //
-      })
-      
-    }
-  })
-}
+
 //deleteAllStudents();
 //deleteAllClasses();
 //deleteEveryonesCourses()
