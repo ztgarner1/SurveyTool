@@ -718,7 +718,7 @@ app.post("/editCourse",checkAuthenticated,(req,res)=>{
 app.post("/addStudent/:courseName&:section",checkAuthenticated,(req,res)=>{
   User.findOne({email:req.body.email.toLowerCase()})
     .then(studentData=>{
-      if(studentData != null){
+      if(studentData != null && !studentData.isTeacher){
         if(studentData.studentId == undefined){
           User.updateOne({_id:studentData._id},{studentId:req.body.id})
         }
@@ -746,8 +746,8 @@ app.post("/addStudent/:courseName&:section",checkAuthenticated,(req,res)=>{
         .catch(error=>{
           console.log("Error in post.addStudent >>" + error)
         })
-      }
-      else{
+      } 
+      else if(!studentData.isTeacher){
         //create a new user for this student
         const slash = /\//gi;
         const period =/\./gi;
