@@ -55,7 +55,6 @@ calcButton.addEventListener("click",()=>{
     //checking to see that the user selected something
     if((allSurveys.value != null || allSurveys.value != undefined)&& (groupSize != "") ){
         fetch('/calculateResults/'+allSurveys.value+"&"+groupSize.value)
-        .then(response =>response.json())
         .then(data=>{
             //reloading the webpage to see if the groups have been added
             location.reload();
